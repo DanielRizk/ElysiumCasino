@@ -1,0 +1,24 @@
+group = 'org.daniel.elysium'
+version = '0.0.1'
+
+allprojects {
+
+    buildDir = file("${rootProject.projectDir}/build/${project.path.substring(1).replace(':', '$')}")
+
+    pluginManager.withPlugin("java"){
+        dependencies {
+            testImplementation platform('org.junit:junit-bom:5.9.1')
+            testImplementation 'org.junit.jupiter:junit-jupiter'
+        }
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(17)
+            }
+        }
+
+        compileJava {
+            options.compilerArgs << '-Xlint:unchecked'
+            options.deprecation = true
+        }
+    }
+}

@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.daniel.elysium'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.xerial:sqlite-jdbc:3.43.2.2'
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
+    //implementation project(':utils')
+}
+
+
+test {
+    useJUnitPlatform()
+}
+
+/*jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.daniel.myCasino.Main'
+        )
+    }
+}*/
+
+/*tasks.register("Run", JavaExec){
+    group = 'application'
+    mainClass = 'org.daniel.myCasino.Main'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+}*/
