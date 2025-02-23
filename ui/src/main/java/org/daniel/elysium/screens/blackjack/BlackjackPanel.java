@@ -1,15 +1,13 @@
 package org.daniel.elysium.screens.blackjack;
 
-import org.daniel.elysium.constants.Asset;
-import org.daniel.elysium.managers.AssetManager;
+import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.screens.ScreenManager;
-import org.daniel.elysium.screens.models.BackgroundPanel;
+import org.daniel.elysium.elements.panels.BackgroundPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.function.Consumer;
 
 public class BlackjackPanel extends JPanel {
 
@@ -31,7 +29,7 @@ public class BlackjackPanel extends JPanel {
         setLayout(new BorderLayout());
 
         // Create background panel
-        BackgroundPanel background = new BackgroundPanel(Asset.BACKGROUND);
+        BackgroundPanel background = new BackgroundPanel(BackgroundAsset.BACKGROUND);
         background.setLayout(new BorderLayout());
 
         // Create subpanels

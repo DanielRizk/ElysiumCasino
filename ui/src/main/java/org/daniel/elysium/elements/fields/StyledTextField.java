@@ -1,7 +1,8 @@
-package org.daniel.elysium.elements;
+package org.daniel.elysium.elements.fields;
 
-import org.daniel.elysium.constants.Asset;
-import org.daniel.elysium.managers.AssetManager;
+import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.assets.Asset;
+import org.daniel.elysium.assets.AssetManager;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -24,7 +25,7 @@ public class StyledTextField extends JTextField {
         this.showingPlaceholder = true;
         setFont(new Font("Roboto", Font.ITALIC, 15));
         basicTextFieldConfig();
-        this.backgroundAsset = Asset.BUTTON_DB_ROUND;
+        this.backgroundAsset = ButtonAsset.BUTTON_DARK_BLUE_ROUND;
         loadBackgroundImage();
         initPlaceholderBehavior();
         preventInitialFocus();
@@ -35,7 +36,7 @@ public class StyledTextField extends JTextField {
         this.placeholder = placeholder;
         this.showingPlaceholder = true;
         basicTextFieldConfig();
-        this.backgroundAsset = Asset.BUTTON_DB_ROUND;
+        this.backgroundAsset = ButtonAsset.BUTTON_DARK_BLUE_ROUND;
         loadBackgroundImage();
         if (editable) {
             setFont(new Font("Roboto", Font.ITALIC, 15));
@@ -79,6 +80,12 @@ public class StyledTextField extends JTextField {
             @Override
             public void componentResized(ComponentEvent e) {
                 loadBackgroundImage();
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                loadBackgroundImage();
+                repaint();
             }
         });
     }

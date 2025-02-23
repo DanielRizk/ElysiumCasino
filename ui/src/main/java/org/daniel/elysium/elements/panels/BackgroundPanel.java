@@ -1,15 +1,26 @@
-package org.daniel.elysium.screens.models;
+package org.daniel.elysium.elements.panels;
 
-import org.daniel.elysium.constants.Asset;
-import org.daniel.elysium.managers.AssetManager;
+import org.daniel.elysium.assets.Asset;
+import org.daniel.elysium.assets.AssetManager;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class BackgroundPanel extends JPanel {
     private Image backgroundImage;
+    boolean doNotScale;
 
     public BackgroundPanel(Asset imageName) {
+        try {
+            backgroundImage =  AssetManager.getImage(imageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        setLayout(new BorderLayout());
+    }
+
+    public BackgroundPanel(Asset imageName, boolean doNotScale) {
+        this.doNotScale = doNotScale;
         try {
             backgroundImage =  AssetManager.getImage(imageName);
         } catch (Exception e) {
@@ -28,8 +39,15 @@ public class BackgroundPanel extends JPanel {
             int imgHeight = backgroundImage.getHeight(this);
 
             double scale = Math.max((double) panelWidth / imgWidth, (double) panelHeight / imgHeight);
-            int newWidth = (int) (imgWidth * scale);
-            int newHeight = (int) (imgHeight * scale);
+            int newWidth;
+            int newHeight;
+            if (doNotScale){
+                newWidth = (int) (imgWidth * 40);
+                newHeight = (int) (imgHeight * 40);
+            } else {
+                newWidth = (int) (imgWidth * scale);
+                newHeight = (int) (imgHeight * scale);
+            }
             int x = (panelWidth - newWidth) / 2;
             int y = (panelHeight - newHeight) / 2;
             g.drawImage(backgroundImage, x, y, newWidth, newHeight, this);

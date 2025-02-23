@@ -1,7 +1,7 @@
 package org.daniel.elysium.screens.blackjack;
 
-import org.daniel.elysium.constants.Asset;
-import org.daniel.elysium.managers.AssetManager;
+import org.daniel.elysium.assets.AssetTemp;
+import org.daniel.elysium.assets.AssetManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,19 +25,19 @@ public class CardDealer {
                 switch (step[0]) {
                     case 0:
                         // Dealer card 1: face down
-                        gameAreaPanel.addDealerCard(AssetManager.getScaledIcon(Asset.CARD_BACK, 100, 150));
+                        gameAreaPanel.addDealerCard(AssetManager.getScaledIcon(AssetTemp.CARD_BACK, 100, 150));
                         break;
                     case 1:
                         // Player card 1: face up
-                        gameAreaPanel.addPlayerCard(AssetManager.getScaledIcon(Asset.CARD_FRONT, 100, 150));
+                        gameAreaPanel.addPlayerCard(AssetManager.getScaledIcon(AssetTemp.CARD_FRONT, 100, 150));
                         break;
                     case 2:
                         // Dealer card 2: face up
-                        gameAreaPanel.addDealerCard(AssetManager.getScaledIcon(Asset.CARD_FRONT, 100, 150));
+                        gameAreaPanel.addDealerCard(AssetManager.getScaledIcon(AssetTemp.CARD_FRONT, 100, 150));
                         break;
                     case 3:
                         // Player card 2: face up
-                        gameAreaPanel.addPlayerCard(AssetManager.getScaledIcon(Asset.CARD_FRONT, 100, 150));
+                        gameAreaPanel.addPlayerCard(AssetManager.getScaledIcon(AssetTemp.CARD_FRONT, 100, 150));
                         break;
                     default:
                         ((Timer) evt.getSource()).stop();

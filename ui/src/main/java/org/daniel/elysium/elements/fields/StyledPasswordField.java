@@ -1,7 +1,8 @@
-package org.daniel.elysium.elements;
+package org.daniel.elysium.elements.fields;
 
-import org.daniel.elysium.constants.Asset;
-import org.daniel.elysium.managers.AssetManager;
+import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.assets.Asset;
+import org.daniel.elysium.assets.AssetManager;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -24,7 +25,7 @@ public class StyledPasswordField extends JPasswordField {
         this.showingPlaceholder = true;
         setFont(new Font("Roboto", Font.PLAIN, 15));
         basicPasswordFieldConfig();
-        this.backgroundAsset = Asset.BUTTON_DB_ROUND;
+        this.backgroundAsset = ButtonAsset.BUTTON_DARK_BLUE_ROUND;
         loadBackgroundImage();
         initPlaceholderBehavior();
         preventInitialFocus();
@@ -61,6 +62,12 @@ public class StyledPasswordField extends JPasswordField {
             @Override
             public void componentResized(ComponentEvent e) {
                 loadBackgroundImage();
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                loadBackgroundImage();
+                repaint();
             }
         });
     }

@@ -1,7 +1,7 @@
 package org.daniel.elysium.screens.blackjack;
 
-import org.daniel.elysium.constants.Asset;
-import org.daniel.elysium.elements.StyledButton;
+import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.elements.buttons.StyledButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,13 +44,13 @@ public class BettingPanel extends JPanel {
         });
         betPanel.add(betCircle);
 
-        currentBetLabel = new StyledButton("Bet: $0", Asset.BUTTON_DB_ROUND);
+        currentBetLabel = new StyledButton("Bet: $0", ButtonAsset.BUTTON_DARK_BLUE_ROUND);
         betPanel.add(currentBetLabel);
 
         add(betPanel);
         add(Box.createVerticalStrut(20));
 
-        clearBetButton = new StyledButton("Clear Bet", Asset.BUTTON_DB_SHARP);
+        clearBetButton = new StyledButton("Clear Bet", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
         clearBetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         clearBetButton.addActionListener(e -> onClearBet.run());
         clearBetButton.setVisible(false);
@@ -59,10 +59,10 @@ public class BettingPanel extends JPanel {
         // Action buttons panel (Hit, Stand, etc.)
         actionButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         actionButtonsPanel.setOpaque(false);
-        StyledButton hitButton = new StyledButton("Hit", Asset.BUTTON_DB_SHARP);
-        StyledButton standButton = new StyledButton("Stand", Asset.BUTTON_DB_SHARP);
-        StyledButton doubleButton = new StyledButton("Double", Asset.BUTTON_DB_SHARP);
-        StyledButton splitButton = new StyledButton("Split", Asset.BUTTON_DB_SHARP);
+        StyledButton hitButton = new StyledButton("Hit", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        StyledButton standButton = new StyledButton("Stand", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        StyledButton doubleButton = new StyledButton("Double", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        StyledButton splitButton = new StyledButton("Split", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
         actionButtonsPanel.add(hitButton);
         actionButtonsPanel.add(standButton);
         actionButtonsPanel.add(doubleButton);

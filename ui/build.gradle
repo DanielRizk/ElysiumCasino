@@ -13,7 +13,7 @@ repositories {
 dependencies {
     // Add a dependency on the core module:
     implementation project(':core')
-    //implementation project(':utils')
+    implementation project(':utils')
 
     // Add CLI-specific dependencies here if needed.
 }

@@ -1,8 +1,9 @@
 package org.daniel.elysium.screens.blackjack;
 
-import org.daniel.elysium.constants.Asset;
-import org.daniel.elysium.managers.AssetManager;
-import org.daniel.elysium.elements.StyledButton;
+import org.daniel.elysium.assets.BackgroundAsset;
+import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.assets.AssetManager;
+import org.daniel.elysium.elements.buttons.StyledButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,14 +51,14 @@ public class GameAreaPanel extends JPanel {
         // Logo – assign 20% of vertical space
         gbc.gridy = 2;
         gbc.weighty = 0.2;
-        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(Asset.BLACKJACK, 600, 230));
+        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(BackgroundAsset.BLACKJACK_RULES, 600, 230));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(logoLabel, gbc);
 
         // Deal Button – assign 10% of vertical space
         gbc.gridy = 3;
         gbc.weighty = 0.1;
-        dealButton = new StyledButton("DEAL", Asset.BUTTON_DB_SHARP);
+        dealButton = new StyledButton("DEAL", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
         dealButton.addActionListener(onDealAction::accept);
         dealButton.setHorizontalAlignment(SwingConstants.CENTER);
         add(dealButton, gbc);

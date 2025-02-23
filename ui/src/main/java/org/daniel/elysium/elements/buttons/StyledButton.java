@@ -1,8 +1,8 @@
-package org.daniel.elysium.elements;
+package org.daniel.elysium.elements.buttons;
 
 
-import org.daniel.elysium.managers.AssetManager;
-import org.daniel.elysium.constants.Asset;
+import org.daniel.elysium.assets.Asset;
+import org.daniel.elysium.assets.AssetManager;
 
 import javax.swing.*;
 import java.awt.*;

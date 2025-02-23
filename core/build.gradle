@@ -12,7 +12,7 @@ repositories {
 dependencies {
     implementation 'org.xerial:sqlite-jdbc:3.43.2.2'
     implementation 'ch.qos.logback:logback-classic:1.4.12'
-    //implementation project(':utils')
+    implementation project(':utils')
 }
 
 

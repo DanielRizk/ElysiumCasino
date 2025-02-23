@@ -1,4 +1,5 @@
 rootProject.name = 'ElysiumCasino'
 include 'core'
 include 'ui'
+include 'utils'
 
