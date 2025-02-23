@@ -25,6 +25,14 @@ public class AssetManager {
         loadAsset("btn_b_r.png", Asset.BUTTON_B_ROUND);
         loadAsset("btn_g_s.png", Asset.BUTTON_G_SHARP);
         loadAsset("btn_g_r.png", Asset.BUTTON_G_ROUND);
+        loadAsset("BlackjackStencil.png", Asset.BLACKJACK);
+        loadAsset("Chip_10.png", Asset.CHIP_10);
+        loadAsset("Chip_50.png", Asset.CHIP_50);
+        loadAsset("Chip_100.png", Asset.CHIP_100);
+        loadAsset("Chip_500.png", Asset.CHIP_500);
+        loadAsset("Chip_1000.png", Asset.CHIP_1000);
+        loadAsset("CardFront.png", Asset.CARD_FRONT);
+        loadAsset("CardBack.png", Asset.CARD_BACK);
         // Add more assets as needed
     }
 

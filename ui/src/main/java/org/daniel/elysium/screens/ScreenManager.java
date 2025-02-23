@@ -1,4 +1,4 @@
-package org.daniel.elysium.managers;
+package org.daniel.elysium.screens;
 
 import javax.swing.*;
 import java.awt.*;

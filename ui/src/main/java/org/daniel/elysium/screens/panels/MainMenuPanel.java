@@ -1,18 +1,19 @@
-package org.daniel.elysium.screens;
+package org.daniel.elysium.screens.panels;
 
-import org.daniel.elysium.BackgroundPanel;
+import org.daniel.elysium.events.handlers.MainMenuEventHandler;
+import org.daniel.elysium.screens.models.BackgroundPanel;
 import org.daniel.elysium.constants.Asset;
 import org.daniel.elysium.elements.StyledButton;
 import org.daniel.elysium.managers.AssetManager;
-import org.daniel.elysium.managers.EventManager;
-import org.daniel.elysium.managers.ScreenManager;
+import org.daniel.elysium.events.EventManager;
+import org.daniel.elysium.screens.ScreenManager;
 
 import javax.swing.*;
 import java.awt.*;
 
 // MainMenuPanel.java
 public class MainMenuPanel extends JPanel {
-    public MainMenuPanel(ScreenManager screenManager, EventManager eventManager) {
+    public MainMenuPanel(MainMenuEventHandler eventHandler) {
         setLayout(new BorderLayout());
 
         BackgroundPanel backgroundPanel = new BackgroundPanel(Asset.BACKGROUND);
@@ -48,7 +49,8 @@ public class MainMenuPanel extends JPanel {
         gbc.gridy = 5;
         buttonPanel.add(logoutButton, gbc);
 
-        eventManager.addLogoutButtonListener(logoutButton);
+        eventHandler.addLogoutButtonListener(logoutButton);
+        eventHandler.addBlackjackButtonListener(blackjackButton);
 
         backgroundPanel.add(buttonPanel, BorderLayout.CENTER);
         add(backgroundPanel, BorderLayout.CENTER);

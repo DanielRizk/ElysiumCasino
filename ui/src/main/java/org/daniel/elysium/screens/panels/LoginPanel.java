@@ -1,22 +1,24 @@
-package org.daniel.elysium.screens;
+package org.daniel.elysium.screens.panels;
 
-import org.daniel.elysium.BackgroundPanel;
+import org.daniel.elysium.events.handlers.LoginEventHandler;
+import org.daniel.elysium.screens.models.BackgroundPanel;
 import org.daniel.elysium.constants.Asset;
 import org.daniel.elysium.elements.StyledButton;
 import org.daniel.elysium.elements.StyledPasswordField;
 import org.daniel.elysium.elements.StyledTextField;
 import org.daniel.elysium.managers.AssetManager;
-import org.daniel.elysium.managers.EventManager;
-import org.daniel.elysium.managers.ScreenManager;
+import org.daniel.elysium.events.EventManager;
+import org.daniel.elysium.screens.ScreenManager;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class RegisterPanel extends JPanel {
-    public RegisterPanel(ScreenManager screenManager, EventManager eventManager) {
+// LoginPanel.java
+public class LoginPanel extends JPanel {
+    public LoginPanel(LoginEventHandler eventHandler) {
         setLayout(new BorderLayout());
 
-        BackgroundPanel backgroundPanel =  new BackgroundPanel(Asset.BACKGROUND);
+        BackgroundPanel backgroundPanel = new BackgroundPanel(Asset.BACKGROUND);
         JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setOpaque(false);
 
@@ -38,27 +40,26 @@ public class RegisterPanel extends JPanel {
         gbc.gridy = 2;
         inputPanel.add(passwordField, gbc);
 
-        StyledPasswordField repeatPasswordField = new StyledPasswordField("Repeat Password", 15);
-        gbc.gridy = 3;
-        inputPanel.add(repeatPasswordField, gbc);
-
         gbc.insets = new Insets(40, 0, 10, 0);
 
+        StyledButton loginButton = new StyledButton("Login", Asset.BUTTON_DB_SHARP);
+        gbc.gridy = 4;
+        inputPanel.add(loginButton, gbc);
+
+        gbc.insets = new Insets(10, 0, 10, 0);
         StyledButton registerButton = new StyledButton("Register", Asset.BUTTON_DB_SHARP);
         gbc.gridy = 5;
         inputPanel.add(registerButton, gbc);
-
-        gbc.insets = new Insets(10, 0, 10, 0);
 
         StyledButton quitButton = new StyledButton("Quit", Asset.BUTTON_DB_SHARP);
         gbc.gridy = 6;
         inputPanel.add(quitButton, gbc);
 
-        eventManager.addLoginButtonListener(registerButton);
-        eventManager.addQuitButtonListener(quitButton);
+        eventHandler.addLoginButtonListener(loginButton);
+        eventHandler.addRegisterButtonListener(registerButton);
+        eventHandler.addQuitButtonListener(quitButton);
 
         backgroundPanel.add(inputPanel, BorderLayout.CENTER);
         add(backgroundPanel, BorderLayout.CENTER);
-
     }
 }

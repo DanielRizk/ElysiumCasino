@@ -30,6 +30,24 @@ public class StyledTextField extends JTextField {
         preventInitialFocus();
     }
 
+    public StyledTextField(String placeholder, int columns, boolean editable) {
+        super(placeholder, columns);
+        this.placeholder = placeholder;
+        this.showingPlaceholder = true;
+        basicTextFieldConfig();
+        this.backgroundAsset = Asset.BUTTON_DB_ROUND;
+        loadBackgroundImage();
+        if (editable) {
+            setFont(new Font("Roboto", Font.ITALIC, 15));
+            initPlaceholderBehavior();
+            preventInitialFocus();
+        } else {
+            setFont(new Font("Serif", Font.BOLD, 18));
+            setEditable(false);
+            setFocusable(false);
+        }
+    }
+
     public StyledTextField(String placeholder, int columns, Font font, Asset backgroundAsset) {
         super(placeholder, columns);
         this.placeholder = placeholder;

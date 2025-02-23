@@ -1,4 +1,4 @@
-package org.daniel.elysium;
+package org.daniel.elysium.screens.models;
 
 import org.daniel.elysium.constants.Asset;
 import org.daniel.elysium.managers.AssetManager;
