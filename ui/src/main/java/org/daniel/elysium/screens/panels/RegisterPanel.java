@@ -1,15 +1,15 @@
 package org.daniel.elysium.screens.panels;
 
+import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledPasswordField;
-import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.assets.AssetManager;
-import org.daniel.elysium.screens.ScreenManager;
 import org.daniel.elysium.user.database.UserDAO;
 import org.daniel.elysium.user.profile.UserProfile;
 
@@ -21,9 +21,9 @@ public class RegisterPanel extends JPanel {
     StyledTextField usernameField;
     StyledPasswordField passwordField;
     StyledPasswordField repeatPasswordField;
-    private final ScreenManager screenManager;
-    public RegisterPanel(ScreenManager screenManager) {
-        this.screenManager = screenManager;
+    private final StateManager stateManager;
+    public RegisterPanel(StateManager stateManager) {
+        this.stateManager = stateManager;
         setLayout(new BorderLayout());
 
         BackgroundPanel backgroundPanel =  new BackgroundPanel(BackgroundAsset.BACKGROUND);
@@ -40,15 +40,15 @@ public class RegisterPanel extends JPanel {
         gbc.gridy = 0;
         inputPanel.add(logoLabel, gbc);
 
-        usernameField = new StyledTextField("Username", 15);
+        usernameField = new StyledTextField("Username");
         gbc.gridy = 1;
         inputPanel.add(usernameField, gbc);
 
-        passwordField = new StyledPasswordField("Password", 15);
+        passwordField = new StyledPasswordField("Password");
         gbc.gridy = 2;
         inputPanel.add(passwordField, gbc);
 
-        repeatPasswordField = new StyledPasswordField("Repeat Password", 15);
+        repeatPasswordField = new StyledPasswordField("Repeat Password");
         gbc.gridy = 3;
         inputPanel.add(repeatPasswordField, gbc);
 
@@ -60,12 +60,23 @@ public class RegisterPanel extends JPanel {
 
         gbc.insets = new Insets(10, 0, 10, 0);
 
-        StyledButton quitButton = new StyledButton("Quit", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        StyledButton backButton = new StyledButton("Back", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
         gbc.gridy = 6;
+        inputPanel.add(backButton, gbc);
+
+        StyledButton quitButton = new StyledButton("Quit", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        gbc.gridy = 7;
         inputPanel.add(quitButton, gbc);
 
         registerButton.addActionListener(e ->{
-            register();
+            stateManager.setProfile(register());
+            if (stateManager.isUserLoggedIn()){
+                stateManager.switchPanel("MainMenu");
+            }
+        });
+
+        backButton.addActionListener(e -> {
+            stateManager.switchPanel("Login");
         });
 
         quitButton.addActionListener(e ->{
@@ -85,8 +96,8 @@ public class RegisterPanel extends JPanel {
 
     private UserProfile register(){
         String userName = usernameField.getText().trim();
-        String password = Arrays.toString(passwordField.getPassword());
-        String repeatPassword = Arrays.toString(repeatPasswordField.getPassword());
+        String password = passwordField.getPassword();
+        String repeatPassword = repeatPasswordField.getPassword();
         UserDAO userDAO = new UserDAO();
         if (userName.isEmpty() || userName.equals("Username")){
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -117,7 +128,6 @@ public class RegisterPanel extends JPanel {
         UserProfile profile = userDAO.addUser(userName, password, 10000);
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         new Toast(frame, "Welcome " + userName + ", Your balance is: " + profile.getBalance(), 3000).setVisible(true);
-        screenManager.showScreen("MainMenu");
         return profile;
     }
 }

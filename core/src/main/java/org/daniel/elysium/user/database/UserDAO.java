@@ -102,7 +102,7 @@ public class UserDAO {
         return null;
     }
 
-    public UserProfile updateBalance(UserProfile player, String username, double newBalance) {
+    public void updateBalance(UserProfile player, String username, double newBalance) {
         String sql = "UPDATE users SET balance = ? WHERE username = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -112,12 +112,9 @@ public class UserDAO {
             pstmt.executeUpdate();
             DebugPrint.println("Balance updated successfully!", true);
             player.setBalance(newBalance);
-            return player;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return null;
     }
 
     public void deleteUser(String username) {

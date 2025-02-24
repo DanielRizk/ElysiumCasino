@@ -2,22 +2,15 @@ package org.daniel.elysium;
 
 import org.daniel.elysium.debugUtils.DebugLevel;
 import org.daniel.elysium.debugUtils.DebugPrint;
-import org.daniel.elysium.events.handlers.LoginEventHandler;
-import org.daniel.elysium.events.handlers.MainMenuEventHandler;
-import org.daniel.elysium.events.handlers.RegisterEventHandler;
-import org.daniel.elysium.models.BJCard;
-import org.daniel.elysium.models.Card;
-import org.daniel.elysium.models.Shoe;
-import org.daniel.elysium.screens.ScreenManager;
-import org.daniel.elysium.screens.blackjack.BlackjackPanel;
+import org.daniel.elysium.screens.blackjack2.BlackjackPanel;
 import org.daniel.elysium.screens.panels.LoginPanel;
 import org.daniel.elysium.screens.panels.MainMenuPanel;
 import org.daniel.elysium.screens.panels.RegisterPanel;
 import org.daniel.elysium.user.database.DatabaseConnection;
+import org.daniel.elysium.user.profile.UserProfile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 
 public class Launcher {
@@ -34,24 +27,16 @@ public class Launcher {
         frame.setResizable(true);
 
         JPanel mainPanel = new JPanel(new CardLayout());
-        ScreenManager screenManager = new ScreenManager(mainPanel);
 
-        /*
-        *
-        StateManager stateManager = new StateManager(frame.getContentPane());
+        StateManager stateManager = new StateManager(mainPanel);
         stateManager.registerPanel("Login", () -> new LoginPanel(stateManager));
         stateManager.registerPanel("MainMenu", () -> new MainMenuPanel(stateManager));
         stateManager.registerPanel("Register", () -> new RegisterPanel(stateManager));
         stateManager.registerPanel("Blackjack", () -> new BlackjackPanel(stateManager));
 
-        stateManager.switchPanel("Login");
-        *
-        * */
+        stateManager.setProfile(new UserProfile("test", "test", 1000));
+        stateManager.switchPanel("Blackjack");
 
-        screenManager.addScreen(new LoginPanel(screenManager), "Login");
-        screenManager.addScreen(new MainMenuPanel(new MainMenuEventHandler(screenManager)), "MainMenu");
-        screenManager.addScreen(new RegisterPanel(screenManager), "Register");
-        screenManager.addScreen(new BlackjackPanel(screenManager), "Blackjack");
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowOpened(java.awt.event.WindowEvent e) {

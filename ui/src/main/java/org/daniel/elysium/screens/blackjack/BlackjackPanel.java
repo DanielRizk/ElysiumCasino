@@ -1,8 +1,9 @@
 package org.daniel.elysium.screens.blackjack;
 
+import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.BackgroundAsset;
-import org.daniel.elysium.screens.ScreenManager;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
+import org.daniel.elysium.models.Chip;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +13,7 @@ import java.awt.event.MouseEvent;
 public class BlackjackPanel extends JPanel {
 
     // Global game state
-    private int balance = 10000;
+    private int balance = 900;
     private int currentBet = 0;
     private boolean gameStarted = false;
 
@@ -21,11 +22,12 @@ public class BlackjackPanel extends JPanel {
     private GameAreaPanel gameAreaPanel;
     private BettingPanel bettingPanel;
     private ChipPanel chipPanel; // Floating chip selection panel
-
+    private StateManager stateManager;
     // Controllers
     private CardDealer cardDealer; // Deals cards into the game area
 
-    public BlackjackPanel(ScreenManager screenManager) {
+    public BlackjackPanel(StateManager stateManager) {
+        this.stateManager = stateManager;
         setLayout(new BorderLayout());
 
         // Create background panel
@@ -33,12 +35,12 @@ public class BlackjackPanel extends JPanel {
         background.setLayout(new BorderLayout());
 
         // Create subpanels
-        topPanel = new TopPanel(screenManager, this::resetEverything, balance);
+        topPanel = new TopPanel(stateManager, this::resetEverything, balance);
         gameAreaPanel = new GameAreaPanel(this::startGame);
         bettingPanel = new BettingPanel(
                 this::toggleChipPanel,
-                this::clearBet,
-                this::handleChipBet
+                this::clearBet
+                //,this::handleChipBet
         );
 
         // Compose the overall layout
@@ -63,13 +65,13 @@ public class BlackjackPanel extends JPanel {
 
 
     // Called when a chip is selected from the chip panel.
-    private void handleChipBet(int chipValue, ImageIcon chipIcon) {
-        if (!gameStarted && placeBet(chipValue, bettingPanel.canHaveMoreBets())) {
+    private void handleChipBet(Chip chip) {
+        if (!gameStarted && placeBet(chip.getValue(), bettingPanel.canHaveMoreBets())) {
             // Update betting panel: update bet label and show clear bet button
             bettingPanel.updateBetLabel(currentBet);
             bettingPanel.showClearBetButton(true);
             // Add the specific chip icon to the BetCircle
-            bettingPanel.addChip(chipIcon);
+            bettingPanel.addChip(chip);
         }
     }
 
@@ -115,7 +117,7 @@ public class BlackjackPanel extends JPanel {
     private void toggleChipPanel() {
         if (gameStarted) return;
         if (chipPanel == null) {
-            chipPanel = new ChipPanel(this::handleChipBet);
+            chipPanel = new ChipPanel(this::handleChipBet, stateManager);
             chipPanel.setBounds(5, getHeight() / 4 - 120, 80, getHeight());
             JLayeredPane layeredPane = getRootPane().getLayeredPane();
             layeredPane.add(chipPanel, JLayeredPane.POPUP_LAYER);

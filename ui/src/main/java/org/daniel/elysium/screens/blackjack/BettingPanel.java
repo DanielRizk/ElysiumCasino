@@ -2,6 +2,7 @@ package org.daniel.elysium.screens.blackjack;
 
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
+import org.daniel.elysium.models.Chip;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +17,7 @@ public class BettingPanel extends JPanel {
     private Runnable onClearBet;
     private Consumer<Integer> onChipBet;
 
-    public BettingPanel(Runnable onToggleChipPanel, Runnable onClearBet, ChipSelectedListener chipSelectedListener) {
+    public BettingPanel(Runnable onToggleChipPanel, Runnable onClearBet) {
         this.onToggleChipPanel = onToggleChipPanel;
         this.onClearBet = onClearBet;
         this.onChipBet = onChipBet;
@@ -84,8 +85,8 @@ public class BettingPanel extends JPanel {
         clearBetButton.setVisible(false);
     }
 
-    public void addChip(ImageIcon chipIcon) {
-        betCircle.addChip(chipIcon);
+    public void addChip(Chip chip) {
+        betCircle.addChip(chip);
     }
 
     public boolean canHaveMoreBets(){

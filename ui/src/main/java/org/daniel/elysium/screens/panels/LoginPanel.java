@@ -1,15 +1,15 @@
 package org.daniel.elysium.screens.panels;
 
+import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledPasswordField;
-import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.assets.AssetManager;
-import org.daniel.elysium.screens.ScreenManager;
 import org.daniel.elysium.user.database.UserDAO;
 import org.daniel.elysium.user.profile.UserProfile;
 
@@ -21,9 +21,9 @@ import java.util.Arrays;
 public class LoginPanel extends JPanel {
     private final StyledTextField usernameField;
     private final StyledPasswordField passwordField;
-    private final ScreenManager screenManager;
-    public LoginPanel(ScreenManager screenManager) {
-        this.screenManager = screenManager;
+    private final StateManager stateManager;
+    public LoginPanel(StateManager stateManager) {
+        this.stateManager = stateManager;
         setLayout(new BorderLayout());
 
         BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.BACKGROUND);
@@ -40,31 +40,34 @@ public class LoginPanel extends JPanel {
         gbc.gridy = 0;
         inputPanel.add(logoLabel, gbc);
 
-        usernameField = new StyledTextField("Username", 15);
+        usernameField = new StyledTextField("Username");
         gbc.gridy = 1;
         inputPanel.add(usernameField, gbc);
 
-        passwordField = new StyledPasswordField("Password", 15);
+        passwordField = new StyledPasswordField("Password");
         gbc.gridy = 2;
         inputPanel.add(passwordField, gbc);
 
         gbc.insets = new Insets(40, 0, 10, 0);
 
-        StyledButton loginButton = new StyledButton("Login", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        StyledButton loginButton = new StyledButton("Login");
         gbc.gridy = 4;
         inputPanel.add(loginButton, gbc);
 
         gbc.insets = new Insets(10, 0, 10, 0);
-        StyledButton registerButton = new StyledButton("Register", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        StyledButton registerButton = new StyledButton("Register");
         gbc.gridy = 5;
         inputPanel.add(registerButton, gbc);
 
-        StyledButton quitButton = new StyledButton("Quit", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        StyledButton quitButton = new StyledButton("Quit");
         gbc.gridy = 6;
         inputPanel.add(quitButton, gbc);
 
         loginButton.addActionListener(e -> {
-            login();
+            stateManager.setProfile(login());
+            if (stateManager.isUserLoggedIn()){
+                stateManager.switchPanel("MainMenu");
+            }
         });
 
         quitButton.addActionListener(e ->{
@@ -72,7 +75,7 @@ public class LoginPanel extends JPanel {
         });
 
         registerButton.addActionListener(e ->{
-            goToRegisterScreen();
+            stateManager.switchPanel("Register");
         });
 
         backgroundPanel.add(inputPanel, BorderLayout.CENTER);
@@ -81,7 +84,7 @@ public class LoginPanel extends JPanel {
 
     private UserProfile login(){
         String userName = usernameField.getText().trim();
-        String password = Arrays.toString(passwordField.getPassword());
+        String password = passwordField.getPassword();
         UserDAO userDAO = new UserDAO();
         if (userName.isEmpty() || userName.equals("Username")){
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -106,12 +109,7 @@ public class LoginPanel extends JPanel {
         }
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         new Toast(frame, "Welcome " + userName + ", Your balance is: " + profile.getBalance(), 3000).setVisible(true);
-        screenManager.showScreen("MainMenu");
         return profile;
-    }
-
-    private void goToRegisterScreen(){
-        screenManager.showScreen("Register");
     }
 
     private void quit(){
@@ -123,7 +121,4 @@ public class LoginPanel extends JPanel {
             System.exit(0);
         }
     }
-
-
-
 }

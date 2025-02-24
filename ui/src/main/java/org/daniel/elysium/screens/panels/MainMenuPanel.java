@@ -1,8 +1,8 @@
 package org.daniel.elysium.screens.panels;
 
+import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
-import org.daniel.elysium.events.handlers.MainMenuEventHandler;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.assets.AssetManager;
@@ -10,9 +10,8 @@ import org.daniel.elysium.assets.AssetManager;
 import javax.swing.*;
 import java.awt.*;
 
-// MainMenuPanel.java
 public class MainMenuPanel extends JPanel {
-    public MainMenuPanel(MainMenuEventHandler eventHandler) {
+    public MainMenuPanel(StateManager stateManager) {
         setLayout(new BorderLayout());
 
         BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.BACKGROUND);
@@ -28,15 +27,15 @@ public class MainMenuPanel extends JPanel {
         gbc.gridy = 0;
         buttonPanel.add(logoLabel, gbc);
 
-        StyledButton blackjackButton = new StyledButton("BlackJack", ButtonAsset.BUTTON_DARK_BLUE_ROUND);
+        StyledButton blackjackButton = new StyledButton("BlackJack");
         gbc.gridy = 1;
         buttonPanel.add(blackjackButton, gbc);
 
-        StyledButton baccaratButton = new StyledButton("Baccarat", ButtonAsset.BUTTON_DARK_BLUE_ROUND);
+        StyledButton baccaratButton = new StyledButton("Baccarat");
         gbc.gridy = 2;
         buttonPanel.add(baccaratButton, gbc);
 
-        StyledButton ultimateTHButton = new StyledButton("Ultimate TH", ButtonAsset.BUTTON_DARK_BLUE_ROUND);
+        StyledButton ultimateTHButton = new StyledButton("Ultimate TH");
         gbc.gridy = 3;
         buttonPanel.add(ultimateTHButton, gbc);
 
@@ -48,8 +47,16 @@ public class MainMenuPanel extends JPanel {
         gbc.gridy = 5;
         buttonPanel.add(logoutButton, gbc);
 
-        eventHandler.addLogoutButtonListener(logoutButton);
-        eventHandler.addBlackjackButtonListener(blackjackButton);
+        logoutButton.addActionListener(e -> {
+            stateManager.setProfile(null);
+            stateManager.switchPanel("Login");
+        });
+
+        blackjackButton.addActionListener(e -> {
+            if (stateManager.isUserLoggedIn()){
+                stateManager.switchPanel("Blackjack");
+            }
+        });
 
         backgroundPanel.add(buttonPanel, BorderLayout.CENTER);
         add(backgroundPanel, BorderLayout.CENTER);

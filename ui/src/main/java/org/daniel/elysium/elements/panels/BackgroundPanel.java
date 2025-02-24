@@ -2,6 +2,7 @@ package org.daniel.elysium.elements.panels;
 
 import org.daniel.elysium.assets.Asset;
 import org.daniel.elysium.assets.AssetManager;
+import org.daniel.elysium.debugUtils.DebugPrint;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,7 @@ public class BackgroundPanel extends JPanel {
         try {
             backgroundImage =  AssetManager.getImage(imageName);
         } catch (Exception e) {
-            e.printStackTrace();
+            DebugPrint.println("Failed to load asset: "  + imageName.toString());
         }
         setLayout(new BorderLayout());
     }
@@ -24,7 +25,7 @@ public class BackgroundPanel extends JPanel {
         try {
             backgroundImage =  AssetManager.getImage(imageName);
         } catch (Exception e) {
-            e.printStackTrace();
+            DebugPrint.println("Failed to load asset: "  + imageName.toString());
         }
         setLayout(new BorderLayout());
     }

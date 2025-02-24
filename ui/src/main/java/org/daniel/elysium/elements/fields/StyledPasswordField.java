@@ -3,6 +3,7 @@ package org.daniel.elysium.elements.fields;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.assets.Asset;
 import org.daniel.elysium.assets.AssetManager;
+import org.daniel.elysium.debugUtils.DebugPrint;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -11,114 +12,143 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Arrays;
 
-public class StyledPasswordField extends JPasswordField {
-    private Image background = null;
-    private final Asset backgroundAsset;
+public class StyledPasswordField extends JPanel {
+    private final int defaultWidth = 250;
+    private final int defaultHeight = 50;
+    private final int defaultColumns = 15;
     private final String placeholder;
-    private boolean showingPlaceholder;
     private final Color textColor = new Color(177, 177, 177);
+    private boolean showingPlaceholder = true;
+    private JPasswordField passwordField;
+    private Image background;
 
-    public StyledPasswordField(String placeholder, int columns) {
-        super(placeholder, columns);
+    public StyledPasswordField(String placeholder) {
         this.placeholder = placeholder;
-        this.showingPlaceholder = true;
-        setFont(new Font("Roboto", Font.PLAIN, 15));
-        basicPasswordFieldConfig();
-        this.backgroundAsset = ButtonAsset.BUTTON_DARK_BLUE_ROUND;
-        loadBackgroundImage();
-        initPlaceholderBehavior();
-        preventInitialFocus();
+        initializePanel(defaultWidth, defaultHeight);
+        initializeBackground(defaultWidth, defaultHeight);
+        initializePasswordField(placeholder, defaultColumns);
+        registerPlaceholderBehaviour();
     }
 
-    public StyledPasswordField(String placeholder, int columns, Font font, Asset backgroundAsset) {
-        super(placeholder, columns);
+    public StyledPasswordField(String placeholder, int width, int height, int columns) {
         this.placeholder = placeholder;
-        this.showingPlaceholder = true;
-        setFont(font);
-        basicPasswordFieldConfig();
-        this.backgroundAsset = backgroundAsset;
-        loadBackgroundImage();
-        initPlaceholderBehavior();
+        initializePanel(width, height);
+        initializeBackground(width, height);
+        initializePasswordField(placeholder, columns);
+        registerPlaceholderBehaviour();
     }
 
-    private void basicPasswordFieldConfig(){
+    private void initializePanel(int width, int height){
+        setLayout(new BorderLayout());
+        setPreferredSize(new Dimension(width, height));
         setOpaque(false);
-        setPreferredSize(new Dimension(200, 50));
-        setForeground(textColor);
+    }
 
-        // Remove the border completely
-        setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30)); // Add padding only (no border)
+    private void initializePasswordField(String placeholder, int columns){
+        passwordField = new JPasswordField(placeholder, columns);
+        passwordField.setOpaque(false);
+        passwordField.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+        passwordField.setForeground(textColor);
+        passwordField.setFont(new Font("Roboto", Font.ITALIC, 15));
+        add(passwordField, BorderLayout.CENTER);
 
-        setCaret(new DefaultCaret() {
+        /*setCaret(new DefaultCaret() {
             @Override
             public void paint(Graphics g) {
                 // Do nothing (hide the caret)
             }
-        });
+        });*/
+    }
 
-        // Add a component listener to reload the background image when the component is resized
+    private void initializeBackground(int width, int height){
+        // Load the background image when resized or shown.
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                loadBackgroundImage();
+                loadBackgroundImage(width, height);
             }
-
             @Override
             public void componentShown(ComponentEvent e) {
-                loadBackgroundImage();
+                loadBackgroundImage(width, height);
                 repaint();
             }
         });
+
+        // Force load background after layout is complete.
+        SwingUtilities.invokeLater(() -> {
+            loadBackgroundImage(width, height);
+            repaint();
+        });
     }
 
-    private void loadBackgroundImage() {
-        if (backgroundAsset != null && getWidth() > 0 && getHeight() > 0) {
-            this.background = AssetManager.getScaledImage(backgroundAsset, getWidth(), getHeight());
+    private void loadBackgroundImage(int width, int height) {
+        if (getWidth() > 0 && getHeight() > 0) {
+            try {
+                background = AssetManager.getScaledImage(ButtonAsset.BUTTON_DARK_BLUE_ROUND, width, height);
+            } catch (Exception ex) {
+                DebugPrint.println("Background image not found: " + ex.getMessage(), true);
+            }
         }
     }
 
-    private void initPlaceholderBehavior() {
+    private void registerPlaceholderBehaviour() {
         // Disable echo char initially to show placeholder text
-        setEchoChar((char) 0);
+        passwordField.setEchoChar((char) 0);
 
         // Add focus listeners to handle placeholder behavior
-        addFocusListener(new FocusListener() {
+        passwordField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 if (showingPlaceholder) {
-                    setText(""); // Clear placeholder text
-                    setEchoChar('*'); // Enable echo char (show ****)
-                    setForeground(textColor); // Switch to normal text color
+                    passwordField.setText(""); // Clear placeholder text
+                    passwordField.setEchoChar('*'); // Enable echo char (show ****)
+                    passwordField.setForeground(textColor); // Switch to normal text color
                     showingPlaceholder = false;
                 }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (getPassword().length == 0) {
-                    setEchoChar((char) 0); // Disable echo char (show plain text)
-                    setForeground(textColor); // Switch to placeholder text color
-                    setText(placeholder);
+                if (passwordField.getPassword().length == 0) {
+                    passwordField.setEchoChar((char) 0); // Disable echo char (show plain text)
+                    passwordField.setForeground(textColor); // Switch to placeholder text color
+                    passwordField.setText(placeholder);
                     showingPlaceholder = true;
                 }
             }
         });
     }
 
-    private void preventInitialFocus() {
-        // Temporarily disable focus
-        setFocusable(false);
-
-        // Re-enable focus after the window is displayed
-        SwingUtilities.invokeLater(() -> setFocusable(true));
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
+        // Draw background image scaled to the panel.
         if (background != null) {
             g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         }
         super.paintComponent(g);
+    }
+
+    public String getPassword() {
+        return showingPlaceholder ? "" : Arrays.toString(passwordField.getPassword());
+    }
+
+    public void setText(String text) {
+        if (text == null || text.isEmpty()) {
+            passwordField.setText(placeholder);
+            passwordField.setForeground(textColor);
+            passwordField.setFont(new Font("Roboto", Font.ITALIC, 15));
+            showingPlaceholder = true;
+        } else {
+            passwordField.setText(text);
+            passwordField.setForeground(textColor);
+            passwordField.setFont(new Font("Roboto", Font.PLAIN, 15));
+            showingPlaceholder = false;
+        }
+    }
+
+    public JPasswordField getTextField() {
+        return passwordField;
     }
 }
