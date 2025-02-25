@@ -1,16 +1,21 @@
 package org.daniel.elysium.models;
 
-import javax.swing.*;
+import org.daniel.elysium.assets.Asset;
+import org.daniel.elysium.assets.AssetManager;
 
-public class Card {
+import javax.swing.*;
+import java.awt.*;
+
+public class Card extends JLabel{
     private final String rank;
     private final String suit;
     private final ImageIcon icon;
 
-    public Card(String rank, String suit, ImageIcon icon) {
+    public Card(String rank, String suit, Asset icon) {
         this.rank = rank;
         this.suit = suit;
-        this.icon = icon;
+        this.icon = AssetManager.getScaledIcon(icon, 110, 150);
+        setIcon(this.icon);
     }
 
     public ImageIcon getIcon() {

@@ -2,6 +2,8 @@ package org.daniel.elysium.elements.notifications;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class Toast extends JWindow {
     public Toast(JFrame owner, String message, int displayTimeMillis) {
@@ -14,15 +16,31 @@ public class Toast extends JWindow {
         add(label);
         pack();
 
-        // Position at the bottom center of the owner frame.
-        Dimension ownerSize = owner.getSize();
-        Point ownerLocation = owner.getLocation();
-        int x = ownerLocation.x + (ownerSize.width - getWidth()) / 2;
-        int y = ownerLocation.y + ownerSize.height - getHeight() - 50;
-        setLocation(x, y);
+        // Initial positioning relative to the owner.
+        repositionToast(owner);
+
+        // Add a listener to update the toast's position when the owner is moved or resized.
+        owner.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                repositionToast(owner);
+            }
+            @Override
+            public void componentResized(ComponentEvent e) {
+                repositionToast(owner);
+            }
+        });
 
         // Timer to auto-close the toast.
         new Timer(displayTimeMillis, e -> dispose()).start();
     }
-    // USAGE: new Toast(frame, "This is a toast notification", 3000).setVisible(true);
+
+    private void repositionToast(JFrame owner) {
+        Dimension ownerSize = owner.getSize();
+        Point ownerLocation = owner.getLocation();
+        int x = ownerLocation.x + ownerSize.width - getWidth() - 50;
+        int y = ownerLocation.y + ownerSize.height - getHeight() - 50;
+        setLocation(x, y);
+    }
 }
+

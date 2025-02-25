@@ -23,7 +23,7 @@ public class Deck {
             String name = card.name();
             String suit = name.substring(0, 1);
             String rank = name.substring(1);
-            cards.add(new Card(rank, suit, AssetManager.getScaledIcon(card, 100, 150)));
+            cards.add(new Card(rank, suit, card));
         }
         return cards;
     }

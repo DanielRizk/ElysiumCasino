@@ -1,10 +1,12 @@
 package org.daniel.elysium.models;
 
+import org.daniel.elysium.assets.Asset;
+
 import javax.swing.*;
 
 public class BJCard extends Card{
 
-    public BJCard(String rank, String suit, ImageIcon icon) {
+    public BJCard(String rank, String suit, Asset icon) {
         super(rank, suit, icon);
     }
 

@@ -1,21 +1,21 @@
 package org.daniel.elysium.screens.blackjack2;
 
 import org.daniel.elysium.StateManager;
-import org.daniel.elysium.assets.AssetManager;
-import org.daniel.elysium.assets.BackgroundAsset;
-import org.daniel.elysium.assets.ButtonAsset;
-import org.daniel.elysium.assets.ChipAsset;
+import org.daniel.elysium.assets.*;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
+import org.daniel.elysium.models.Card;
 import org.daniel.elysium.models.Chip;
+import org.daniel.elysium.models.Shoe;
 import org.daniel.elysium.screens.blackjack.BetCircle;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.List;
 
 public class BlackjackPanel extends JPanel {
     private final StateManager stateManager;
@@ -32,11 +32,54 @@ public class BlackjackPanel extends JPanel {
     StyledButton dealButton;
     BetCircle betCircle;
     StyledTextField currentBetLabel;
-    StyledButton clearBetButton;
+    CardLayout playerButtons;
+    JPanel buttonSwitcherPanel;
+
+    JPanel dealerHandPanel;
+    JPanel playerHandPanel;
+
+    List<Card> cards;
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        // When this panel is added to the hierarchy, re-add the chip panel.
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (frame != null) {
+                JLayeredPane layeredPane = frame.getRootPane().getLayeredPane();
+                // Only add if not already added.
+                if (chipPanel.getParent() != layeredPane) {
+                    layeredPane.add(chipPanel, JLayeredPane.POPUP_LAYER);
+                }
+                repositionChipPanel();
+                chipPanel.setVisible(true);
+                frame.addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(ComponentEvent e) {
+                        repositionChipPanel();
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void removeNotify() {
+        // When this panel is removed, also remove the chip panel from the layered pane.
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (frame != null) {
+            JLayeredPane layeredPane = frame.getRootPane().getLayeredPane();
+            layeredPane.remove(chipPanel);
+            layeredPane.repaint();
+        }
+        super.removeNotify();
+    }
 
     public BlackjackPanel(StateManager stateManager) {
         this.stateManager = stateManager;
         setLayout(new BorderLayout());
+        cards = Shoe.getShoe(4);
 
         BackgroundPanel background = new BackgroundPanel(BackgroundAsset.BACKGROUND);
         background.setLayout(new BorderLayout());
@@ -67,13 +110,17 @@ public class BlackjackPanel extends JPanel {
         background.add(topPanel, BorderLayout.NORTH);
         background.add(gameAreaPanel, BorderLayout.CENTER);
         background.add(bettingPanel, BorderLayout.SOUTH);
-        background.add(chipPanel, BorderLayout.WEST);
 
         // Finally, add the background panel to this panel.
         add(background, BorderLayout.CENTER);
 
+
+
+
+
+
         // Optional: Hide chip panel when clicking outside it.
-        this.addMouseListener(new MouseAdapter() {
+        /*this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (chipPanel != null && chipPanel.isVisible()) {
@@ -83,7 +130,7 @@ public class BlackjackPanel extends JPanel {
                     }
                 }
             }
-        });
+        });*/
     }
 
     private JPanel createTopPanel(){
@@ -95,7 +142,10 @@ public class BlackjackPanel extends JPanel {
         // Balance label shows the current balance from the state manager's profile.
         balanceLabel = new StyledTextField("Balance: " + stateManager.getProfile().getBalance(), false);
         topPanel.add(balanceLabel, BorderLayout.EAST);
-        returnButton.addActionListener(e -> stateManager.switchPanel("MainMenu"));
+        returnButton.addActionListener(e ->{
+            //chipPanel.setVisible(false);
+            stateManager.switchPanel("MainMenu");
+        });
         return topPanel;
     }
 
@@ -111,8 +161,9 @@ public class BlackjackPanel extends JPanel {
         // Dealer Hand Panel
         gbc.gridy = 0;
         gbc.weighty = 0.3;
-        JPanel dealerHandPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        dealerHandPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         dealerHandPanel.setOpaque(false);
+        dealerHandPanel.setMinimumSize(new Dimension(600, 150));
         dealerHandPanel.setPreferredSize(new Dimension(600, 150));
         gameAreaPanel.add(dealerHandPanel, gbc);
 
@@ -131,12 +182,18 @@ public class BlackjackPanel extends JPanel {
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gameAreaPanel.add(logoLabel, gbc);
 
-        // Deal Button
+        // Deal Button Container
         gbc.gridy = 3;
         gbc.weighty = 0.1;
+        JPanel dealButtonContainer = new JPanel(new BorderLayout());
+        dealButtonContainer.setOpaque(false);
+        dealButtonContainer.setMinimumSize(new Dimension(600, 60));
+        //dealButtonContainer.setPreferredSize(new Dimension(600, 60)); // fixed height for the container
         dealButton = new StyledButton("DEAL", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
         dealButton.setHorizontalAlignment(SwingConstants.CENTER);
-        gameAreaPanel.add(dealButton, gbc);
+        dealButton.setVisible(false);
+        dealButtonContainer.add(dealButton, BorderLayout.CENTER);
+        gameAreaPanel.add(dealButtonContainer, gbc);
 
         // Filler panel between deal button and player hand
         gbc.gridy = 4;
@@ -149,8 +206,9 @@ public class BlackjackPanel extends JPanel {
         // Player Hand Panel
         gbc.gridy = 5;
         gbc.weighty = 0.35;
-        JPanel playerHandPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        playerHandPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         playerHandPanel.setOpaque(false);
+        playerHandPanel.setMinimumSize(new Dimension(600, 150));
         playerHandPanel.setPreferredSize(new Dimension(600, 300));
         gameAreaPanel.add(playerHandPanel, gbc);
         return gameAreaPanel;
@@ -172,21 +230,32 @@ public class BlackjackPanel extends JPanel {
         bettingPanel.add(betPanel);
         bettingPanel.add(Box.createVerticalStrut(20));
 
-        // Clear Bet Button
-        clearBetButton = new StyledButton("Clear bet");
+        // Create a container that uses CardLayout to switch between clear button and action buttons.
+        buttonSwitcherPanel = new JPanel(new CardLayout());
+        buttonSwitcherPanel.setOpaque(false);
+        // Fix the container size so layout remains constant (adjust dimensions as needed).
+        Dimension fixedSize = new Dimension(1000, 60);
+        buttonSwitcherPanel.setPreferredSize(fixedSize);
+        buttonSwitcherPanel.setMinimumSize(fixedSize);
+        buttonSwitcherPanel.setMaximumSize(fixedSize);
+
+        // Create clear button panel.
+        JPanel clearButtonPanel = new JPanel(new BorderLayout());
+        clearButtonPanel.setOpaque(false);
+        StyledButton clearBetButton = new StyledButton("Clear bet");
         clearBetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        clearBetButton.setVisible(false);
         clearBetButton.addActionListener(e -> {
             stateManager.getProfile().increaseBalanceBy(currentBet);
             currentBet = 0;
+            dealButton.setVisible(false);
+            playerButtons.show(buttonSwitcherPanel, "hide");
             currentBetLabel.setText(String.valueOf(currentBet));
             betCircle.clearChips();
             balanceLabel.setText("Balance: " + stateManager.getProfile().getBalance());
-            clearBetButton.setVisible(false);
         });
-        bettingPanel.add(clearBetButton);
+        clearButtonPanel.add(clearBetButton, BorderLayout.CENTER);
 
-        // Action Buttons Panel (Hit, Stand, etc.)
+        // Create action buttons panel.
         JPanel actionButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         actionButtonsPanel.setOpaque(false);
         StyledButton hitButton = new StyledButton("Hit");
@@ -197,9 +266,23 @@ public class BlackjackPanel extends JPanel {
         actionButtonsPanel.add(standButton);
         actionButtonsPanel.add(doubleButton);
         actionButtonsPanel.add(splitButton);
-        actionButtonsPanel.setVisible(false);
-        bettingPanel.add(actionButtonsPanel);
 
+        JPanel emptyPanel = new JPanel();
+        emptyPanel.setOpaque(false);
+
+        // Add both panels to the CardLayout container with distinct card names.
+        buttonSwitcherPanel.add(clearButtonPanel, "clear");
+        buttonSwitcherPanel.add(actionButtonsPanel, "action");
+        buttonSwitcherPanel.add(emptyPanel, "hide");
+
+        // Initially, you might want to show the clear button (or whichever you prefer).
+        playerButtons = (CardLayout) buttonSwitcherPanel.getLayout();
+        playerButtons.show(buttonSwitcherPanel, "hide");
+
+        // Add the card-switcher container to the betting panel.
+        bettingPanel.add(buttonSwitcherPanel);
+
+        // Example: When the deal button is pressed, switch to the action buttons.
         dealButton.addActionListener(e -> {
             if (currentBet == 0) {
                 new Toast((JFrame) SwingUtilities.getWindowAncestor(this), "No bet placed", 3000).setVisible(true);
@@ -207,11 +290,36 @@ public class BlackjackPanel extends JPanel {
             }
             state = GameState.GAME_STARTED;
             dealButton.setVisible(false);
-            clearBetButton.setVisible(false);
+            chipPanel.setVisible(false);
+            dealInitialCards();
+            // Hide chip panel, etc., and then switch to the action buttons:
+            playerButtons.show(buttonSwitcherPanel, "action");
             // ... additional game logic here.
         });
+
         return bettingPanel;
     }
+
+    private void dealInitialCards() {
+        addDealerCard(cards.remove(0));
+        addPlayerCard(cards.remove(0));
+        addDealerCard(new Card("BACK", "BACK", CardAsset.BC));
+        addPlayerCard(cards.remove(0));
+    }
+
+    public void addDealerCard(Card card) {
+        dealerHandPanel.add(card);
+        dealerHandPanel.revalidate();
+        dealerHandPanel.repaint();
+    }
+
+    public void addPlayerCard(Card card) {
+        playerHandPanel.add(card);
+        playerHandPanel.revalidate();
+        playerHandPanel.repaint();
+    }
+
+
 
     private JPanel createChipPanel(){
         JPanel chipPanel = new JPanel();
@@ -225,7 +333,8 @@ public class BlackjackPanel extends JPanel {
                         betCircle.addChip(chip);
                         currentBet += chip.getValue();
                         currentBetLabel.setText(String.valueOf(currentBet));
-                        clearBetButton.setVisible(true);
+                        playerButtons.show(buttonSwitcherPanel, "clear");
+                        dealButton.setVisible(true);
                         stateManager.getProfile().decreaseBalanceBy(chip.getValue());
                         balanceLabel.setText("Balance: " + stateManager.getProfile().getBalance());
                     } else {
@@ -236,8 +345,24 @@ public class BlackjackPanel extends JPanel {
                 chipPanel.add(chip);
             }
         }
+        chipPanel.setVisible(true);
         return chipPanel;
     }
+
+    private void repositionChipPanel() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (frame != null) {
+            Dimension pref = chipPanel.getPreferredSize();
+            int chipPanelWidth = pref.width;
+            int chipPanelHeight = pref.height;
+            int yPos = frame.getHeight() - chipPanelHeight - 60;  // 10px margin from bottom
+            int xPos = 20; // 10px margin from left
+            chipPanel.setBounds(xPos, yPos, chipPanelWidth, chipPanelHeight);
+            chipPanel.revalidate();
+            chipPanel.repaint();
+        }
+    }
+
 
     enum GameState {
         BET_PHASE,
