@@ -129,6 +129,11 @@ public class GameAreaPanel extends JPanel {
         }
     }
 
+    public void clearHands(){
+        playerHandPanel.removeAll();
+        dealerHandPanel.removeAll();
+    }
+
     /**
      * Dynamically scales card components in the given panel based on its current width.
      * Assumes each card is a JLabel with an ImageIcon.

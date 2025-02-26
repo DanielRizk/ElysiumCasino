@@ -20,9 +20,9 @@ public class BlackjackController implements BlackjackMediator {
 
     // References to subcomponents.
     private final TopPanel topPanel;
-    private final BettingPanel bettingPanel;
-    private final ChipPanel chipPanel;
-    private final GameAreaPanel gameAreaPanel;
+    private BettingPanel bettingPanel;
+    private ChipPanel chipPanel;
+    private GameAreaPanel gameAreaPanel;
 
     private BlackjackEngine gameEngine;
 
@@ -86,6 +86,17 @@ public class BlackjackController implements BlackjackMediator {
 
         }
     }
+
+    private void reset(){
+        currentBet = 0;
+        bettingPanel.clearActions();
+        gameAreaPanel.clearHands();
+        chipPanel.setVisible(true);
+        bettingPanel.clearChips();
+        bettingPanel.updateBetDisplay(currentBet);
+        gameEngine = new BlackjackEngine();
+    }
+
 
     private void displayInsuranceOptions(){
         state = GameState.PLAYER_TURN;
@@ -183,6 +194,12 @@ public class BlackjackController implements BlackjackMediator {
             }
             gameAreaPanel.addDealerCard(card);
         }
+
+        Timer timer = new Timer(3000, e -> {
+            reset();
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 
     @Override
