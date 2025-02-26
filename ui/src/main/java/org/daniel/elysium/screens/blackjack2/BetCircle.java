@@ -1,6 +1,5 @@
-package org.daniel.elysium.screens.blackjack;
+package org.daniel.elysium.screens.blackjack2;
 
-import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.models.Chip;
 
 import javax.swing.*;

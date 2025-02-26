@@ -1,19 +1,30 @@
 package org.daniel.elysium.elements.notifications;
 
+import org.daniel.elysium.assets.AssetManager;
+import org.daniel.elysium.assets.BackgroundAsset;
+import org.daniel.elysium.elements.panels.BackgroundPanel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class Toast extends JWindow {
+    // TODO: check how to center the text.
     public Toast(JFrame owner, String message, int displayTimeMillis) {
         super(owner);
+        setBackground(new Color(0, 0, 0, 0));
+        BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.TOAST_BG);
+        Font font = new Font("Segoe UI", Font.BOLD, 18);
+        backgroundPanel.setOpaque(false);
         JLabel label = new JLabel(message);
-        label.setOpaque(true);
-        label.setBackground(new Color(0, 0, 0, 170));
+        label.setOpaque(false);
         label.setForeground(Color.WHITE);
         label.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        add(label);
+        label.setFont(font);
+        setPreferredSize(new Dimension(300, 80));
+        backgroundPanel.add(label);
+        add(backgroundPanel);
         pack();
 
         // Initial positioning relative to the owner.

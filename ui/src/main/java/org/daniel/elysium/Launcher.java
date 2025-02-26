@@ -28,14 +28,14 @@ public class Launcher {
 
         JPanel mainPanel = new JPanel(new CardLayout());
 
-        StateManager stateManager = new StateManager(mainPanel);
+        StateManager stateManager = new StateManager(mainPanel, frame);
         stateManager.registerPanel("Login", () -> new LoginPanel(stateManager));
         stateManager.registerPanel("MainMenu", () -> new MainMenuPanel(stateManager));
         stateManager.registerPanel("Register", () -> new RegisterPanel(stateManager));
         stateManager.registerPanel("Blackjack", () -> new BlackjackPanel(stateManager));
 
         stateManager.setProfile(new UserProfile("test", "test", 1000));
-        stateManager.switchPanel("Login");
+        stateManager.switchPanel("Blackjack");
 
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override

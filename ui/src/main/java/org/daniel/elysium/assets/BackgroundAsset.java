@@ -12,7 +12,8 @@ public enum BackgroundAsset implements Asset {
     LOGO_RAW,
     LOGO_SHADE,
     BLACKJACK_RULES,
-    DIALOG_BACKGROUND;
+    DIALOG_BACKGROUND,
+    TOAST_BG;
 
     public static void loadAssets(Map<Asset, Image> imageCache){
         for (BackgroundAsset asset: BackgroundAsset.values()){

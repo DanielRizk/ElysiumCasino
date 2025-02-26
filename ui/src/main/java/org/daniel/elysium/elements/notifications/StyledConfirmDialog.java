@@ -14,14 +14,14 @@ public class StyledConfirmDialog extends JDialog {
     public StyledConfirmDialog(JFrame owner, String message) {
         super(owner, "Quit", true);
         setUndecorated(true); // Optional: borderless look
-
-        Font font = new Font("Serif", Font.BOLD, 18); //new Font("Segoe UI", Font.BOLD, 14)
+        setBackground(new Color(0, 0, 0, 0));
+        Font font = new Font("Segoe UI", Font.BOLD, 20);
 
         // Create the background panel with the image.
         BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.DIALOG_BACKGROUND);
-        backgroundPanel.setPreferredSize(new Dimension(600, 300));
+        backgroundPanel.setPreferredSize(new Dimension(620, 360));
         backgroundPanel.setLayout(new BorderLayout());
-        backgroundPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+        backgroundPanel.setOpaque(false);
 
         // Message label with transparent background.
         JLabel msgLabel = new JLabel(message, SwingConstants.CENTER);
@@ -49,6 +49,7 @@ public class StyledConfirmDialog extends JDialog {
         spacer.setPreferredSize(new Dimension(50,50));
         buttonPanel.add(spacer);
         buttonPanel.add(noButton);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(backgroundPanel);

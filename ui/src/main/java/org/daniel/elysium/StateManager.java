@@ -13,10 +13,12 @@ public class StateManager {
     private UserProfile profile = null;
     private JPanel currentPanel = null;
     private final Map<String, Supplier<JPanel>> panelSuppliers;
+    private final JFrame frame;
 
-    public StateManager(Container container) {
+    public StateManager(Container container, JFrame frame) {
         this.container = container;
         this.panelSuppliers = new HashMap<>();
+        this.frame = frame;
     }
 
     public void registerPanel(String key, Supplier<JPanel> panelSupplier) {
@@ -53,5 +55,9 @@ public class StateManager {
 
     public void setProfile(UserProfile profile) {
         this.profile = profile;
+    }
+
+    public JFrame getFrame(){
+        return frame;
     }
 }

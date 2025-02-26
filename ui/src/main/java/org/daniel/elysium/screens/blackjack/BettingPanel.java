@@ -3,6 +3,7 @@ package org.daniel.elysium.screens.blackjack;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.models.Chip;
+import org.daniel.elysium.screens.blackjack2.BetCircle;
 
 import javax.swing.*;
 import java.awt.*;
