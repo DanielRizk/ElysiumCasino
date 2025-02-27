@@ -7,11 +7,11 @@ import org.daniel.elysium.assets.CardAsset;
 import javax.swing.*;
 
 public class UICard extends JLabel{
-    private final Card card;
+    private final BJCard card;
     private final ImageIcon icon;
 
     public UICard(String rank, String suit, Asset icon) {
-        this.card = new Card(rank, suit);
+        this.card = new BJCard(rank, suit);
         this.icon = AssetManager.getScaledIcon(icon, 110, 150);
         setIcon(this.icon);
     }
@@ -32,7 +32,7 @@ public class UICard extends JLabel{
         return card.getSuit();
     }
 
-    public Card getCard(){
+    public BJCard getCard(){
         return card;
     }
 

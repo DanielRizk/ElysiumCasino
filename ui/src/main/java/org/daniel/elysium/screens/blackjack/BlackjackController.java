@@ -1,26 +1,28 @@
-package org.daniel.elysium.screens.blackjack2;
+package org.daniel.elysium.screens.blackjack;
 
 import org.daniel.elysium.StateManager;
-import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.blackjack.BlackjackEngine;
 import org.daniel.elysium.blackjack.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.Toast;
-import org.daniel.elysium.models.*;
+import org.daniel.elysium.models.Chip;
+import org.daniel.elysium.models.Shoe;
+import org.daniel.elysium.models.UICard;
+import org.daniel.elysium.models.UIDeck;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class BlackjackController implements BlackjackMediator {
     private final StateManager stateManager;
     private GameState state = GameState.BET_PHASE;
-    private int currentBet = 0;
 
     // References to subcomponents.
     private final TopPanel topPanel;
-    private BettingPanel bettingPanel;
+    //private BettingPanel bettingPanel;
     private ChipPanel chipPanel;
     private GameAreaPanel gameAreaPanel;
 
@@ -34,21 +36,19 @@ public class BlackjackController implements BlackjackMediator {
         this.stateManager = stateManager;
         this.gameEngine = new BlackjackEngine();
         this.topPanel = new TopPanel(this, stateManager);
-        this.bettingPanel = new BettingPanel(this, stateManager);
         this.chipPanel = new ChipPanel(this, stateManager);
-        this.gameAreaPanel = new GameAreaPanel(this);
+        this.gameAreaPanel = new GameAreaPanel(this, stateManager);
     }
 
     @Override
     public void onChipSelected(Chip chip) {
         if (chip.getValue() <= stateManager.getProfile().getBalance()) {
-            if (bettingPanel.canAddChip()){
-                bettingPanel.addChip(chip);
-                currentBet += chip.getValue();
-                bettingPanel.updateBetDisplay(currentBet);
+            if (gameAreaPanel.getPlayerHand(0).canAddChip()){
+                gameAreaPanel.getPlayerHand(0).addChip(chip);
+                gameAreaPanel.updateBetDisplay(0, gameAreaPanel.getPlayerHand(0).getHand().getBet());
                 stateManager.getProfile().decreaseBalanceBy(chip.getValue());
-                updateBalanceDisplay();
                 gameAreaPanel.showDealButton(true);
+                updateBalanceDisplay();
             } else {
                 new Toast(stateManager.getFrame(), "Max number of chips reached.", 3000).setVisible(true);
             }
@@ -59,23 +59,23 @@ public class BlackjackController implements BlackjackMediator {
 
     @Override
     public void onClearBet() {
-        stateManager.getProfile().increaseBalanceBy(currentBet);
-        currentBet = 0;
-        bettingPanel.clearChips();
+        stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand(0).getHand().getBet());
+        gameAreaPanel.getPlayerHand(0).clearChips();
         gameAreaPanel.showDealButton(false);
-        bettingPanel.updateBetDisplay(currentBet);
+        gameAreaPanel.updateBetDisplay(0, 0);
         updateBalanceDisplay();
     }
 
     @Override
     public void onDealRequested() {
-        if (currentBet == 0) {
+        if (gameAreaPanel.getPlayerHand(0).getHand().getBet() == 0) {
             new Toast(stateManager.getFrame(), "No bet placed yet.", 3000).setVisible(true);
             return;
         }
+        state = GameState.GAME_STARTED;
         chipPanel.setVisible(false);
         gameAreaPanel.showDealButton(false);
-        bettingPanel.clearActions();
+        gameAreaPanel.clearActions();
         dealInitialCards();
 
         if (checkInsurance()){
@@ -83,53 +83,86 @@ public class BlackjackController implements BlackjackMediator {
         } else if (!checkForBlackJack()){
             calculatePlayerOptions();
         } else {
-
+            evaluateGameResults();
         }
     }
 
     private void reset(){
-        currentBet = 0;
-        bettingPanel.clearActions();
+        state = GameState.GAME_ENDED;
+        gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
         chipPanel.setVisible(true);
-        bettingPanel.clearChips();
-        bettingPanel.updateBetDisplay(currentBet);
         gameEngine = new BlackjackEngine();
+        state = GameState.BET_PHASE;
     }
 
+    private void evaluateGameResults(){
+        state = GameState.EVALUATION_PHASE;
+        for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
+            gameEngine.resolvePlayerResult(playerHandUI.getHand(),
+                    gameAreaPanel.getDealerHand().getHand());
+            new Toast(stateManager.getFrame(),
+                    "Hand" + playerHandUI.getHand().getState(),
+                    3000).setVisible(true);
+        }
+
+        proceedToPayouts();
+    }
+
+    private void proceedToPayouts(){
+        state = GameState.PAYOUT;
+        List<PlayerHandUI> allHands = gameAreaPanel.getPlayerHands();
+        for (PlayerHandUI playerHandUI : allHands) {
+            stateManager.getProfile().increaseBalanceBy(playerHandUI.getHand().getBet());
+            if (playerHandUI.getHand().getState() == HandState.WON) {
+                List<Chip> chips = new ArrayList<>(playerHandUI.getBetPanel().getChips());
+                for (Chip chip : chips) {
+                    playerHandUI.addPayoutChip(chip);
+                }
+            }
+        }
+        updateBalanceDisplay();
+
+        Timer timer = new Timer(3000, e -> {
+            reset();
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
 
     private void displayInsuranceOptions(){
         state = GameState.PLAYER_TURN;
         List<GameActions> actions = Arrays.asList(GameActions.INSURE, GameActions.DO_NOT_INSURE);
-        bettingPanel.updateActionButtons(actions);
+        gameAreaPanel.updateActionButtons(actions);
     }
 
     private boolean checkInsurance(){
-        return gameEngine.isInsurance();
+        return gameEngine.isInsurance(gameAreaPanel.getDealerHand().getHand());
     }
 
     private boolean checkForBlackJack(){
-        return gameEngine.isAnyBlackjack();
+        //return gameEngine.isAnyBlackjack();
+        return false;
     }
 
     private void calculatePlayerOptions() {
         state = GameState.PLAYER_TURN;
-        bettingPanel.updateActionButtons(getOptions());
+        gameAreaPanel.updateActionButtons(getOptions(0));
     }
 
-    private List<GameActions> getOptions(){
+    private List<GameActions> getOptions(int index){
         List<GameActions> actions = new ArrayList<>();
-        for (String option: gameEngine.getAvailableHandOptions()){
+        for (String option: gameEngine.getAvailableHandOptions(gameAreaPanel.getPlayerHand(index).getHand())){
             switch (option){
                 case "HIT" -> actions.add(GameActions.HIT);
                 case "STAND" -> actions.add(GameActions.STAND);
                 case "DOUBLE" -> {
-                    if (currentBet <= stateManager.getProfile().getBalance()) {
+                    if (gameAreaPanel.getPlayerHand(index).getHand().getBet() <= stateManager.getProfile().getBalance()) {
                         actions.add(GameActions.DOUBLE);
                     }
                 }
                 case "SPLIT" -> {
-                    if (currentBet <= stateManager.getProfile().getBalance()) {
+                    if (gameAreaPanel.getPlayerHand(index).getHand().getBet() <= stateManager.getProfile().getBalance()) {
                         actions.add(GameActions.SPLIT);
                     }
                 }
@@ -148,63 +181,53 @@ public class BlackjackController implements BlackjackMediator {
         state = GameState.DEALING_CARDS;
 
         UICard playerCard1 = getCardFromShoe();
-        gameEngine.getPlayerHand().dealCard(new BJCard(playerCard1.getRank(), playerCard1.getSuit()));
         UICard dealerCard1 = getCardFromShoe();
-        gameEngine.getDealerHand().dealCard(new BJCard(dealerCard1.getRank(), dealerCard1.getSuit()));
-
         UICard playerCard2 = getCardFromShoe();
-        gameEngine.getPlayerHand().dealCard(new BJCard(playerCard2.getRank(), playerCard2.getSuit()));
         UICard dealerCard2 = getCardFromShoe();
-        gameEngine.getDealerHand().dealCard(new BJCard(dealerCard2.getRank(), dealerCard2.getSuit()));
         dealerCard2.setFaceDown();
 
-        gameAreaPanel.addPlayerCard(playerCard1);
+        gameAreaPanel.addPlayerCard(0, playerCard1);
         gameAreaPanel.addDealerCard(dealerCard1);
-        gameAreaPanel.addPlayerCard(playerCard2);
+        gameAreaPanel.addPlayerCard(0, playerCard2);
         gameAreaPanel.addDealerCard(dealerCard2);
     }
 
     @Override
     public void onActionSelected(GameActions action) {
         switch (action){
-            case HIT -> handleHitOption();
+            case HIT -> handleHitOption(0);
             case STAND -> handleStandOption();
         }
     }
 
-    private void handleHitOption(){
+    private void handleHitOption(int index){
         UICard card = getCardFromShoe();
-        gameEngine.getPlayerHand().dealCard(new BJCard(card.getRank(), card.getSuit()));
-        gameAreaPanel.addPlayerCard(card);
-        bettingPanel.updateActionButtons(getOptions());
+        gameAreaPanel.addPlayerCard(index, card);
+        gameAreaPanel.updateActionButtons(getOptions(index));
     }
 
     private void handleStandOption(){
-        bettingPanel.clearActions();
+        gameAreaPanel.clearActions();
         dealerTurn();
     }
 
     private void dealerTurn(){
         state = GameState.DEALER_TURN;
-        gameAreaPanel.exposeDealer();
+        gameAreaPanel.getDealerHand().flipCardUp();
         while (true){
             UICard card = getCardFromShoe();
-            if (!gameEngine.getDealerHand().dealCard(new BJCard(card.getRank(), card.getSuit()))){
+            if (!gameAreaPanel.getDealerHand().addCard(card)){
                 break;
             }
             gameAreaPanel.addDealerCard(card);
         }
 
-        Timer timer = new Timer(3000, e -> {
-            reset();
-        });
-        timer.setRepeats(false);
-        timer.start();
+        evaluateGameResults();
     }
 
     @Override
     public void returnToMainMenu() {
-        if (state.ordinal() > GameState.BET_PHASE.ordinal()){
+        if (state.ordinal() > GameState.GAME_STARTED.ordinal()){
             StyledConfirmDialog dialog = new StyledConfirmDialog(stateManager.getFrame(),
                     "If you exit now you will lose your bet, Continue?");
             dialog.setVisible(true);
@@ -222,9 +245,17 @@ public class BlackjackController implements BlackjackMediator {
         return cards.remove(0);
     }
 
+    public int getMediatorWidth(){
+        return stateManager.getFrame().getWidth();
+    }
+
+    public int getMediatorHeight(){
+        return stateManager.getFrame().getHeight();
+    }
+
     // Getter methods for the panels.
     public TopPanel getTopPanel() { return topPanel; }
-    public BettingPanel getBettingPanel() { return bettingPanel; }
+    //public BettingPanel getBettingPanel() { return bettingPanel; }
     public ChipPanel getChipPanel() { return chipPanel; }
     public GameAreaPanel getGameAreaPanel() { return gameAreaPanel; }
 }

@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack2;
+package org.daniel.elysium.screens.blackjack;
 
 import org.daniel.elysium.models.Chip;
 
@@ -9,6 +9,7 @@ import java.util.List;
 
 public class BetCircle extends JPanel {
     private final List<Chip> chips = new ArrayList<>();
+    private final int maxUserChips = 10;
     private final int maxChips = 20;
 
     public BetCircle() {
@@ -34,7 +35,11 @@ public class BetCircle extends JPanel {
     }
 
     public int getMaxChips(){
-        return maxChips;
+        return maxUserChips;
+    }
+
+    public List<Chip> getChips(){
+        return chips;
     }
 
     @Override

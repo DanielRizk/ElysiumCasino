@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack2;
+package org.daniel.elysium.screens.blackjack;
 
 import org.daniel.elysium.models.Chip;
 

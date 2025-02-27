@@ -1,21 +1,20 @@
 package org.daniel.elysium.screens.panels;
 
 import org.daniel.elysium.StateManager;
+import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.elements.buttons.StyledButton;
+import org.daniel.elysium.elements.fields.StyledPasswordField;
 import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
-import org.daniel.elysium.elements.buttons.StyledButton;
-import org.daniel.elysium.elements.fields.StyledPasswordField;
-import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.user.database.UserDAO;
 import org.daniel.elysium.user.profile.UserProfile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 public class RegisterPanel extends JPanel {
     StyledTextField usernameField;

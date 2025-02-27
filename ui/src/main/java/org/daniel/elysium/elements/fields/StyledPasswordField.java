@@ -1,12 +1,10 @@
 package org.daniel.elysium.elements.fields;
 
-import org.daniel.elysium.assets.ButtonAsset;
-import org.daniel.elysium.assets.Asset;
 import org.daniel.elysium.assets.AssetManager;
+import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.debugUtils.DebugPrint;
 
 import javax.swing.*;
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;

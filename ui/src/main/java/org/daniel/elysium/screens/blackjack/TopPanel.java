@@ -1,34 +1,35 @@
 package org.daniel.elysium.screens.blackjack;
 
 import org.daniel.elysium.StateManager;
-import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
+import org.daniel.elysium.elements.fields.StyledTextField;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class TopPanel extends JPanel {
-    private StyledButton returnButton;
-    private StyledButton balanceLabel;
+    private final BlackjackMediator mediator;
+    private final StateManager stateManager;
+    private final StyledTextField balanceLabel;
 
-    public TopPanel(StateManager stateManager, Runnable onReturn, int initialBalance) {
+    public TopPanel(BlackjackMediator mediator, StateManager stateManager) {
+        this.mediator = mediator;
+        this.stateManager = stateManager;
         setLayout(new BorderLayout());
         setOpaque(false);
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
+        setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        returnButton = new StyledButton("Back to Main Menu", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
-        returnButton.addActionListener(e -> {
-            onReturn.run();
-            stateManager.switchPanel("MainMenu");
-        });
+        StyledButton returnButton = new StyledButton("Return to Main Menu", 250, 50);
         add(returnButton, BorderLayout.WEST);
+        returnButton.addActionListener(e -> mediator.returnToMainMenu());
 
-        balanceLabel = new StyledButton("Balance: $" + initialBalance, ButtonAsset.BUTTON_DARK_BLUE_ROUND);
-        balanceLabel.setFocusable(false);
+        balanceLabel = new StyledTextField("Balance: " + stateManager.getProfile().getBalance(), false);
         add(balanceLabel, BorderLayout.EAST);
     }
 
-    public void setBalance(int balance) {
-        balanceLabel.setText("Balance: $" + balance);
+    public void setBalance(String balanceText) {
+        balanceLabel.setText(balanceText);
     }
 }
+
+

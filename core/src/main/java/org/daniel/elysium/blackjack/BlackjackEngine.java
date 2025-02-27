@@ -7,50 +7,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlackjackEngine {
-    private PlayerHand playerHand;
-    private DealerHand dealerHand;
 
     public BlackjackEngine() {
-        playerHand = new PlayerHand();
-        dealerHand = new DealerHand();
+
     }
 
-    public PlayerHand getPlayerHand() {
-        return playerHand;
+    public boolean isInsurance(DealerHand hand){
+        return hand.getHand().get(0).getValue() == 11;
     }
 
-    public DealerHand getDealerHand() {
-        return dealerHand;
-    }
-
-    public boolean isAnyBlackjack(){
-        boolean anyBlackjack = false;
-        if (playerHand.isBlackJack()){
-            playerHand.setState(HandState.BLACKJACK);
-            anyBlackjack = true;
+    public void resolvePlayerResult(PlayerHand hand, DealerHand dealerHand) {
+        float bet = hand.getBet();
+        if (hand.getState() == HandState.INSURED) {
+            hand.setInsuranceBet(hand.getInsuranceBet() + (hand.getInsuranceBet() * 2));
+        } else if (hand.isBlackJack() && !dealerHand.isBlackJack()) {
+            hand.setBet((int) (bet * 2.5f));
+            hand.setState(HandState.WON);
+        } else if ((hand.getHandValue() > dealerHand.getHandValue() && hand.getHandValue() <= 21)
+                || (dealerHand.getHandValue() > 21 && hand.getHandValue() <= 21)) {
+            hand.setBet((int) (bet * 2));
+            hand.setState(HandState.WON);
+        } else if (hand.getHandValue() == dealerHand.getHandValue()) {
+            hand.setBet((int) bet);
+            hand.setState(HandState.PUSH);
+        } else {
+            hand.setState(HandState.LOST);
+            hand.setBet(0);
         }
-
-        if (dealerHand.isBlackJack()){
-            dealerHand.setState(HandState.BLACKJACK);
-            anyBlackjack = true;
-        }
-        return anyBlackjack;
     }
 
-    public boolean isInsurance(){
-        return dealerHand.getHand().get(0).getValue() == 11;
-    }
-
-    public List<String> getAvailableHandOptions(){
+    public List<String> getAvailableHandOptions(PlayerHand hand){
         List<String> handOptions = new ArrayList<>();
-        if (playerHand.getHandValue() < 21){
+        if (hand.getHandValue() < 21){
             handOptions.add("HIT");
             handOptions.add("STAND");
         }
-        if (playerHand.getHand().size() <= 2){
+        if (hand.getHand().size() <= 2){
             handOptions.add("DOUBLE");
         }
-        if (playerHand.isSplittable()){
+        if (hand.isSplittable()){
             handOptions.add("SPLIT");
         }
         return handOptions;

@@ -3,153 +3,78 @@ package org.daniel.elysium.screens.blackjack;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
-import org.daniel.elysium.models.Chip;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class BlackjackPanel extends JPanel {
-
-    // Global game state
-    private int balance = 900;
-    private int currentBet = 0;
-    private boolean gameStarted = false;
-
-    // Subpanels
-    private TopPanel topPanel;
-    private GameAreaPanel gameAreaPanel;
-    private BettingPanel bettingPanel;
-    private ChipPanel chipPanel; // Floating chip selection panel
-    private StateManager stateManager;
-    // Controllers
-    private CardDealer cardDealer; // Deals cards into the game area
+    private final BlackjackController controller;
 
     public BlackjackPanel(StateManager stateManager) {
-        this.stateManager = stateManager;
         setLayout(new BorderLayout());
+        controller = new BlackjackController(stateManager);
 
-        // Create background panel
+        // Create the background container.
         BackgroundPanel background = new BackgroundPanel(BackgroundAsset.BACKGROUND);
         background.setLayout(new BorderLayout());
 
-        // Create subpanels
-        topPanel = new TopPanel(stateManager, this::resetEverything, balance);
-        gameAreaPanel = new GameAreaPanel(this::startGame);
-        bettingPanel = new BettingPanel(
-                this::toggleChipPanel,
-                this::clearBet
-                //,this::handleChipBet
-        );
+        // Assemble sub_panels from the controller.
+        background.add(controller.getTopPanel(), BorderLayout.NORTH);
+        background.add(controller.getGameAreaPanel(), BorderLayout.CENTER);
+        //background.add(controller.getBettingPanel(), BorderLayout.SOUTH);
 
-        // Compose the overall layout
-        background.add(topPanel, BorderLayout.NORTH);
-        background.add(gameAreaPanel, BorderLayout.CENTER);
-        background.add(bettingPanel, BorderLayout.SOUTH);
-        add(background);
+        add(background, BorderLayout.CENTER);
+    }
 
-        // Optional: Hide chip panel when clicking outside it.
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (chipPanel != null && chipPanel.isVisible()) {
-                    Rectangle bounds = SwingUtilities.convertRectangle(chipPanel.getParent(), chipPanel.getBounds(), BlackjackPanel.this);
-                    if (!bounds.contains(e.getPoint())) {
-                        chipPanel.setVisible(false);
-                    }
+    // Add the chip panel to the frame's layered pane.
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (frame != null) {
+                JLayeredPane layeredPane = frame.getRootPane().getLayeredPane();
+                if (controller.getChipPanel().getParent() != layeredPane) {
+                    layeredPane.add(controller.getChipPanel(), JLayeredPane.POPUP_LAYER);
                 }
+                repositionChipPanel();
+                controller.getChipPanel().setVisible(true);
+                frame.addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(ComponentEvent e) {
+                        repositionChipPanel();
+                    }
+                });
             }
         });
     }
 
-
-    // Called when a chip is selected from the chip panel.
-    private void handleChipBet(Chip chip) {
-        if (!gameStarted && placeBet(chip.getValue(), bettingPanel.canHaveMoreBets())) {
-            // Update betting panel: update bet label and show clear bet button
-            bettingPanel.updateBetLabel(currentBet);
-            bettingPanel.showClearBetButton(true);
-            // Add the specific chip icon to the BetCircle
-            bettingPanel.addChip(chip);
+    @Override
+    public void removeNotify() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (frame != null) {
+            JLayeredPane layeredPane = frame.getRootPane().getLayeredPane();
+            layeredPane.remove(controller.getChipPanel());
+            layeredPane.repaint();
         }
+        super.removeNotify();
     }
 
-
-    // Place a bet if enough balance exists
-    private boolean placeBet(int amount, boolean canHaveMoreBets) {
-        if (balance >= amount && canHaveMoreBets) {
-            currentBet += amount;
-            balance -= amount;
-            topPanel.setBalance(balance);
-            return true;
+    private void repositionChipPanel() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (frame != null) {
+            Dimension pref = controller.getChipPanel().getPreferredSize();
+            int chipPanelWidth = pref.width;
+            int chipPanelHeight = pref.height;
+            int yPos = frame.getHeight() - chipPanelHeight - 60;  // margin from bottom
+            int xPos = 20; // margin from left
+            controller.getChipPanel().setBounds(xPos, yPos, chipPanelWidth, chipPanelHeight);
+            controller.getChipPanel().revalidate();
+            controller.getChipPanel().repaint();
         }
-        System.out.println("Insufficient balance");
-        return false;
-    }
-
-    // Called when the "Clear Bet" button is pressed.
-    private void clearBet() {
-        balance += currentBet;
-        currentBet = 0;
-        bettingPanel.updateBetLabel(currentBet);
-        topPanel.setBalance(balance);
-        bettingPanel.clearChips();
-        bettingPanel.showClearBetButton(false);
-    }
-
-    // Called when the "Deal" button is pressed.
-    private void startGame(java.awt.event.ActionEvent e) {
-        if (currentBet == 0) return;
-        gameStarted = true;
-        gameAreaPanel.hideDealButton();
-        bettingPanel.hideClearBetButton();
-        if (chipPanel != null) {
-            chipPanel.setVisible(false);
-        }
-        bettingPanel.showActionButtons(true);
-        // Use CardDealer to simulate dealing cards with delay.
-        cardDealer = new CardDealer(gameAreaPanel);
-        cardDealer.dealCards();
-    }
-
-    // Shows the chip panel (unless the game has started).
-    private void toggleChipPanel() {
-        if (gameStarted) return;
-        if (chipPanel == null) {
-            chipPanel = new ChipPanel(this::handleChipBet, stateManager);
-            chipPanel.setBounds(5, getHeight() / 4 - 120, 80, getHeight());
-            JLayeredPane layeredPane = getRootPane().getLayeredPane();
-            layeredPane.add(chipPanel, JLayeredPane.POPUP_LAYER);
-        }
-        chipPanel.setVisible(true);
-        chipPanel.revalidate();
-        chipPanel.repaint();
-    }
-
-    // Reset the entire UI to the initial state.
-    private void resetEverything() {
-        // Remove chip panel
-        if (chipPanel != null) {
-            chipPanel.setVisible(false);
-            JLayeredPane layeredPane = getRootPane().getLayeredPane();
-            layeredPane.remove(chipPanel);
-            chipPanel = null;
-        }
-        // Reset card areas
-        gameAreaPanel.clearCards();
-        // Reset bet circle
-        bettingPanel.clearChips();
-        // Reset state variables
-        currentBet = 0;
-        gameStarted = false;
-        balance = 1000;
-        topPanel.setBalance(balance);
-        bettingPanel.updateBetLabel(currentBet);
-        bettingPanel.showClearBetButton(false);
-        bettingPanel.showActionButtons(false);
-        gameAreaPanel.showDealButton(true);
-        revalidate();
-        repaint();
     }
 }
+
+

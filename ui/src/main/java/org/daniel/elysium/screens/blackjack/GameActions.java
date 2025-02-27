@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack2;
+package org.daniel.elysium.screens.blackjack;
 
 public enum GameActions {
     HIT, STAND, DOUBLE, SPLIT, INSURE, DO_NOT_INSURE;

@@ -2,7 +2,7 @@ package org.daniel.elysium;
 
 import org.daniel.elysium.debugUtils.DebugLevel;
 import org.daniel.elysium.debugUtils.DebugPrint;
-import org.daniel.elysium.screens.blackjack2.BlackjackPanel;
+import org.daniel.elysium.screens.blackjack.BlackjackPanel;
 import org.daniel.elysium.screens.panels.LoginPanel;
 import org.daniel.elysium.screens.panels.MainMenuPanel;
 import org.daniel.elysium.screens.panels.RegisterPanel;
@@ -24,6 +24,8 @@ public class Launcher {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(1800, 1200));
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setResizable(true);
 
         JPanel mainPanel = new JPanel(new CardLayout());
@@ -35,7 +37,7 @@ public class Launcher {
         stateManager.registerPanel("Blackjack", () -> new BlackjackPanel(stateManager));
 
         stateManager.setProfile(new UserProfile("test", "test", 1000));
-        stateManager.switchPanel("Blackjack");
+        stateManager.switchPanel("Login");
 
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override

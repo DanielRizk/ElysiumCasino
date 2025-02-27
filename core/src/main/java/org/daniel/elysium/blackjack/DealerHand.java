@@ -2,6 +2,8 @@ package org.daniel.elysium.blackjack;
 
 import org.daniel.elysium.models.BJCard;
 
+import java.util.List;
+
 public class DealerHand extends BJHand{
 
     @Override

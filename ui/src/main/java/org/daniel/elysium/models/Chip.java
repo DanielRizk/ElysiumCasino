@@ -1,7 +1,6 @@
 package org.daniel.elysium.models;
 
 import org.daniel.elysium.assets.AssetManager;
-import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.assets.ChipAsset;
 
 import javax.swing.*;

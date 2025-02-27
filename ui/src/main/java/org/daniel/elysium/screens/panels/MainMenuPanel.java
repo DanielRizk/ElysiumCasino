@@ -1,11 +1,11 @@
 package org.daniel.elysium.screens.panels;
 
 import org.daniel.elysium.StateManager;
+import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
-import org.daniel.elysium.elements.panels.BackgroundPanel;
 import org.daniel.elysium.elements.buttons.StyledButton;
-import org.daniel.elysium.assets.AssetManager;
+import org.daniel.elysium.elements.panels.BackgroundPanel;
 
 import javax.swing.*;
 import java.awt.*;
