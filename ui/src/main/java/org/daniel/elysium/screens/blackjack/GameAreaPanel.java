@@ -5,13 +5,12 @@ import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
+import org.daniel.elysium.models.Chip;
 import org.daniel.elysium.models.UICard;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,14 +73,11 @@ public class GameAreaPanel extends JPanel {
         gbc.gridy = 4;
         gbc.weighty = 0.50;
         playerHandPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        playerHandPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         playerHandPanel.setOpaque(false);
         PlayerHandUI playerHandUI = new PlayerHandUI();
         playerHandPanel.add(playerHandUI);
         add(playerHandPanel, gbc);
-        System.out.println("After adding, child count = " + playerHandPanel.getComponentCount());
-        for (Component c : playerHandPanel.getComponents()) {
-            System.out.println("  Child: " + c.getClass().getName());
-        }
 
 
         gbc.gridy = 5;
@@ -106,8 +102,7 @@ public class GameAreaPanel extends JPanel {
 
     }
 
-    public void updateBetDisplay(int index, int bet) {
-        getPlayerHand(index).updateBetDisplay(bet);
+    public void updateBetDisplay(int bet) {
         cardLayout.show(buttonSwitcherPanel, bet > 0 ? "clear" : "hide");
     }
 
@@ -116,12 +111,11 @@ public class GameAreaPanel extends JPanel {
     }
 
     // Call this method to update the action buttons dynamically.
-    public void updateActionButtons(Collection<GameActions> availableActions) {
+    public void updateActionButtons(Map<GameActions, Integer> availableActions) {
         actionButtonsPanel.removeAll();
-        for (GameActions action : availableActions) {
-            StyledButton button = new StyledButton(action.toString());
-            // Each button notifies the mediator which action was selected.
-            button.addActionListener(e -> mediator.onActionSelected(action));
+        for (Map.Entry<GameActions, Integer> action : availableActions.entrySet()){
+            StyledButton button = new StyledButton(action.getKey().toString());
+            button.addActionListener(e -> mediator.onActionSelected(action.getKey(), action.getValue()));
             actionButtonsPanel.add(button);
         }
         actionButtonsPanel.revalidate();
@@ -171,6 +165,30 @@ public class GameAreaPanel extends JPanel {
             }
         }
         return result;
+    }
+
+    public void splitHand(){
+        PlayerHandUI original = getPlayerHand(0);
+        PlayerHandUI split = new PlayerHandUI();
+        playerHandPanel.removeAll();
+
+        UICard secondCard = (UICard) original.getPlayerHand().getComponent(1);
+        original.getPlayerHand().remove(1);
+        original.getHand().getHand().remove(1);
+
+        split.addCard(secondCard);
+        List<Chip> chips = new ArrayList<>(original.getBetPanel().getChipsMain());
+        for (Chip chip : chips){
+            split.addChip(chip);
+        }
+
+        playerHandPanel.add(original);
+        playerHandPanel.add(split);
+
+        playerHandPanel.revalidate();
+        playerHandPanel.repaint();
+        revalidate();
+        repaint();
     }
 
 

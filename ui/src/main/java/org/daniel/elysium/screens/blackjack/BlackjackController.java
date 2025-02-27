@@ -1,6 +1,7 @@
 package org.daniel.elysium.screens.blackjack;
 
 import org.daniel.elysium.StateManager;
+import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.blackjack.BlackjackEngine;
 import org.daniel.elysium.blackjack.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
@@ -11,10 +12,8 @@ import org.daniel.elysium.models.UICard;
 import org.daniel.elysium.models.UIDeck;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import javax.swing.Timer;
+import java.util.*;
 
 public class BlackjackController implements BlackjackMediator {
     private final StateManager stateManager;
@@ -22,7 +21,6 @@ public class BlackjackController implements BlackjackMediator {
 
     // References to subcomponents.
     private final TopPanel topPanel;
-    //private BettingPanel bettingPanel;
     private ChipPanel chipPanel;
     private GameAreaPanel gameAreaPanel;
 
@@ -30,7 +28,26 @@ public class BlackjackController implements BlackjackMediator {
 
     // Game cards creation
     Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
-    private final List<UICard> cards = shoe.getCards();
+    private List<UICard> cards = shoe.getCards();
+
+    private List<UICard> getCustomDeck(){
+        List<UICard> cards = new ArrayList<>();
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("10", "S", CardAsset.S10));
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("4", "H", CardAsset.H4));
+        cards.add(new UICard("A", "S", CardAsset.SA));
+        cards.add(new UICard("4", "C", CardAsset.C4));
+        cards.add(new UICard("4", "H", CardAsset.H4));
+        cards.add(new UICard("4", "C", CardAsset.C4));
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        return cards;
+    }
 
     public BlackjackController(StateManager stateManager) {
         this.stateManager = stateManager;
@@ -45,7 +62,7 @@ public class BlackjackController implements BlackjackMediator {
         if (chip.getValue() <= stateManager.getProfile().getBalance()) {
             if (gameAreaPanel.getPlayerHand(0).canAddChip()){
                 gameAreaPanel.getPlayerHand(0).addChip(chip);
-                gameAreaPanel.updateBetDisplay(0, gameAreaPanel.getPlayerHand(0).getHand().getBet());
+                //gameAreaPanel.updateBetDisplay(gameAreaPanel.getPlayerHand(0).getHand().getBet());
                 stateManager.getProfile().decreaseBalanceBy(chip.getValue());
                 gameAreaPanel.showDealButton(true);
                 updateBalanceDisplay();
@@ -62,13 +79,13 @@ public class BlackjackController implements BlackjackMediator {
         stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand(0).getHand().getBet());
         gameAreaPanel.getPlayerHand(0).clearChips();
         gameAreaPanel.showDealButton(false);
-        gameAreaPanel.updateBetDisplay(0, 0);
+        gameAreaPanel.updateBetDisplay(0);
         updateBalanceDisplay();
     }
 
     @Override
     public void onDealRequested() {
-        if (gameAreaPanel.getPlayerHand(0).getHand().getBet() == 0) {
+        if (gameAreaPanel.getPlayerHand(0).getHand().getBet() < StateManager.MIN_BET) {
             new Toast(stateManager.getFrame(), "No bet placed yet.", 3000).setVisible(true);
             return;
         }
@@ -78,13 +95,35 @@ public class BlackjackController implements BlackjackMediator {
         gameAreaPanel.clearActions();
         dealInitialCards();
 
-        if (checkInsurance()){
-            displayInsuranceOptions();
-        } else if (!checkForBlackJack()){
-            calculatePlayerOptions();
+        if (!isPlayerBlackjack()){
+            if (!checkInsurance()){
+                if (!isDealerBlackjack()){
+                    calculatePlayerOptions(0);
+                } else {
+                    dealerTurn();
+                }
+            } else {
+                displayInsuranceOptions();
+            }
         } else {
-            evaluateGameResults();
+            dealerTurn();
         }
+    }
+
+    private boolean isPlayerBlackjack(){
+        if (gameAreaPanel.getPlayerHand(0).getHand().isBlackJack()){
+            gameAreaPanel.getPlayerHand(0).getHand().setState(HandState.BLACKJACK);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDealerBlackjack(){
+        if (gameAreaPanel.getDealerHand().getHand().isBlackJack()){
+            gameAreaPanel.getDealerHand().getHand().setState(HandState.BLACKJACK);
+            return true;
+        }
+        return false;
     }
 
     private void reset(){
@@ -94,6 +133,16 @@ public class BlackjackController implements BlackjackMediator {
         chipPanel.setVisible(true);
         gameEngine = new BlackjackEngine();
         state = GameState.BET_PHASE;
+
+        if (stateManager.getProfile().getBalance() < StateManager.MIN_BET){
+            stateManager.switchPanel("MainMenu");
+        }
+
+        if (shoe.getCards().size() < 10){
+            cards = Shoe.createShoe(4, UIDeck::new).getCards();
+            new Toast(stateManager.getFrame(),
+                    "Shoe Ended", 3000).setVisible(true);
+        }
     }
 
     private void evaluateGameResults(){
@@ -105,7 +154,6 @@ public class BlackjackController implements BlackjackMediator {
                     "Hand" + playerHandUI.getHand().getState(),
                     3000).setVisible(true);
         }
-
         proceedToPayouts();
     }
 
@@ -113,17 +161,25 @@ public class BlackjackController implements BlackjackMediator {
         state = GameState.PAYOUT;
         List<PlayerHandUI> allHands = gameAreaPanel.getPlayerHands();
         for (PlayerHandUI playerHandUI : allHands) {
-            stateManager.getProfile().increaseBalanceBy(playerHandUI.getHand().getBet());
-            if (playerHandUI.getHand().getState() == HandState.WON) {
-                List<Chip> chips = new ArrayList<>(playerHandUI.getBetPanel().getChips());
-                for (Chip chip : chips) {
-                    playerHandUI.addPayoutChip(chip);
-                }
+
+            if (playerHandUI.getHand().getState() == HandState.BLACKJACK){
+                stateManager.getProfile().increaseBalanceBy(playerHandUI.getBet());
+                playerHandUI.payBlackjackWin();
+            } else if (playerHandUI.getHand().getState() == HandState.INSURED){
+                stateManager.getProfile().increaseBalanceBy(playerHandUI.getInsuranceBet());
+                playerHandUI.payInsurance();
+                playerHandUI.clearMainBet();
+            } else if (playerHandUI.getHand().getState() == HandState.WON) {
+                stateManager.getProfile().increaseBalanceBy(playerHandUI.getBet());
+                playerHandUI.payWin();
+            } else if (playerHandUI.getHand().getState() == HandState.PUSH) {
+                stateManager.getProfile().increaseBalanceBy(playerHandUI.getBet());
             }
         }
+
         updateBalanceDisplay();
 
-        Timer timer = new Timer(3000, e -> {
+        Timer timer = new Timer(5000, e -> {
             reset();
         });
         timer.setRepeats(false);
@@ -132,38 +188,43 @@ public class BlackjackController implements BlackjackMediator {
 
     private void displayInsuranceOptions(){
         state = GameState.PLAYER_TURN;
-        List<GameActions> actions = Arrays.asList(GameActions.INSURE, GameActions.DO_NOT_INSURE);
+        Map<GameActions, Integer> actions = new LinkedHashMap<>();
+        actions.put(GameActions.INSURE, 0);
+        actions.put(GameActions.DO_NOT_INSURE, 0);
         gameAreaPanel.updateActionButtons(actions);
     }
 
     private boolean checkInsurance(){
-        return gameEngine.isInsurance(gameAreaPanel.getDealerHand().getHand());
+        return gameEngine.isInsurance(gameAreaPanel.getDealerHand().getHand())
+                && (int)(gameAreaPanel.getPlayerHand(0).getBet() * 0.5) <=
+                stateManager.getProfile().getBalance();
     }
 
-    private boolean checkForBlackJack(){
-        //return gameEngine.isAnyBlackjack();
-        return false;
-    }
-
-    private void calculatePlayerOptions() {
+    private void calculatePlayerOptions(int index) {
         state = GameState.PLAYER_TURN;
-        gameAreaPanel.updateActionButtons(getOptions(0));
+        gameAreaPanel.getPlayerHand(index).setHighlight(checkForSecondHand());
+
+        Map<GameActions, Integer> actions = getOptions(index);
+        gameAreaPanel.updateActionButtons(actions);
+        if (actions.isEmpty()){
+            handleStandOption(index);
+        }
     }
 
-    private List<GameActions> getOptions(int index){
-        List<GameActions> actions = new ArrayList<>();
+    private Map<GameActions, Integer> getOptions(int index){
+        Map<GameActions, Integer> actions = new LinkedHashMap<>();
         for (String option: gameEngine.getAvailableHandOptions(gameAreaPanel.getPlayerHand(index).getHand())){
             switch (option){
-                case "HIT" -> actions.add(GameActions.HIT);
-                case "STAND" -> actions.add(GameActions.STAND);
+                case "HIT" -> actions.put(GameActions.HIT, index);
+                case "STAND" -> actions.put(GameActions.STAND, index);
                 case "DOUBLE" -> {
                     if (gameAreaPanel.getPlayerHand(index).getHand().getBet() <= stateManager.getProfile().getBalance()) {
-                        actions.add(GameActions.DOUBLE);
+                        actions.put(GameActions.DOUBLE, index);
                     }
                 }
                 case "SPLIT" -> {
                     if (gameAreaPanel.getPlayerHand(index).getHand().getBet() <= stateManager.getProfile().getBalance()) {
-                        actions.add(GameActions.SPLIT);
+                        actions.put(GameActions.SPLIT, index);
                     }
                 }
             }
@@ -193,33 +254,122 @@ public class BlackjackController implements BlackjackMediator {
     }
 
     @Override
-    public void onActionSelected(GameActions action) {
+    public void onActionSelected(GameActions action, int index) {
         switch (action){
-            case HIT -> handleHitOption(0);
-            case STAND -> handleStandOption();
+            case HIT -> handleHitOption(index);
+            case STAND -> handleStandOption(index);
+            case DOUBLE -> handleDoubleOption(index);
+            case SPLIT -> handleSplitOption();
+            case INSURE -> handleInsureOption();
+            case DO_NOT_INSURE -> handleDoNotInsureOption();
+        }
+    }
+
+    private void handleSplitOption(){
+        gameAreaPanel.splitHand();
+        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHands().get(0);
+        stateManager.getProfile().decreaseBalanceBy(playerHandUI.getBet());
+        updateBalanceDisplay();
+        playerHandUI.addCard(getCardFromShoe());
+        playerHandUI.getHand().setHandSplit(true);
+        calculatePlayerOptions(0);
+    }
+
+    private void handleDoubleOption(int index){
+        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
+        stateManager.getProfile().decreaseBalanceBy(playerHandUI.getBet());
+        playerHandUI.addDoubleBet();
+        updateBalanceDisplay();
+        UICard card = getCardFromShoe();
+        gameAreaPanel.addPlayerCard(index, card);
+
+        if (checkForSecondHand() && index < 1){
+            calculatePlayerOptions(index);
+        } else {
+            handleStandOption(index);
+        }
+    }
+
+    private void handleInsureOption() {
+        int insuranceBet = (int)(gameAreaPanel.getPlayerHand(0).getBet() * 0.5);
+        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(0);
+        playerHandUI.addInsuranceBet();
+        stateManager.getProfile().decreaseBalanceBy(insuranceBet);
+        updateBalanceDisplay();
+
+        Timer timer = new Timer(1000, e -> {
+            if (!isDealerBlackjack()) {
+                playerHandUI.clearInsuranceBet();
+                calculatePlayerOptions(0);
+            } else {
+                playerHandUI.getHand().setState(HandState.INSURED);
+                dealerTurn();
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void handleDoNotInsureOption(){
+        if (isDealerBlackjack()){
+            dealerTurn();
+        } else {
+            calculatePlayerOptions(0);
         }
     }
 
     private void handleHitOption(int index){
         UICard card = getCardFromShoe();
         gameAreaPanel.addPlayerCard(index, card);
-        gameAreaPanel.updateActionButtons(getOptions(index));
+        calculatePlayerOptions(index);
+        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
+        if (playerHandUI.getHand().getHandValue() >= 21){
+            if (checkForSecondHand() && index < 1){
+                index++;
+                calculatePlayerOptions(index);
+            } else {
+                handleStandOption(index);
+            }
+        }
     }
 
-    private void handleStandOption(){
+    private boolean checkForSecondHand(){
+        return gameAreaPanel.getPlayerHands().size() > 1;
+    }
+
+    private void handleStandOption(int index){
+        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
+        playerHandUI.setHighlight(false);
         gameAreaPanel.clearActions();
-        dealerTurn();
+        if (checkForSecondHand() && index < 1){
+            index++;
+            playerHandUI.getHand().setHandSplit(true);
+            gameAreaPanel.addPlayerCard(index, getCardFromShoe());
+            calculatePlayerOptions(index);
+        } else {
+            dealerTurn();
+        }
     }
 
     private void dealerTurn(){
         state = GameState.DEALER_TURN;
         gameAreaPanel.getDealerHand().flipCardUp();
-        while (true){
-            UICard card = getCardFromShoe();
-            if (!gameAreaPanel.getDealerHand().addCard(card)){
-                break;
+
+        boolean isPlayerStillInTheGame = false;
+        for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
+            if (!(playerHandUI.getHand().isBlackJack() || playerHandUI.getHand().getHandValue() > 21)){
+                isPlayerStillInTheGame = true;
             }
-            gameAreaPanel.addDealerCard(card);
+        }
+        if (isPlayerStillInTheGame){
+            while (true){
+                UICard card = peekCardFromShoe();
+                if (gameAreaPanel.getDealerHand().addCard(card)){
+                    card = getCardFromShoe();
+                } else {
+                    break;
+                }
+            }
         }
 
         evaluateGameResults();
@@ -245,13 +395,10 @@ public class BlackjackController implements BlackjackMediator {
         return cards.remove(0);
     }
 
-    public int getMediatorWidth(){
-        return stateManager.getFrame().getWidth();
+    private UICard peekCardFromShoe(){
+        return cards.get(0);
     }
 
-    public int getMediatorHeight(){
-        return stateManager.getFrame().getHeight();
-    }
 
     // Getter methods for the panels.
     public TopPanel getTopPanel() { return topPanel; }

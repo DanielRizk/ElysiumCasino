@@ -17,4 +17,17 @@ public class PlayerCardsPanel extends JPanel {
     public void addCard(UICard card){
         add(card);
     }
+
+    public void setHighlight(boolean glow) {
+        Component[] components = getComponents();
+        for (Component component : components) {
+            if (glow) {
+                ((UICard) component).setBorder(new GlowBorder(Color.YELLOW, 4));
+            } else {
+                ((UICard) component).setBorder(null);
+            }
+        }
+        revalidate();
+        repaint();
+    }
 }

@@ -53,7 +53,8 @@ public class MainMenuPanel extends JPanel {
         });
 
         blackjackButton.addActionListener(e -> {
-            if (stateManager.isUserLoggedIn()){
+            if (stateManager.isUserLoggedIn() &&
+                    stateManager.getProfile().getBalance() > StateManager.MIN_BET){
                 stateManager.switchPanel("Blackjack");
             }
         });

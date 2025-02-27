@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PlayerHand extends BJHand{
 
-    private boolean didYouComeFromSplitAces = false;
+    private boolean isHandSplit = false;
 
     private int bet = 0;
 
@@ -18,18 +18,16 @@ public class PlayerHand extends BJHand{
 
     @Override
     public boolean dealCard(BJCard card) {
-        if (!didYouComeFromSplitAces){
-            if (getHandValue() < 21){
-                getHand().add(card);
-                return true;
-            }
+        if (getHandValue() < 21){
+            getHand().add(card);
+            return true;
         }
         return false;
     }
 
     @Override
     public boolean isBlackJack() {
-        return getHand().size() <= 2 && getHandValue() == 21 && !didYouComeFromSplitAces;
+        return getHand().size() <= 2 && getHandValue() == 21 && !isHandSplit;
     }
 
     @Override
@@ -59,12 +57,12 @@ public class PlayerHand extends BJHand{
         return getHand().size() == 2 && getHand().get(0).getValue() == getHand().get(1).getValue();
     }
 
-    public void setDidYouComeFromSplitAces(boolean didYouComeFromSplitAces) {
-        this.didYouComeFromSplitAces = didYouComeFromSplitAces;
+    public void setHandSplit(boolean handSplit) {
+        this.isHandSplit = handSplit;
     }
 
-    public boolean isDidYouComeFromSplitAces() {
-        return didYouComeFromSplitAces;
+    public boolean isHandSplit() {
+        return isHandSplit;
     }
 
     public boolean splittingAces(){

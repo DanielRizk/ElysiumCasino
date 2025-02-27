@@ -14,6 +14,7 @@ public class StateManager {
     private JPanel currentPanel = null;
     private final Map<String, Supplier<JPanel>> panelSuppliers;
     private final JFrame frame;
+    public static final int MIN_BET = 10;
 
     public StateManager(Container container, JFrame frame) {
         this.container = container;

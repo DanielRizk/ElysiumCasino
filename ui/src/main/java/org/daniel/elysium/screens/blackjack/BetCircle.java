@@ -11,11 +11,13 @@ public class BetCircle extends JPanel {
     private final List<Chip> chips = new ArrayList<>();
     private final int maxUserChips = 10;
     private final int maxChips = 20;
+    private final boolean visible;
 
-    public BetCircle() {
+    public BetCircle(boolean visible ) {
         setOpaque(false);
         // Set the panel's preferred size larger than the circle size.
         setPreferredSize(new Dimension(130, 220));
+        this.visible = visible;
     }
 
     public void addChip(Chip chip) {
@@ -48,14 +50,20 @@ public class BetCircle extends JPanel {
         // Create a copy of the Graphics for proper rendering.
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setStroke(new BasicStroke(3));
-        g2.setColor(Color.WHITE);
+        if (visible){
+            g2.setStroke(new BasicStroke(3));
+            g2.setColor(Color.WHITE);
+        }
+
+
 
         // Use a fixed diameter for the circle (200px)
         int circleDiameter = 120;
         int circleX = (getWidth() - circleDiameter) / 2;
         int circleY = (getHeight() - circleDiameter) / 2;
-        g2.drawOval(circleX, circleY, circleDiameter, circleDiameter);
+        if (visible){
+            g2.drawOval(circleX, circleY, circleDiameter, circleDiameter);
+        }
 
         // Draw chips relative to the circle's position.
         int chipSize = 100;  // Adjust as needed.

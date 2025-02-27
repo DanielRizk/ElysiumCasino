@@ -9,7 +9,7 @@ public interface BlackjackMediator {
     void onDealRequested();
     void updateBalanceDisplay();
     void dealInitialCards();
-    void onActionSelected(GameActions action);
+    void onActionSelected(GameActions action, int index);
     void returnToMainMenu();
 }
 

@@ -19,10 +19,10 @@ public class BlackjackEngine {
     public void resolvePlayerResult(PlayerHand hand, DealerHand dealerHand) {
         float bet = hand.getBet();
         if (hand.getState() == HandState.INSURED) {
-            hand.setInsuranceBet(hand.getInsuranceBet() + (hand.getInsuranceBet() * 2));
+            hand.setInsuranceBet(hand.getInsuranceBet() * 3);
         } else if (hand.isBlackJack() && !dealerHand.isBlackJack()) {
             hand.setBet((int) (bet * 2.5f));
-            hand.setState(HandState.WON);
+            hand.setState(HandState.BLACKJACK);
         } else if ((hand.getHandValue() > dealerHand.getHandValue() && hand.getHandValue() <= 21)
                 || (dealerHand.getHandValue() > 21 && hand.getHandValue() <= 21)) {
             hand.setBet((int) (bet * 2));
@@ -42,7 +42,7 @@ public class BlackjackEngine {
             handOptions.add("HIT");
             handOptions.add("STAND");
         }
-        if (hand.getHand().size() <= 2){
+        if (hand.getHand().size() <= 2 && hand.getHandValue() != 21){
             handOptions.add("DOUBLE");
         }
         if (hand.isSplittable()){

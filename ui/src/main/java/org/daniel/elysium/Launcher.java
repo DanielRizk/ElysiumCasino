@@ -37,7 +37,7 @@ public class Launcher {
         stateManager.registerPanel("Blackjack", () -> new BlackjackPanel(stateManager));
 
         stateManager.setProfile(new UserProfile("test", "test", 1000));
-        stateManager.switchPanel("Login");
+        stateManager.switchPanel("Blackjack");
 
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
