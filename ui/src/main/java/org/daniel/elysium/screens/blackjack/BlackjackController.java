@@ -3,7 +3,7 @@ package org.daniel.elysium.screens.blackjack;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.blackjack.BlackjackEngine;
-import org.daniel.elysium.blackjack.HandState;
+import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.models.Chip;
@@ -23,6 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controls the Blackjack game flow, handling state transitions, UI updates, and interactions.
+ */
 public class BlackjackController implements BlackjackMediator {
     // State managers
     private final StateManager stateManager;
@@ -38,8 +41,13 @@ public class BlackjackController implements BlackjackMediator {
 
     // Game cards creation
     Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
-    private List<UICard> cards = shoe.getCards();
+    private List<UICard> cards = shoe.cards();
 
+    /**
+     * Constructs the BlackjackController and initializes game components.
+     *
+     * @param stateManager The state manager handling panel switching and user profile data.
+     */
     public BlackjackController(StateManager stateManager) {
         this.stateManager = stateManager;
         this.gameEngine = new BlackjackEngine();
@@ -48,18 +56,27 @@ public class BlackjackController implements BlackjackMediator {
         this.gameAreaPanel = new GameAreaPanel(this, stateManager);
     }
 
+    /*======================
+        Initial actions
+    ======================*/
+
     /**
-     * When a chip is selected from the chip panel, this method validates
-     * if the chip value is less than the current balance, it then validates
-     * if the bet circle of the player hand can have more chips stacked,
-     * then it adds the chip, decrease the balance, updates the current balance,
-     * show clear bet button, and display the deal button to start the game.
+     * Handles the event when a chip is selected from the chip panel.
+     * <p>
+     * This method checks if the selected chip's value does not exceed the player's current balance.
+     * If the player's betting area allows for more chips, the chip is added to the bet.
+     * The player's balance is then updated accordingly. If the player has sufficient balance
+     * and the bet is valid, the "Deal" and "Clear Bet" buttons are displayed.
+     * If the bet exceeds the allowed chip limit, a warning message is displayed.
+     * If the balance is insufficient, an error message is shown.
+     *
+     * @param chip The selected chip to be placed as a bet.
      */
     @Override
     public void onChipSelected(Chip chip) {
         if (chip.getValue() <= stateManager.getProfile().getBalance()) {
             PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
-            if (playerHandUI.canAddChip()){
+            if (playerHandUI.canAddChip()) {
                 playerHandUI.addChip(chip);
                 stateManager.getProfile().decreaseBalanceBy(chip.getValue());
                 gameAreaPanel.showDealButton(true);
@@ -73,30 +90,33 @@ public class BlackjackController implements BlackjackMediator {
         }
     }
 
-    /*======================
-        Initial actions
-    ======================*/
-
     /**
-     * When the clear bet button is clicked, it clears all the chips on the bet panel
-     * and return the bet to the balance, hides the clearBet button, hides the deal button
-     * and updates the balance.
+     * Handles the event when the "Clear Bet" button is clicked.
+     * <p>
+     * This method clears all chips from the betting panel and refunds the amount back to the player's balance.
+     * It also hides the "Clear Bet" and "Deal" buttons, ensuring that the game does not start without a valid bet.
+     * Finally, the player's balance display is updated.
      */
     @Override
     public void onClearBet() {
         PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
         stateManager.getProfile().increaseBalanceBy(playerHandUI.getHand().getBet());
-        // This has to be after the balance increase because the bet will be set to 0
-        playerHandUI.clearChips();
+        playerHandUI.clearChips(); // Clear chips after refunding the balance
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.showClearBetButton(false);
         updateBalanceDisplay();
     }
 
     /**
-     * When the deal button is clicked, the bet is validated, game stated is updated,
-     * then the game area is updated. The initial cards are dealt and initial,
-     * hands processing is done to determine the appropriate path.
+     * Handles the event when the "Deal" button is clicked.
+     * <p>
+     * This method validates the player's bet before starting the game.
+     * If no bet is placed or if the bet is below the minimum required amount,
+     * an error message is displayed.
+     * Otherwise, the game state is updated, the betting panel is hidden,
+     * and the initial cards are dealt to both the player and the dealer.
+     * The game logic is then processed based on whether the player or dealer has a blackjack,
+     * or if insurance options should be displayed.
      */
     @Override
     public void onDealRequested() {
@@ -104,14 +124,10 @@ public class BlackjackController implements BlackjackMediator {
 
         // Handle invalid bet
         if (playerHandUI.getHand().getBet() == 0) {
-            new Toast(stateManager.getFrame(),
-                    "No bet placed yet.",
-                    3000).setVisible(true);
+            new Toast(stateManager.getFrame(), "No bet placed yet.", 3000).setVisible(true);
             return;
         } else if (playerHandUI.getHand().getBet() < StateManager.MIN_BET) {
-            new Toast(stateManager.getFrame(),
-                    "Min bet is 10$",
-                    3000).setVisible(true);
+            new Toast(stateManager.getFrame(), "Min bet is 10$", 3000).setVisible(true);
             return;
         }
 
@@ -121,25 +137,25 @@ public class BlackjackController implements BlackjackMediator {
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.clearActions();
 
+
         // Deal the cards to the players
         dealInitialCards();
 
-
         // The logical flow of the game
         // If player has a blackjack go to dealer turn
-        if (isPlayerBlackjack()){ // if player does
+        if (isPlayerBlackjack()) {
             dealerTurn();
             return;
         }
 
         // If dealer has ace as first card, go to insurance
-        if (checkInsurance()){
+        if (checkInsurance()) {
             displayInsuranceOptions();
             return;
         }
 
         // If dealer has a blackjack, go to dealer turn
-        if (isDealerBlackjack()){
+        if (isDealerBlackjack()) {
             dealerTurn();
             return;
         }
@@ -148,7 +164,12 @@ public class BlackjackController implements BlackjackMediator {
         calculatePlayerOptions(PlayerHandUI.FIRST_HAND);
     }
 
-    /** Update game state and deal initial cards */
+    /**
+     * Deals the initial cards to both the player and the dealer.
+     * <p>
+     * This method updates the game state to "Dealing Cards" and distributes two cards each
+     * to the player and the dealer. The dealer's second card is hidden from view until further gameplay decisions are made.
+     */
     @Override
     public void dealInitialCards() {
         state = GameState.DEALING_CARDS;
@@ -156,20 +177,24 @@ public class BlackjackController implements BlackjackMediator {
         gameAreaPanel.addDealerCard(getCardFromShoe());
         gameAreaPanel.addPlayerCard(PlayerHandUI.FIRST_HAND, getCardFromShoe());
         gameAreaPanel.addDealerCard(getCardFromShoe());
-        gameAreaPanel.getDealerHand().flipCardDown(); // Hide dealer second card
+        gameAreaPanel.getDealerHand().flipCardDown(); // Hide dealer's second card
     }
 
     /**
-     * Return to main menu, If player is in a middle of a game
-     * and leaves, her loses the bet
+     * Handles the event when the player chooses to return to the main menu.
+     * <p>
+     * If the player exits in the middle of a game, they will lose their bet.
+     * A confirmation dialog is displayed to inform the player of this consequence.
+     * If the player confirms the exit, the game switches to the main menu.
+     * If the game has not started, the bet is cleared before exiting.
      */
     @Override
     public void returnToMainMenu() {
-        if (state.ordinal() > GameState.GAME_STARTED.ordinal()){
+        if (state.ordinal() > GameState.GAME_STARTED.ordinal()) {
             StyledConfirmDialog dialog = new StyledConfirmDialog(stateManager.getFrame(),
                     "If you exit now you will lose your bet, Continue?");
             dialog.setVisible(true);
-            if (dialog.isConfirmed()){
+            if (dialog.isConfirmed()) {
                 stateManager.switchPanel("MainMenu");
             }
         } else {
@@ -178,17 +203,30 @@ public class BlackjackController implements BlackjackMediator {
         }
     }
 
+
     /*======================
         Blackjack methods
     ======================*/
 
-    /** Check if the player has a blackjack */
+    /**
+     * Checks if the player has a blackjack.
+     * <p>
+     * Retrieves the player's hand and determines whether it qualifies as a blackjack.
+     *
+     * @return true if the player's hand is a blackjack, false otherwise.
+     */
     private boolean isPlayerBlackjack(){
         PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
         return playerHandUI.getHand().isBlackJack();
     }
 
-    /** Check if the dealer has a blackjack */
+    /**
+     * Checks if the dealer has a blackjack.
+     * <p>
+     * Retrieves the dealer's hand and determines whether it qualifies as a blackjack.
+     *
+     * @return true if the dealer's hand is a blackjack, false otherwise.
+     */
     private boolean isDealerBlackjack(){
         return gameAreaPanel.getDealerHand().getHand().isBlackJack();
     }
@@ -198,9 +236,12 @@ public class BlackjackController implements BlackjackMediator {
     ======================*/
 
     /**
-     * This method passes the dealer hand to the backend logic to determine
-     * if it has an ace as the first hand, then checks if the player has enough
-     * balance for insurance.
+     * Determines if insurance should be offered to the player.
+     * <p>
+     * Checks whether the dealer's first card is an ace and if the player has
+     * enough balance to afford the insurance bet (half of the original bet amount).
+     *
+     * @return true if the player qualifies for insurance, false otherwise.
      */
     private boolean checkInsurance(){
         return gameEngine.isInsurance(gameAreaPanel.getDealerHand().getHand())
@@ -209,8 +250,10 @@ public class BlackjackController implements BlackjackMediator {
     }
 
     /**
-     * Update game state, create the insurance map
-     * for the game area panel to generate the insurance buttons
+     * Displays insurance options to the player.
+     * <p>
+     * Updates the game state and generates the necessary UI elements to allow the player
+     * to choose between insuring their bet or declining insurance.
      */
     private void displayInsuranceOptions(){
         state = GameState.PLAYER_TURN;
@@ -221,8 +264,12 @@ public class BlackjackController implements BlackjackMediator {
     }
 
     /**
-     * Handler for insure option, Add the insurance to the extra bet circle
-     * and decreases balance. Evaluates the insurance.
+     * Handles the insurance option selected by the player.
+     * <p>
+     * If the player chooses to insure their bet, the insurance amount is deducted from their balance
+     * and added to the extra bet area. A timer is set to evaluate the insurance bet:
+     * If the dealer has blackjack, the hand is marked as insured and the dealer wins.
+     * Otherwise, the insurance bet is lost, and the game continues.
      */
     private void handleInsureOption() {
         PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
@@ -230,12 +277,12 @@ public class BlackjackController implements BlackjackMediator {
         stateManager.getProfile().decreaseBalanceBy(playerHandUI.getInsuranceBet());
         updateBalanceDisplay();
 
-        // Wait for a second for the user to see the outcome of the insurance, Can we do better?
+        // Wait for a second for the user to see the outcome of the insurance
         Timer timer = new Timer(1000, e -> {
-            if (!isDealerBlackjack()) { // If dealer is not blackjack, insurance lost, game continues
+            if (!isDealerBlackjack()) { // If dealer is not blackjack, insurance is lost, game continues
                 playerHandUI.clearInsuranceBet();
                 calculatePlayerOptions(0);
-            } else { // If dealer is blackjack, Dealer wins and set hand state to INSURED
+            } else { // If dealer has blackjack, the dealer wins, and the hand is marked as INSURED
                 playerHandUI.getHand().setState(HandState.INSURED);
                 dealerTurn();
             }
@@ -244,11 +291,16 @@ public class BlackjackController implements BlackjackMediator {
         timer.start();
     }
 
-    /** Handler for do not insure option. Evaluates the insurance and proceeds the game. */
+    /**
+     * Handles the player's decision to decline insurance.
+     * <p>
+     * If the dealer has blackjack, the dealer wins immediately.
+     * Otherwise, the game proceeds as usual.
+     */
     private void handleDoNotInsureOption(){
-        if (isDealerBlackjack()){ // If dealer is blackjack dealer wins
+        if (isDealerBlackjack()){ // If dealer has blackjack, dealer wins
             dealerTurn();
-        } else { // Otherwise game continues
+        } else { // Otherwise, continue the game
             calculatePlayerOptions(PlayerHandUI.FIRST_HAND);
         }
     }
@@ -257,7 +309,14 @@ public class BlackjackController implements BlackjackMediator {
         Player actions
     ======================*/
 
-    /** Update game state, and get the available options for the player hand*/
+    /**
+     * Updates game state and retrieves available options for the player's hand.
+     * <p>
+     * This method highlights the current hand if necessary and determines the available actions
+     * based on backend logic. If no actions are available, the player is forced to stand.
+     *
+     * @param index The index of the player's hand.
+     */
     private void calculatePlayerOptions(int index) {
         state = GameState.PLAYER_TURN;
 
@@ -275,9 +334,15 @@ public class BlackjackController implements BlackjackMediator {
     }
 
     /**
-     * Helper method to map between the output of the backend and the
-     * creation of the map required by the game area panel to generate the action buttons.
+     * Retrieves the available actions for a player's hand based on backend logic.
+     * <p>
+     * It checks the game engine for allowed actions and maps them to the corresponding
+     * game area panel buttons. The map preserves the order of actions for consistency.
+     *
+     * @param index The index of the player's hand.
+     * @return A map of available game actions for the specified hand.
      */
+
     private Map<GameActions, Integer> getOptions(int index){
         Map<GameActions, Integer> actions = new LinkedHashMap<>(); // LinkedHashMap is used to preserve the order
         for (String option: gameEngine.getAvailableHandOptions(gameAreaPanel.getPlayerHand(index).getHand())){
@@ -300,9 +365,15 @@ public class BlackjackController implements BlackjackMediator {
     }
 
     /**
-     * Triggered by the actions listeners of the action buttons,
-     * and maps each action to its respective handler
+     * Handles the player's selected action from the action buttons.
+     * <p>
+     * This method maps each selected action to its corresponding handler,
+     * ensuring the correct game logic is executed.
+     *
+     * @param action The selected game action.
+     * @param index  The index of the player's hand affected by the action.
      */
+
     @Override
     public void onActionSelected(GameActions action, int index) {
         switch (action){
@@ -316,9 +387,16 @@ public class BlackjackController implements BlackjackMediator {
     }
 
     /**
-     * Handler for hit option, Validates the draw of a card
-     * and determine the appropriate flow for the game
+     * Handles the "Hit" action by drawing a card and updating the game flow.
+     * <p>
+     * This method validates whether the player can draw another card. If they can,
+     * it adds the card to their hand and updates their available actions.
+     * If the player's total hand value reaches or exceeds 21, the turn either moves
+     * to the second hand (if applicable) or stands by default.
+     *
+     * @param index The index of the player's hand.
      */
+
     private void handleHitOption(int index){
         // Check if player can draw another card
         if (gameAreaPanel.addPlayerCard(index, peekCardFromShoe())){
@@ -341,7 +419,15 @@ public class BlackjackController implements BlackjackMediator {
         }
     }
 
-    /** Handler for stand option, it directs the game to the appropriate flow of the game */
+    /**
+     * Handles the "Stand" action, transitioning the game to the appropriate state.
+     * <p>
+     * If the player has multiple hands (due to a split), the game moves to the next hand.
+     * Otherwise, the dealer's turn begins.
+     *
+     * @param index The index of the player's hand.
+     */
+
     private void handleStandOption(int index){
         PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
         playerHandUI.setHighlight(false); // turns the highlight off at all cases
@@ -358,7 +444,16 @@ public class BlackjackController implements BlackjackMediator {
         }
     }
 
-    /** Handler for double option, Adds the bet decreases the balance and goes to stand */
+    /**
+     * Handles the "Double" action by doubling the player's bet, drawing a final card,
+     * and then standing by default.
+     * <p>
+     * The method ensures that the player's balance is updated before adding the double bet.
+     * After drawing one additional card, the player's turn ends automatically.
+     *
+     * @param index The index of the player's hand.
+     */
+
     private void handleDoubleOption(int index){
         PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
         stateManager.getProfile().decreaseBalanceBy(playerHandUI.getBet());
@@ -372,9 +467,13 @@ public class BlackjackController implements BlackjackMediator {
     }
 
     /**
-     * Handler for split option, invokes the split method in the game area,
-     * and then decrease the balance and display the available option for the first split hand
+     * Handles the "Split" action, allowing the player to divide their hand into two separate hands.
+     * <p>
+     * This method updates the UI to reflect the split, decreases the player's balance
+     * accordingly, and assigns a second card to the first split hand. The game then proceeds
+     * with the first split hand.
      */
+
     private void handleSplitOption(){
         gameAreaPanel.splitHand(); // The game area panel is responsible for the UI splitting of the hands
         PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHands().get(PlayerHandUI.FIRST_HAND);
@@ -391,7 +490,16 @@ public class BlackjackController implements BlackjackMediator {
         Dealer actions
     ======================*/
 
-    /** Updates the game state, and handles the dealer turn */
+    /**
+     * Updates the game state and handles the dealer's turn.
+     * <p>
+     * This method transitions the game state to the dealer's turn, revealing the dealer's second card.
+     * It determines whether the dealer should continue drawing cards based on the state of the player's hands.
+     * If at least one player hand is still in the game (not busted or already a blackjack),
+     * the dealer will continue drawing cards according to the game rules.
+     * Once the dealer's turn is completed, the game results are evaluated.
+     */
+
     private void dealerTurn(){
         state = GameState.DEALER_TURN;
         gameAreaPanel.getDealerHand().flipCardUp(); // expose dealer's second card
@@ -409,7 +517,7 @@ public class BlackjackController implements BlackjackMediator {
 
         if (isPlayerStillInTheGame){
             while (true){
-                if (gameAreaPanel.getDealerHand().addCard(peekCardFromShoe())){
+                if (gameAreaPanel.addDealerCard(peekCardFromShoe())){
                     burnCard(); // remove the added card from the shoe
                 } else {
                     break;
@@ -424,8 +532,12 @@ public class BlackjackController implements BlackjackMediator {
     ======================*/
 
     /**
-     * Updates the game state, Send the hand to the backend logic for
-     * evaluation against the daler cards, and displays the result message
+     * Updates the game state and evaluates the player's hands against the dealer's cards.
+     * <p>
+     * This method transitions the game state to the evaluation phase. Each player's hand is sent
+     * to the backend logic to determine the game outcome based on the dealer's hand.
+     * The results are displayed on the UI, and a message is shown indicating the outcome of each hand.
+     * After evaluation, the game proceeds to the payout phase.
      */
     private void evaluateGameResults(){
         state = GameState.EVALUATION_PHASE;
@@ -433,6 +545,7 @@ public class BlackjackController implements BlackjackMediator {
             gameEngine.resolvePlayerResult(playerHandUI.getHand(),
                     gameAreaPanel.getDealerHand().getHand());
 
+            playerHandUI.displayHandResult();
             // placeholder for the final result message
             new Toast(stateManager.getFrame(),
                     "Hand " + playerHandUI.getHand().getState(),
@@ -441,8 +554,13 @@ public class BlackjackController implements BlackjackMediator {
         proceedToPayouts();
     }
 
-    /** Updates the game state, handles the UI payout by adding/removing chips,
-     * and updates the balance. Finally, it goes to the reset routine to start a new game
+    /**
+     * Updates the game state and processes payouts for the player based on hand results.
+     * <p>
+     * This method iterates through all player hands and determines the appropriate payout
+     * based on the final state of each hand. Winnings are added to the player's balance
+     * accordingly. The UI is updated to reflect the payouts, and the game transitions
+     * to a reset routine after a delay to start a new round.
      */
     private void proceedToPayouts(){
         state = GameState.PAYOUT;
@@ -466,9 +584,7 @@ public class BlackjackController implements BlackjackMediator {
         updateBalanceDisplay();
 
         // Go to reset to start a new game after 5 seconds
-        Timer timer = new Timer(5000, e -> {
-            reset();
-        });
+        Timer timer = new Timer(5000, e -> reset());
         timer.setRepeats(false);
         timer.start();
     }
@@ -477,7 +593,15 @@ public class BlackjackController implements BlackjackMediator {
         Reset
     ======================*/
 
-    /** Updates the game state, and reset everything to start a new game */
+    /**
+     * Resets the game state and prepares everything for a new round.
+     * <p>
+     * This method clears all previous game actions and hands, resets the game engine,
+     * and transitions the state back to the betting phase. It also ensures that the player
+     * has enough balance to continue playing. If the player's balance falls below the minimum
+     * bet, they are redirected to the main menu. Additionally, if the shoe has fewer than
+     * 10 cards remaining, a new shoe is created.
+     */
     private void reset(){
         state = GameState.GAME_ENDED;
         gameAreaPanel.clearActions();
@@ -492,8 +616,8 @@ public class BlackjackController implements BlackjackMediator {
         }
 
         // If the shoe has less than 10 cards, start a new shoe
-        if (shoe.getCards().size() < 10){
-            cards = Shoe.createShoe(4, UIDeck::new).getCards();
+        if (shoe.cards().size() < 10){
+            cards = Shoe.createShoe(4, UIDeck::new).cards();
             new Toast(stateManager.getFrame(),
                     "Shoe Ended", 3000).setVisible(true);
         }
@@ -503,28 +627,64 @@ public class BlackjackController implements BlackjackMediator {
         Helper methods
     ======================*/
 
-    /** Checks if the player has split hands */
+    /**
+     * Checks if the player has split hands.
+     * <p>
+     * This method determines whether the player has more than one hand in play,
+     * indicating that a split action has been performed.
+     *
+     * @return true if the player has multiple hands, false otherwise.
+     */
+
     private boolean checkForSecondHand(){
         return gameAreaPanel.getPlayerHands().size() > 1;
     }
 
-    /** Update the balance display with the current balance */
+    /**
+     * Updates the balance display with the current balance.
+     * <p>
+     * Retrieves the player's current balance from the profile and updates
+     * the UI's balance display accordingly.
+     */
+
     @Override
     public void updateBalanceDisplay() {
         topPanel.setBalance("Balance: " + stateManager.getProfile().getBalance());
     }
 
-    /** Returns and removes the top card from the shoe */
+    /**
+     * Draws and removes the top card from the shoe.
+     * <p>
+     * This method retrieves the top card from the shoe and removes it from the deck,
+     * simulating the process of dealing a card in the game.
+     *
+     * @return The top card from the shoe.
+     */
+
     private UICard getCardFromShoe() {
         return cards.remove(0);
     }
 
-    /** Returns the top card from the shoe */
+    /**
+     * Retrieves the top card from the shoe without removing it.
+     * <p>
+     * This method allows the game logic to check the next card in the shoe
+     * without altering the deck order.
+     *
+     * @return The top card from the shoe.
+     */
+
     private UICard peekCardFromShoe(){
         return cards.get(0);
     }
 
-    /** Removes the top card from the shoe */
+    /**
+     * Removes the top card from the shoe without using it.
+     * <p>
+     * This method is typically used in blackjack to discard a card,
+     * simulating the burning process used in some game variations.
+     */
+
     private void burnCard(){
         getCardFromShoe();
     }
@@ -533,16 +693,35 @@ public class BlackjackController implements BlackjackMediator {
         Getters
     ======================*/
 
-    /** Returns the reference to the top panel object */
-    public TopPanel getTopPanel() { return topPanel; }
+    /**
+     * Returns the top panel containing game status and return button.
+     *
+     * @return The {@link TopPanel} UI component.
+     */
+    public TopPanel getTopPanel() {
+        return topPanel;
+    }
 
-    /** Returns the reference to the chip panel object */
-    public ChipPanel getChipPanel() { return chipPanel; }
+    /**
+     * Returns the chip selection panel.
+     *
+     * @return The {@link ChipPanel} UI component.
+     */
+    public ChipPanel getChipPanel() {
+        return chipPanel;
+    }
 
-    /** Returns the reference to the game area panel object */
-    public GameAreaPanel getGameAreaPanel() { return gameAreaPanel; }
+    /**
+     * Returns the game area panel containing the dealer and player hands.
+     *
+     * @return The {@link GameAreaPanel} UI component.
+     */
+    public GameAreaPanel getGameAreaPanel() {
+        return gameAreaPanel;
+    }
 
     //TODO: remove before production
+    @SuppressWarnings("Unused")
     private List<UICard> getCustomDeck(){
         List<UICard> cards = new ArrayList<>();
         cards.add(new UICard("K", "S", CardAsset.SK));

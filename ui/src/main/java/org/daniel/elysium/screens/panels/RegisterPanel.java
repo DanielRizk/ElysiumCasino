@@ -18,6 +18,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+/**
+ * Represents the user registration panel where new users can create an account.
+ */
 public class RegisterPanel extends JPanel {
     private final StyledTextField usernameField;
     private final StyledPasswordField passwordField;
@@ -27,13 +30,19 @@ public class RegisterPanel extends JPanel {
     private final StyledButton quitButton;
     private final StateManager stateManager;
 
+    /**
+     * Constructs a {@code RegisterPanel} with input fields for registration.
+     *
+     * @param stateManager The application's {@link StateManager} instance.
+     */
     public RegisterPanel(StateManager stateManager) {
         this.stateManager = stateManager;
         setLayout(new BorderLayout());
 
         // Set the background
-        BackgroundPanel backgroundPanel =  new BackgroundPanel(BackgroundAsset.BACKGROUND);
-        // inputPanel to hold other elements
+        BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.BACKGROUND);
+
+        // Panel to hold input fields and buttons
         JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setOpaque(false);
 
@@ -65,7 +74,7 @@ public class RegisterPanel extends JPanel {
         gbc.gridy = 3;
         inputPanel.add(repeatPasswordField, gbc);
 
-        // add more space between inputs and buttons
+        // Add spacing between inputs and buttons
         gbc.insets = new Insets(40, 0, 10, 0);
 
         // Create and add register button
@@ -73,7 +82,7 @@ public class RegisterPanel extends JPanel {
         gbc.gridy = 5;
         inputPanel.add(registerButton, gbc);
 
-        // Revert original spaces
+        // Revert original spacing
         gbc.insets = new Insets(10, 0, 10, 0);
 
         // Create and add back button
@@ -86,28 +95,28 @@ public class RegisterPanel extends JPanel {
         gbc.gridy = 7;
         inputPanel.add(quitButton, gbc);
 
-        // Add action listeners
+        // Register button actions
         registerButtonsActions();
 
-        // add inputPanel and background to main panel
+        // Add input panel and background to the main panel
         backgroundPanel.add(inputPanel, BorderLayout.CENTER);
         add(backgroundPanel, BorderLayout.CENTER);
-
     }
 
     /**
-     * Register and activate buttons action listeners
+     * Registers action listeners for register, back, and quit buttons.
+     * Also maps the Enter key to trigger the register button.
      */
-    private void registerButtonsActions(){
-        // Register button action -> register and go to main menu
-        registerButton.addActionListener(e ->{
+    private void registerButtonsActions() {
+        // Register button action -> create user account and go to main menu
+        registerButton.addActionListener(e -> {
             stateManager.setProfile(register());
-            if (stateManager.isUserLoggedIn()){
+            if (stateManager.isUserLoggedIn()) {
                 stateManager.switchPanel("MainMenu");
             }
         });
 
-        // Add keystroke to register button - Enter Key -
+        // Add keystroke to register button (Enter key)
         KeyStroke enterKey = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(enterKey, "registerAction");
@@ -118,58 +127,66 @@ public class RegisterPanel extends JPanel {
             }
         });
 
-        // Back button action -> go to login page
+        // Back button action -> switch to login panel
         backButton.addActionListener(e -> stateManager.switchPanel("Login"));
 
-        // Quit button action -> confirm and quit
+        // Quit button action -> confirm before quitting
         quitButton.addActionListener(e -> quit());
     }
 
     /**
-     * Register logic and procedure
+     * Handles the registration logic by validating user input and creating a new user.
+     *
+     * @return The newly created {@link UserProfile}, or {@code null} if registration fails.
      */
-    private UserProfile register(){
+    private UserProfile register() {
         String userName = usernameField.getText().trim();
         String password = passwordField.getPassword();
         String repeatPassword = repeatPasswordField.getPassword();
         UserDAO userDAO = new UserDAO();
 
-        if (userName.isEmpty() || userName.equals("Username")){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Validate username
+        if (userName.isEmpty() || userName.equals("Username")) {
             new Toast(frame, "Please enter your Username", 3000).setVisible(true);
             return null;
         }
-        if (userDAO.getUserByUsername(userName) != null){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Check if username already exists
+        if (userDAO.getUserByUsername(userName) != null) {
             new Toast(frame, "Username already exists", 3000).setVisible(true);
             return null;
         }
-        if (password.isEmpty() || password.equals("Password")){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Validate password
+        if (password.isEmpty() || password.equals("Password")) {
             new Toast(frame, "Please enter your Password", 3000).setVisible(true);
             return null;
         }
-        if (repeatPassword.isEmpty() || repeatPassword.equals("Repeat Password")){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Validate repeat password field
+        if (repeatPassword.isEmpty() || repeatPassword.equals("Repeat Password")) {
             new Toast(frame, "Please repeat your Password", 3000).setVisible(true);
             return null;
         }
-        if (!password.equals(repeatPassword)){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Check if passwords match
+        if (!password.equals(repeatPassword)) {
             new Toast(frame, "Passwords do not match, Try again.", 3000).setVisible(true);
             return null;
         }
 
+        // Create the user
         UserProfile profile = userDAO.addUser(userName, password, 10000);
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         new Toast(frame, "Welcome " + userName + ", Your balance is: " + profile.getBalance(), 3000).setVisible(true);
         return profile;
     }
 
     /**
-     * Quit confirmation
+     * Prompts the user with a confirmation dialog before quitting the application.
      */
-    private void quit(){
+    private void quit() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         StyledConfirmDialog dialog = new StyledConfirmDialog(frame, "Are you sure you want to quit?");
         dialog.setVisible(true);

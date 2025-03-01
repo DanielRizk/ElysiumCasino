@@ -12,9 +12,17 @@ import org.daniel.elysium.user.profile.UserProfile;
 import javax.swing.*;
 import java.awt.*;
 
-
+/**
+ * The main launcher for the Elysium Casino application.
+ * Initializes the database, creates the main frame, and sets up the StateManager
+ * to handle panel navigation.
+ */
 public class Launcher {
 
+    /**
+     * Constructs and initializes the application launcher.
+     * Sets up the main window, registers UI panels, and starts the application.
+     */
     public Launcher() {
         // Initialization
         DatabaseConnection.initializeDatabase();
@@ -32,10 +40,10 @@ public class Launcher {
         // Creating main panel to hold all other panels
         JPanel mainPanel = new JPanel(new CardLayout());
 
-        // Creating stateManager and register all panels
+        // Creating stateManager and registering all panels
         StateManager stateManager = createStateManager(mainPanel, frame);
 
-        // Set entry point to the app
+        // Set the entry point of the app (initial panel)
         stateManager.switchPanel("Blackjack");
 
         // Set initial focus to the main panel
@@ -52,7 +60,11 @@ public class Launcher {
     }
 
     /**
-     * Create StateManager and register all panels
+     * Creates and configures the StateManager, registering all available panels.
+     *
+     * @param mainPanel The main container panel that will hold all registered UI panels.
+     * @param frame     The main application frame.
+     * @return The configured {@link StateManager} instance.
      */
     private static StateManager createStateManager(JPanel mainPanel, JFrame frame) {
         StateManager stateManager = new StateManager(mainPanel, frame);
@@ -66,5 +78,3 @@ public class Launcher {
         return stateManager;
     }
 }
-
-

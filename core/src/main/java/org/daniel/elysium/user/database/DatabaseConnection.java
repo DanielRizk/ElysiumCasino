@@ -10,14 +10,27 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Handles database connections and initialization for the application.
+ */
 public class DatabaseConnection {
     private static final String URL = "jdbc:sqlite:data/user_db.db";
 
+    /**
+     * Establishes a connection to the SQLite database.
+     *
+     * @return A connection object to the database.
+     * @throws SQLException If a database access error occurs.
+     */
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
     }
 
-    public static void initializeDatabase(){
+    /**
+     * Initializes the database by creating the "users" table if it does not exist.
+     * Also ensures the necessary "data" directory is created.
+     */
+    public static void initializeDatabase() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,17 +57,20 @@ public class DatabaseConnection {
                 DebugPrint.println("Directory already exists: " + targetDir, true);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            DebugPrint.println(e, true);
         }
 
-        try(Connection conn = getConnection(); var stmt = conn.createStatement()){
+        try (Connection conn = getConnection(); var stmt = conn.createStatement()) {
             stmt.execute(sql);
             DebugPrint.println("Database initialized successfully", true);
-        } catch (SQLException e){
-            e.printStackTrace();
+        } catch (SQLException e) {
+            DebugPrint.println(e, true);
         }
     }
 
+    /**
+     * Resets the database by dropping the "users" table and reinitializing it.
+     */
     public static void resetDatabase() {
         String dropTableSql = "DROP TABLE IF EXISTS users";
 
@@ -67,7 +83,7 @@ public class DatabaseConnection {
             // Reinitialize the database
             initializeDatabase();
         } catch (SQLException e) {
-            e.printStackTrace();
+            DebugPrint.println(e, true);
         }
     }
 }

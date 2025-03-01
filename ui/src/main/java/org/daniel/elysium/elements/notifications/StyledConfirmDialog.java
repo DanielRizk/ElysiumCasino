@@ -8,9 +8,21 @@ import org.daniel.elysium.elements.panels.BackgroundPanel;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A custom-styled confirmation dialog with a background image and styled buttons.
+ * Displays a confirmation message with "Yes" and "No" buttons.
+ */
 public class StyledConfirmDialog extends JDialog {
+
+    /** Indicates whether the user confirmed the dialog. */
     private boolean confirmed = false;
 
+    /**
+     * Constructs a StyledConfirmDialog with a given message.
+     *
+     * @param owner   The parent JFrame that owns this dialog.
+     * @param message The message to be displayed in the dialog.
+     */
     public StyledConfirmDialog(JFrame owner, String message) {
         super(owner, "Confirm", true);
         setUndecorated(true);
@@ -35,19 +47,19 @@ public class StyledConfirmDialog extends JDialog {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         buttonPanel.setOpaque(false);
 
-        // Create yes button
+        // Create "Yes" button
         StyledButton yesButton = new StyledButton("Yes", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
 
-        // Create no button
+        // Create "No" button
         StyledButton noButton = new StyledButton("No", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
 
-        // Add action listener to yes button -> set confirm
+        // Add action listener to "Yes" button -> set confirmed and close dialog
         yesButton.addActionListener(e -> {
             confirmed = true;
             dispose();
         });
 
-        // Add action listener to no button -> do nothing
+        // Add action listener to "No" button -> close dialog without confirming
         noButton.addActionListener(e -> {
             dispose();
         });
@@ -55,23 +67,31 @@ public class StyledConfirmDialog extends JDialog {
         // Create an empty space between the buttons
         JPanel spacer = new JPanel();
         spacer.setOpaque(false);
-        spacer.setPreferredSize(new Dimension(50,50));
+        spacer.setPreferredSize(new Dimension(50, 50));
 
+        // Add buttons to the panel
         buttonPanel.add(yesButton);
         buttonPanel.add(spacer);
         buttonPanel.add(noButton);
 
+        // Add button panel to the background panel
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        // Set content pane and finalize setup
         setContentPane(backgroundPanel);
         pack();
+
+        // Center the dialog relative to the owner
         // Has to be last statement to center the dialog
         setLocationRelativeTo(owner);
     }
 
-    /** Return user choice */
+    /**
+     * Returns whether the user confirmed the action.
+     *
+     * @return {@code true} if the user clicked "Yes", otherwise {@code false}.
+     */
     public boolean isConfirmed() {
         return confirmed;
     }
 }
-

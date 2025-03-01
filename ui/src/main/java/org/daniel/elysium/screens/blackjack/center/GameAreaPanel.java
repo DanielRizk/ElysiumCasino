@@ -18,46 +18,53 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * GameAreaPanel represents the main play area where dealer and player hands are displayed.
+ * It also handles buttons for game actions like betting, dealing, and hitting.
+ */
 public class GameAreaPanel extends JPanel {
     private final JPanel dealerHandPanel;
     private final JPanel playerHandPanel;
     private final StyledButton dealButton;
     private final BlackjackMediator mediator;
-
     private final JPanel buttonSwitcherPanel;
     private final CardLayout cardLayout;
     private final JPanel actionButtonsPanel;
 
+    /**
+     * Constructs the main blackjack play area, initializing UI elements.
+     *
+     * @param mediator   The mediator handling communication between UI and logic.
+     * @param stateManager The state manager tracking the game's state.
+     */
     public GameAreaPanel(BlackjackMediator mediator, StateManager stateManager) {
         this.mediator = mediator;
         setLayout(new GridBagLayout());
         setOpaque(false);
 
-        // Create a grid to organize elements
+        // Define layout constraints
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.gridx = 0;
         gbc.weightx = 1.0;
 
-        // Dealer Hand Panel.
+        // Dealer Hand Panel
         gbc.gridy = 0;
         gbc.weighty = 0.10;
         dealerHandPanel = new JPanel(new BorderLayout());
         dealerHandPanel.setOpaque(false);
-        DealerHandUI dealerHandUI = new DealerHandUI();
-        dealerHandPanel.add(dealerHandUI);
+        dealerHandPanel.add(new DealerHandUI());
         add(dealerHandPanel, gbc);
 
-        // Logo / Rules Label.
+        // Logo / Rules Label
         gbc.gridy = 1;
         gbc.weighty = 0.10;
-        Dimension logoDimension = new Dimension(600, 230);
-        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(BackgroundAsset.BLACKJACK_RULES, logoDimension));
+        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(BackgroundAsset.BLACKJACK_RULES, new Dimension(600, 230)));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(logoLabel, gbc);
 
-        // Deal Button Container.
+        // Deal Button
         gbc.gridy = 2;
         gbc.weighty = 0.05;
         JPanel dealButtonContainer = new JPanel(new BorderLayout());
@@ -69,38 +76,43 @@ public class GameAreaPanel extends JPanel {
         dealButtonContainer.add(dealButton, BorderLayout.CENTER);
         add(dealButtonContainer, gbc);
 
-        //Filler panel between deal button and player hand.
+        // Filler Panel (Spacer)
         gbc.gridy = 3;
         gbc.weighty = 0.1;
         JPanel filler = new JPanel();
         filler.setOpaque(false);
         add(filler, gbc);
 
-        // Player hand panel (Player hand + Bet panel).
+        // Player Hand Panel
         gbc.gridy = 4;
         gbc.weighty = 0.50;
         playerHandPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         playerHandPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         playerHandPanel.setOpaque(false);
-        PlayerHandUI playerHandUI = new PlayerHandUI();
-        playerHandPanel.add(playerHandUI);
+        playerHandPanel.add(new PlayerHandUI());
         add(playerHandPanel, gbc);
 
-        // Action buttons.
+        // Action Buttons Panel
         gbc.gridy = 5;
         gbc.weighty = 0.15;
         cardLayout = new CardLayout();
         buttonSwitcherPanel = new JPanel(cardLayout);
         buttonSwitcherPanel.setOpaque(false);
+
+        // Clear Bet Button Panel
         JPanel clearButtonPanel = new JPanel(new BorderLayout());
         clearButtonPanel.setOpaque(false);
         StyledButton clearBetButton = new StyledButton("Clear bet");
         clearBetButton.addActionListener(e -> mediator.onClearBet());
         clearButtonPanel.add(clearBetButton, BorderLayout.CENTER);
         buttonSwitcherPanel.add(clearButtonPanel, "clear");
+
+        // Action Buttons Panel
         actionButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         actionButtonsPanel.setOpaque(false);
         buttonSwitcherPanel.add(actionButtonsPanel, "action");
+
+        // Empty Panel (Hidden State)
         JPanel emptyPanel = new JPanel();
         emptyPanel.setOpaque(false);
         buttonSwitcherPanel.add(emptyPanel, "hide");
@@ -109,21 +121,34 @@ public class GameAreaPanel extends JPanel {
         add(buttonSwitcherPanel, gbc);
     }
 
-    /*======================
-        Hands methods
-    ======================*/
+    /* ======================
+       Hand Management Methods
+       ====================== */
 
-    /** Get the player hand at a specific index */
-    public PlayerHandUI getPlayerHand(int index){
-        return ((PlayerHandUI) playerHandPanel.getComponent(index));
+    /**
+     * Retrieves the player hand at a specific index.
+     *
+     * @param index The index of the player hand.
+     * @return The {@link PlayerHandUI} at the given index.
+     */
+    public PlayerHandUI getPlayerHand(int index) {
+        return (PlayerHandUI) playerHandPanel.getComponent(index);
     }
 
-    /** Get the dealer hand */
-    public DealerHandUI getDealerHand(){
+    /**
+     * Retrieves the dealer's hand.
+     *
+     * @return The {@link DealerHandUI} instance.
+     */
+    public DealerHandUI getDealerHand() {
         return (DealerHandUI) dealerHandPanel.getComponent(0);
     }
 
-    /** Returns a list of all player's hand, should not be more than two */
+    /**
+     * Returns a list of all player hands.
+     *
+     * @return List of {@link PlayerHandUI}.
+     */
     public List<PlayerHandUI> getPlayerHands() {
         List<PlayerHandUI> result = new ArrayList<>();
         for (Component comp : playerHandPanel.getComponents()) {
@@ -134,30 +159,33 @@ public class GameAreaPanel extends JPanel {
         return result;
     }
 
-    /** Clears and resets the player and the dealer hands*/
+    /**
+     * Clears and resets both the dealer's and player's hands.
+     */
     public void clearHands() {
         playerHandPanel.removeAll();
-        playerHandPanel.revalidate();
-        playerHandPanel.repaint();
         playerHandPanel.add(new PlayerHandUI());
 
         dealerHandPanel.removeAll();
         dealerHandPanel.add(new DealerHandUI());
-        dealerHandPanel.revalidate();
-        dealerHandPanel.repaint();
 
         revalidate();
         repaint();
     }
 
-    /*======================
-        Game actions
-    ======================*/
+    /* ======================
+       Game Actions
+       ====================== */
 
-    /** Adds a card to the dealer's hand */
+    /**
+     * Adds a card to the dealer's hand.
+     *
+     * @param card The {@link UICard} to be added.
+     * @return {@code true} if successfully added, otherwise {@code false}.
+     */
     public boolean addDealerCard(UICard card) {
         DealerHandUI dealerHandUI = getDealerHand();
-        if (dealerHandUI.addCard(card)){
+        if (dealerHandUI.addCard(card)) {
             dealerHandUI.revalidate();
             dealerHandUI.repaint();
             return true;
@@ -165,19 +193,27 @@ public class GameAreaPanel extends JPanel {
         return false;
     }
 
-    /** Adds a card to the player's hand */
+    /**
+     * Adds a card to the player's hand.
+     *
+     * @param index The index of the player hand.
+     * @param card  The {@link UICard} to be added.
+     * @return {@code true} if successfully added, otherwise {@code false}.
+     */
     public boolean addPlayerCard(int index, UICard card) {
-        PlayerHandUI playerHandUI = (PlayerHandUI) playerHandPanel.getComponent(index);
-        if(playerHandUI.addCard(card)){
-            playerHandUI.getPlayerCards().revalidate();
-            playerHandUI.getPlayerCards().repaint();
+        PlayerHandUI playerHandUI = getPlayerHand(index);
+        if (playerHandUI.addCard(card)) {
+            playerHandUI.revalidate();
+            playerHandUI.repaint();
             return true;
         }
         return false;
     }
 
-    /** Splits the player's hand into two */
-    public void splitHand(){
+    /**
+     * Splits the player's hand into two.
+     */
+    public void splitHand() {
         PlayerHandUI original = getPlayerHand(0);
         PlayerHandUI split = new PlayerHandUI();
         playerHandPanel.removeAll();
@@ -187,65 +223,71 @@ public class GameAreaPanel extends JPanel {
         original.getHand().getHand().remove(1);
 
         split.addCard(secondCard);
-        List<Chip> chips = new ArrayList<>(original.getBetPanel().getChipsMain());
-        for (Chip chip : chips){
-            split.addChip(chip);
-        }
+        split.getBetPanel().getChipsMain().addAll(original.getBetPanel().getChipsMain());
 
         playerHandPanel.add(original);
         playerHandPanel.add(split);
 
-        playerHandPanel.revalidate();
-        playerHandPanel.repaint();
         revalidate();
         repaint();
     }
 
-    /*======================
-        Action buttons
-    ======================*/
+    /* ======================
+       Button Visibility
+       ====================== */
 
-    /** Generates and updates the available action buttons dynamically depending on the stage the user at */
+    /**
+     * Updates the available action buttons dynamically based on the provided actions.
+     *
+     * @param availableActions A map containing available {@link GameActions} and their respective hand indices.
+     */
     public void updateActionButtons(Map<GameActions, Integer> availableActions) {
+        // Clear existing buttons
         actionButtonsPanel.removeAll();
-        for (Map.Entry<GameActions, Integer> action : availableActions.entrySet()){
-            StyledButton button = new StyledButton(action.getKey().toString());
-            button.addActionListener(e -> mediator.onActionSelected(action.getKey(), action.getValue()));
-            actionButtonsPanel.add(button);
+
+        // Add new buttons based on the available actions
+        if (availableActions != null && !availableActions.isEmpty()) {
+            availableActions.forEach((action, index) -> {
+                StyledButton button = new StyledButton(action.toString());
+                button.addActionListener(e -> mediator.onActionSelected(action, index));
+                actionButtonsPanel.add(button);
+            });
+
+            // Ensure the panel layout updates after adding new buttons
+            actionButtonsPanel.revalidate();
+            actionButtonsPanel.repaint();
+
+            // Show the action button panel
+            cardLayout.show(buttonSwitcherPanel, "action");
+        } else {
+            // Hide actions if none are available
+            clearActions();
         }
-        actionButtonsPanel.revalidate();
-        actionButtonsPanel.repaint();
-        // Show the action card.
-        cardLayout.show(buttonSwitcherPanel, "action");
     }
 
-    /** Toggles the visibility of the deal button */
+    /**
+     * Toggles the visibility of the deal button.
+     *
+     * @param visible {@code true} to show the button, {@code false} to hide it.
+     */
     public void showDealButton(boolean visible) {
         dealButton.setVisible(visible);
     }
 
-    /** Toggles the clear bet button on if the bet is higher than 0, and off if the bet is 0 or less */
+    /**
+     * Toggles the visibility of the clear bet button.
+     *
+     * @param visible {@code true} to show the clear bet button, {@code false} to hide it.
+     */
     public void showClearBetButton(boolean visible) {
         cardLayout.show(buttonSwitcherPanel, visible ? "clear" : "hide");
     }
 
-    /** Hides all action buttons */
+    /**
+     * Hides all action buttons by switching to an empty panel.
+     */
     public void clearActions() {
         cardLayout.show(buttonSwitcherPanel, "hide");
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
-

@@ -9,21 +9,33 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+/**
+ * A custom toast notification window that displays a temporary message to the user.
+ * The notification fades away after a specified duration.
+ */
 public class Toast extends JWindow {
+
+    /**
+     * Constructs a toast notification with a given message and display duration.
+     *
+     * @param owner            The parent JFrame that owns this toast.
+     * @param message          The message to be displayed in the toast.
+     * @param displayTimeMillis The duration in milliseconds before the toast disappears.
+     */
     public Toast(JFrame owner, String message, int displayTimeMillis) {
         super(owner);
         setBackground(new Color(0, 0, 0, 0));
 
-        // A background panel that shows your toast texture/image.
+        // A background panel that shows the toast texture/image.
         BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.TOAST_BG);
         backgroundPanel.setLayout(new BorderLayout());
         setPreferredSize(new Dimension(300, 80));
         backgroundPanel.setOpaque(false);
 
-        // Create text area for th message, use JTextArea to enable line wrap
+        // Create text area for the message, use JTextArea to enable line wrap.
         JTextArea textArea = createTextArea(message);
 
-        // Add the text area to the background panel
+        // Add the text area to the background panel.
         backgroundPanel.add(textArea, BorderLayout.CENTER);
         add(backgroundPanel);
         pack();
@@ -37,17 +49,24 @@ public class Toast extends JWindow {
             public void componentMoved(ComponentEvent e) {
                 repositionToast(owner);
             }
+
             @Override
             public void componentResized(ComponentEvent e) {
                 repositionToast(owner);
             }
         });
 
-        // Timer to auto-close the toast.
+        // Timer to auto-close the toast after the specified duration.
         new Timer(displayTimeMillis, e -> dispose()).start();
     }
 
-    /** Helper method to create and initialize a text area */
+    /**
+     * Creates and initializes a text area for displaying the message.
+     * Ensures proper formatting and word wrapping.
+     *
+     * @param message The message to be displayed in the toast.
+     * @return A configured {@link JTextArea} component.
+     */
     private static JTextArea createTextArea(String message) {
         if (message.length() <= 60) {
             JTextArea textArea = new JTextArea(message);
@@ -61,12 +80,17 @@ public class Toast extends JWindow {
             textArea.setPreferredSize(new Dimension(280, 90));
             return textArea;
         } else {
-            DebugPrint.println("Toast message length exceeded the limit of 60 character", true);
+            DebugPrint.println("Toast message length exceeded the limit of 60 characters", true);
             return new JTextArea();
         }
     }
 
-    /** Helper method to reposition the toast relative to the owner */
+    /**
+     * Repositions the toast notification relative to the owner window.
+     * Ensures that the toast appears in the bottom-right corner of the parent frame.
+     *
+     * @param owner The parent JFrame to position the toast relative to.
+     */
     private void repositionToast(JFrame owner) {
         Dimension ownerSize = owner.getSize();
         Point ownerLocation = owner.getLocation();
@@ -75,4 +99,3 @@ public class Toast extends JWindow {
         setLocation(x, y);
     }
 }
-

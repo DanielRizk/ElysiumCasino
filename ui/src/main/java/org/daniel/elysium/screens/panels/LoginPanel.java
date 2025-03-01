@@ -17,6 +17,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+/**
+ * Represents the login panel where users can enter their credentials
+ * to log in, register, or quit the application.
+ */
 public class LoginPanel extends JPanel {
     private final StyledTextField usernameField;
     private final StyledPasswordField passwordField;
@@ -25,13 +29,19 @@ public class LoginPanel extends JPanel {
     private final StyledButton quitButton;
     private final StateManager stateManager;
 
+    /**
+     * Constructs a {@code LoginPanel} with the required UI components.
+     *
+     * @param stateManager The application's {@link StateManager} instance.
+     */
     public LoginPanel(StateManager stateManager) {
         this.stateManager = stateManager;
         setLayout(new BorderLayout());
 
         // Set the background
         BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.BACKGROUND);
-        // inputPanel to hold other elements
+
+        // Panel to hold input fields and buttons
         JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setOpaque(false);
 
@@ -58,7 +68,7 @@ public class LoginPanel extends JPanel {
         gbc.gridy = 2;
         inputPanel.add(passwordField, gbc);
 
-        // add more space between inputs and buttons
+        // Add spacing between inputs and buttons
         gbc.insets = new Insets(40, 0, 10, 0);
 
         // Create and add login button
@@ -66,7 +76,7 @@ public class LoginPanel extends JPanel {
         gbc.gridy = 4;
         inputPanel.add(loginButton, gbc);
 
-        // Revert original spaces
+        // Revert original spacing
         gbc.insets = new Insets(10, 0, 10, 0);
 
         // Create and add register button
@@ -79,27 +89,28 @@ public class LoginPanel extends JPanel {
         gbc.gridy = 6;
         inputPanel.add(quitButton, gbc);
 
-        // Add action listeners
+        // Register button actions
         registerButtonsActions();
 
-        // add inputPanel and background to main panel
+        // Add input panel and background to the main panel
         backgroundPanel.add(inputPanel, BorderLayout.CENTER);
         add(backgroundPanel, BorderLayout.CENTER);
     }
 
     /**
-     * Register and activate buttons action listeners
+     * Registers action listeners for login, register, and quit buttons.
+     * Also maps the Enter key to trigger the login button.
      */
-    private void registerButtonsActions(){
-        // Login button action -> login and go to main menu
+    private void registerButtonsActions() {
+        // Login button action -> log in and go to the main menu
         loginButton.addActionListener(e -> {
             stateManager.setProfile(login());
-            if (stateManager.isUserLoggedIn()){
+            if (stateManager.isUserLoggedIn()) {
                 stateManager.switchPanel("MainMenu");
             }
         });
 
-        // Add keystroke to login button - Enter Key -
+        // Add keystroke to login button (Enter key)
         KeyStroke enterKey = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(enterKey, "loginAction");
@@ -110,55 +121,63 @@ public class LoginPanel extends JPanel {
             }
         });
 
-        // Register button action -> go to register page
-        registerButton.addActionListener(e ->{
+        // Register button action -> switch to register panel
+        registerButton.addActionListener(e -> {
             stateManager.switchPanel("Register");
         });
 
-        // Quit button action -> confirm and quit
-        quitButton.addActionListener(e ->{
+        // Quit button action -> confirm before quitting
+        quitButton.addActionListener(e -> {
             quit();
         });
     }
 
     /**
-     * Login logic and procedure
+     * Handles the login logic by validating user input and checking credentials.
+     *
+     * @return The logged-in {@link UserProfile} if successful, otherwise {@code null}.
      */
-    private UserProfile login(){
+    private UserProfile login() {
         String userName = usernameField.getText().trim();
         String password = passwordField.getPassword();
         UserDAO userDAO = new UserDAO();
 
-        if (userName.isEmpty() || userName.equals("Username")){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Validate username
+        if (userName.isEmpty() || userName.equals("Username")) {
             new Toast(frame, "Please enter your Username", 3000).setVisible(true);
             return null;
         }
-        if (password.isEmpty() || password.equals("Password")){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Validate password
+        if (password.isEmpty() || password.equals("Password")) {
             new Toast(frame, "Please enter your Password", 3000).setVisible(true);
             return null;
         }
+
+        // Fetch user profile from database
         UserProfile profile = userDAO.getUserByUsername(userName);
-        if (profile == null){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            new Toast(frame, "Username does not exists", 3000).setVisible(true);
+        if (profile == null) {
+            new Toast(frame, "Username does not exist", 3000).setVisible(true);
             return null;
         }
-        if (!profile.getPass().equals(password)){
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Verify password
+        if (!profile.getPass().equals(password)) {
             new Toast(frame, "Wrong password, Try again", 3000).setVisible(true);
             return null;
         }
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Successful login
         new Toast(frame, "Welcome " + userName + ", Your balance is: " + profile.getBalance(), 3000).setVisible(true);
         return profile;
     }
 
     /**
-     * Quit confirmation
+     * Prompts the user with a confirmation dialog before quitting the application.
      */
-    private void quit(){
+    private void quit() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         StyledConfirmDialog dialog = new StyledConfirmDialog(frame, "Are you sure you want to quit?");
         dialog.setVisible(true);

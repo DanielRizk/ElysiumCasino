@@ -11,11 +11,18 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Represents the betting panel where the player can place main and extra bets.
+ * It includes two betting circles and a display to show the current bet amount.
+ */
 public class BetPanel extends JPanel {
     private final BetCircle mainBet;
     private final BetCircle extraBet;
     private final StyledTextField currentBetLabel;
 
+    /**
+     * Constructs the bet panel with a main bet circle, an extra bet circle, and a bet display.
+     */
     public BetPanel() {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -34,62 +41,97 @@ public class BetPanel extends JPanel {
         add(extraBet);
     }
 
-    /** Checks if the chip count on the main bet did not exceed the max limit of chips */
+    /**
+     * Checks if a chip can be added to the main bet circle.
+     *
+     * @return True if the number of chips in the main bet is below the maximum limit, false otherwise.
+     */
     public boolean canAddChip() {
         return mainBet.getChipsCount() < mainBet.getMaxChips();
     }
 
-    /** Add a chip to the main bet circle */
+    /**
+     * Adds a chip to the main bet circle.
+     *
+     * @param chip The chip to be added.
+     */
     public void addChipMain(Chip chip) {
         mainBet.addChip(chip);
     }
 
-    /** Add a chip to the extra bet circle */
+    /**
+     * Adds a chip to the extra bet circle.
+     *
+     * @param chip The chip to be added.
+     */
     public void addChipExtra(Chip chip) {
         extraBet.addChip(chip);
     }
 
-    /** Returns a list of the chips on the main bet */
-    public List<Chip> getChipsMain(){
+    /**
+     * Retrieves the list of chips placed in the main bet circle.
+     *
+     * @return A list of chips in the main bet.
+     */
+    public List<Chip> getChipsMain() {
         return mainBet.getChips();
     }
 
-    /** Returns a list of the chips on the extra bet */
-    public List<Chip> getChipsExtra(){
+    /**
+     * Retrieves the list of chips placed in the extra bet circle.
+     *
+     * @return A list of chips in the extra bet.
+     */
+    public List<Chip> getChipsExtra() {
         return extraBet.getChips();
     }
 
-    /** Removes all the chips on the main bet */
-    public void clearMainChips(){
+    /**
+     * Removes all chips from the main bet circle.
+     */
+    public void clearMainChips() {
         mainBet.clearChips();
     }
 
-    /** Removes all the chips on the extra bet */
-    public void clearExtraChips(){
+    /**
+     * Removes all chips from the extra bet circle.
+     */
+    public void clearExtraChips() {
         extraBet.clearChips();
     }
 
-    /** Removes all the chips on both the main and the extra bet */
+    /**
+     * Removes all chips from both the main and extra bet circles.
+     */
     public void clearChips() {
         mainBet.clearChips();
         extraBet.clearChips();
     }
 
-    /** Helper method to update the bet display text field */
+    /**
+     * Updates the displayed bet amount.
+     *
+     * @param bet The amount to display.
+     */
     public void updateBetDisplay(int bet) {
         currentBetLabel.setText(String.valueOf(bet));
     }
 
-    /** Helper method to generate a possible combination of the chips available from an integer */
-    public List<Chip> getChipCombination(int bet){
+    /**
+     * Generates a possible combination of chips from the available denominations to match the given bet amount.
+     *
+     * @param bet The total bet amount to be represented in chips.
+     * @return A list of chips representing the given bet amount.
+     */
+    public List<Chip> getChipCombination(int bet) {
         List<ChipAsset> assetsSorted = Arrays.stream(ChipAsset.values())
                 .sorted(Comparator.comparingInt(ChipAsset::getValue).reversed())
                 .toList();
 
         List<Chip> combination = new ArrayList<>();
 
-        for (ChipAsset chipAsset : assetsSorted){
-            while (bet >= chipAsset.getValue()){
+        for (ChipAsset chipAsset : assetsSorted) {
+            while (bet >= chipAsset.getValue()) {
                 combination.add(new Chip(chipAsset));
                 bet -= chipAsset.getValue();
             }

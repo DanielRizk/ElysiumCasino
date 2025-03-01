@@ -11,16 +11,41 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+/**
+ * A custom styled text field with placeholder text and background styling.
+ * Supports editable and non-editable modes.
+ */
 public class StyledTextField extends JPanel {
+
+    /** Default field dimensions (250x50). */
     private final Dimension defaultDimension = new Dimension(250, 50);
+
+    /** Default number of columns in the text field. */
     private final int defaultColumns = 15;
+
+    /** Placeholder text for the text field. */
     private final String placeholder;
+
+    /** Color used for the placeholder text. */
     private final Color textColor = new Color(177, 177, 177);
+
+    /** Indicates whether the placeholder text is currently displayed. */
     private boolean showingPlaceholder = true;
+
+    /** The actual text input field. */
     private JTextField textField;
+
+    /** Background image for the text field. */
     private Image background;
+
+    /** Indicates whether the text field is editable. */
     private final boolean editable;
 
+    /**
+     * Constructs a StyledTextField with a placeholder and default dimensions.
+     *
+     * @param placeholder The placeholder text to be displayed when the field is empty.
+     */
     public StyledTextField(String placeholder) {
         this.placeholder = placeholder;
         this.editable = true;
@@ -30,6 +55,12 @@ public class StyledTextField extends JPanel {
         registerPlaceholderBehaviour();
     }
 
+    /**
+     * Constructs a StyledTextField with a placeholder and editability flag.
+     *
+     * @param placeholder The placeholder text to be displayed when the field is empty.
+     * @param editable    Specifies whether the field is editable.
+     */
     public StyledTextField(String placeholder, boolean editable) {
         this.placeholder = placeholder;
         this.editable = editable;
@@ -37,11 +68,19 @@ public class StyledTextField extends JPanel {
         initializeBackground(defaultDimension);
         initializeTextField(placeholder, defaultColumns, editable);
 
-        if (editable){
+        if (editable) {
             registerPlaceholderBehaviour();
         }
     }
 
+    /**
+     * Constructs a StyledTextField with a placeholder, custom dimensions, column count, and editability flag.
+     *
+     * @param placeholder The placeholder text to be displayed when the field is empty.
+     * @param dimension   The custom size of the field.
+     * @param columns     The number of columns in the text field.
+     * @param editable    Specifies whether the field is editable.
+     */
     public StyledTextField(String placeholder, Dimension dimension, int columns, boolean editable) {
         this.placeholder = placeholder;
         this.editable = editable;
@@ -49,26 +88,36 @@ public class StyledTextField extends JPanel {
         initializeBackground(dimension);
         initializeTextField(placeholder, columns, editable);
 
-        if (editable){
+        if (editable) {
             registerPlaceholderBehaviour();
         }
     }
 
-    /** Set common configs for base panel */
-    private void initializePanel(Dimension dimension){
+    /**
+     * Sets common configurations for the main panel.
+     *
+     * @param dimension The preferred size of the panel.
+     */
+    private void initializePanel(Dimension dimension) {
         setLayout(new BorderLayout());
         setPreferredSize(dimension);
         setOpaque(false);
     }
 
-    /** Set common configs for the text field */
-    private void initializeTextField(String placeholder, int columns, boolean editable){
+    /**
+     * Initializes the text field with styling and placeholder text.
+     *
+     * @param placeholder The placeholder text for the field.
+     * @param columns     The number of columns in the text field.
+     * @param editable    Specifies whether the text field is editable.
+     */
+    private void initializeTextField(String placeholder, int columns, boolean editable) {
         textField = new JTextField(placeholder, columns);
         textField.setOpaque(false);
         textField.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         textField.setForeground(textColor);
 
-        if (editable){
+        if (editable) {
             textField.setFont(new Font("Roboto", Font.ITALIC, 15));
         } else {
             textField.setFont(new Font("Serif", Font.BOLD, 18));
@@ -78,8 +127,12 @@ public class StyledTextField extends JPanel {
         add(textField, BorderLayout.CENTER);
     }
 
-    /** Initialize background image and insure it is painted */
-    private void initializeBackground(Dimension dimension){
+    /**
+     * Initializes and loads the background image for the text field dynamically.
+     *
+     * @param dimension The size of the background image to be loaded.
+     */
+    private void initializeBackground(Dimension dimension) {
         // Load the background image when resized or shown.
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -95,14 +148,18 @@ public class StyledTextField extends JPanel {
             }
         });
 
-        // Force load background after layout is complete.
+        // Force background load after layout is complete.
         SwingUtilities.invokeLater(() -> {
             loadBackgroundImage(dimension);
             repaint();
         });
     }
 
-    /** Load the background image from asset manager image cache */
+    /**
+     * Loads the background image from the asset manager and scales it to fit the panel.
+     *
+     * @param dimension The size of the background to be loaded.
+     */
     private void loadBackgroundImage(Dimension dimension) {
         if (getWidth() > 0 && getHeight() > 0) {
             try {
@@ -113,9 +170,11 @@ public class StyledTextField extends JPanel {
         }
     }
 
-    /** In case of editable text field, register disappearing placeholder text effect */
-    private void registerPlaceholderBehaviour(){
-        // Handle placeholder behavior.
+    /**
+     * Registers focus listeners to handle placeholder behavior in the text field.
+     * The placeholder disappears when the field gains focus and reappears when it is empty.
+     */
+    private void registerPlaceholderBehaviour() {
         textField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -139,13 +198,20 @@ public class StyledTextField extends JPanel {
         });
     }
 
-    /** Getter for the text field, return empty string if it has the placeholder displayed */
+    /**
+     * Retrieves the text entered by the user.
+     *
+     * @return The entered text, or an empty string if the placeholder is displayed.
+     */
     public String getText() {
         return showingPlaceholder ? "" : textField.getText();
     }
 
-    /** Setter for the text area, in case of editable text field:
-     *  if the text to set is empty display the placeholder, otherwise set the text
+    /**
+     * Sets the text of the text field.
+     * If the provided text is empty, the placeholder will be displayed.
+     *
+     * @param text The text to set in the text field.
      */
     public void setText(String text) {
         if (editable) {
@@ -165,9 +231,13 @@ public class StyledTextField extends JPanel {
         }
     }
 
+    /**
+     * Paints the background image behind the text field.
+     *
+     * @param g The {@link Graphics} object used to paint the background.
+     */
     @Override
     protected void paintComponent(Graphics g) {
-        // Draw background image scaled to the panel.
         if (background != null) {
             g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         }

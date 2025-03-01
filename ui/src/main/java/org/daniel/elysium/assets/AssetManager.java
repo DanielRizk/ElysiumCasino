@@ -5,20 +5,36 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.*;
+
+/**
+ * Manages the loading and caching of game assets such as images and icons.
+ * This class provides utility methods to retrieve raw and scaled assets.
+ */
 public class AssetManager {
 
-    // Cache for loaded images;
+    /** Cache for storing loaded images. */
     private static final Map<Asset, Image> imageCache = new HashMap<>();
 
-    // load all assets statically into the cache
+    // Load all assets statically into the cache
     static {
         ChipAsset.loadAssets(imageCache);
         ButtonAsset.loadAssets(imageCache);
         BackgroundAsset.loadAssets(imageCache);
         CardAsset.loadAssets(imageCache);
+        BJResultAsset.loadAssets(imageCache);
     }
 
-    /** Utility method to get a scaled icon from a cached image */
+    /**
+     * Retrieves a scaled {@link ImageIcon} from the cached assets.
+     *
+     * @param assetName The {@link Asset} to retrieve.
+     * @param dimension The desired dimensions for scaling.
+     * @return A scaled {@link ImageIcon}, or {@code null} if the asset is not found.
+     */
     public static ImageIcon getScaledIcon(Asset assetName, Dimension dimension) {
         if (dimension.width == 0 || dimension.height == 0) {
             dimension.width = 1920; // Default width
@@ -34,7 +50,13 @@ public class AssetManager {
         }
     }
 
-    /** Utility method to get a scaled Image from a cached image */
+    /**
+     * Retrieves a scaled {@link Image} from the cached assets.
+     *
+     * @param assetName The {@link Asset} to retrieve.
+     * @param dimension The desired dimensions for scaling.
+     * @return A scaled {@link Image}, or {@code null} if the asset is not found.
+     */
     public static Image getScaledImage(Asset assetName, Dimension dimension) {
         if (dimension.width == 0 || dimension.height == 0) {
             dimension.width = 1920; // Default width
@@ -49,8 +71,14 @@ public class AssetManager {
         }
     }
 
-    /** Utility method to get a raw Image from a cached image */
+    /**
+     * Retrieves the raw {@link Image} associated with the given asset.
+     *
+     * @param assetName The {@link Asset} to retrieve.
+     * @return The {@link Image} if found, otherwise {@code null}.
+     */
     public static Image getImage(Asset assetName) {
         return imageCache.get(assetName);
     }
 }
+

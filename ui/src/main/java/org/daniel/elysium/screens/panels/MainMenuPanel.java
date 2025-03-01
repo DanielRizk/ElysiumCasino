@@ -11,6 +11,10 @@ import org.daniel.elysium.elements.panels.BackgroundPanel;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * The {@code MainMenuPanel} class represents the main menu screen where users can navigate
+ * to different game modes, view their profile, or log out.
+ */
 public class MainMenuPanel extends JPanel {
     private final StyledButton blackjackButton;
     private final StyledButton baccaratButton;
@@ -19,13 +23,19 @@ public class MainMenuPanel extends JPanel {
     private final StyledButton logoutButton;
     private final StateManager stateManager;
 
+    /**
+     * Constructs the {@code MainMenuPanel}, initializes buttons and UI components.
+     *
+     * @param stateManager The application's {@link StateManager} instance.
+     */
     public MainMenuPanel(StateManager stateManager) {
-       this.stateManager = stateManager;
+        this.stateManager = stateManager;
         setLayout(new BorderLayout());
 
         // Set the background
         BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.BACKGROUND);
-        // inputPanel to hold other elements
+
+        // Panel to hold menu buttons
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.setOpaque(false);
 
@@ -51,7 +61,7 @@ public class MainMenuPanel extends JPanel {
         gbc.gridy = 2;
         buttonPanel.add(baccaratButton, gbc);
 
-        // Create and add ultimate_th button
+        // Create and add Ultimate Texas Hold'em button
         ultimateTHButton = new StyledButton("Ultimate TH");
         gbc.gridy = 3;
         buttonPanel.add(ultimateTHButton, gbc);
@@ -66,63 +76,62 @@ public class MainMenuPanel extends JPanel {
         gbc.gridy = 5;
         buttonPanel.add(logoutButton, gbc);
 
-        // Add action listeners
+        // Register button actions
         registerButtonsActions();
 
-        // add inputPanel and background to main panel
+        // Add input panel and background to the main panel
         backgroundPanel.add(buttonPanel, BorderLayout.CENTER);
         add(backgroundPanel, BorderLayout.CENTER);
     }
 
     /**
-     * Register and activate buttons action listeners
+     * Registers action listeners for menu buttons to handle navigation and interactions.
      */
-    private void registerButtonsActions(){
-        // Blackjack button action -> start and go to blackjack
+    private void registerButtonsActions() {
+        // Blackjack button action -> start and go to blackjack if user has sufficient balance
         blackjackButton.addActionListener(e -> {
             if (stateManager.isUserLoggedIn() &&
-                    stateManager.getProfile().getBalance() > StateManager.MIN_BET){
+                    stateManager.getProfile().getBalance() > StateManager.MIN_BET) {
                 stateManager.switchPanel("Blackjack");
             }
         });
 
-        // Baccarat button action -> start and go to baccarat
+        // Baccarat button action -> display "Coming soon" notification
         baccaratButton.addActionListener(e -> {
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
             StyledNotificationDialog dialog = new StyledNotificationDialog(frame, "Coming soon");
             dialog.setVisible(true);
             /*
             if (stateManager.isUserLoggedIn() &&
-                    stateManager.getProfile().getBalance() > StateManager.MIN_BET){
+                    stateManager.getProfile().getBalance() > StateManager.MIN_BET) {
                 stateManager.switchPanel("Baccarat");
             }*/
         });
 
-        // Ultimate_TH button action -> start and go to ultimate_th
+        // Ultimate Texas Hold'em button action -> display "Coming soon" notification
         ultimateTHButton.addActionListener(e -> {
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
             StyledNotificationDialog dialog = new StyledNotificationDialog(frame, "Coming soon");
             dialog.setVisible(true);
             /*
             if (stateManager.isUserLoggedIn() &&
-                    stateManager.getProfile().getBalance() > StateManager.MIN_BET){
+                    stateManager.getProfile().getBalance() > StateManager.MIN_BET) {
                 stateManager.switchPanel("Ultimate TH");
             }*/
         });
 
-        // Profile button action -> go to user profile page
+        // Profile button action -> display "Coming soon" notification
         profileButton.addActionListener(e -> {
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
             StyledNotificationDialog dialog = new StyledNotificationDialog(frame, "Coming soon");
             dialog.setVisible(true);
             /*
-            if (stateManager.isUserLoggedIn() &&
-                    stateManager.getProfile().getBalance() > StateManager.MIN_BET){
+            if (stateManager.isUserLoggedIn()) {
                 stateManager.switchPanel("Profile");
             }*/
         });
 
-        // Logout button action -> go to login page
+        // Logout button action -> log out the user and return to login screen
         logoutButton.addActionListener(e -> {
             stateManager.setProfile(null);
             stateManager.switchPanel("Login");

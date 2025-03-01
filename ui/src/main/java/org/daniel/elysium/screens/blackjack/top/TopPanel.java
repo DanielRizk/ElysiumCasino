@@ -8,9 +8,19 @@ import org.daniel.elysium.screens.blackjack.BlackjackMediator;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * The {@code TopPanel} class represents the top section of the Blackjack UI.
+ * It contains a return button to navigate back to the main menu and a balance display.
+ */
 public class TopPanel extends JPanel {
     private final StyledTextField balanceLabel;
 
+    /**
+     * Constructs the top panel for the Blackjack game.
+     *
+     * @param mediator     The {@link BlackjackMediator} that handles communication between UI components.
+     * @param stateManager The {@link StateManager} that manages application states.
+     */
     public TopPanel(BlackjackMediator mediator, StateManager stateManager) {
         setLayout(new BorderLayout());
         setOpaque(false);
@@ -19,6 +29,7 @@ public class TopPanel extends JPanel {
         // Create and add return to main menu button on the left side
         StyledButton returnButton = new StyledButton("Return to Main Menu", 250, 50);
         add(returnButton, BorderLayout.WEST);
+
         // Add action listener for return button -> go to main menu
         returnButton.addActionListener(e -> mediator.returnToMainMenu());
 
@@ -27,10 +38,12 @@ public class TopPanel extends JPanel {
         add(balanceLabel, BorderLayout.EAST);
     }
 
-    /** Helper method to set the current balance */
+    /**
+     * Updates the balance label to reflect the current balance.
+     *
+     * @param balanceText The new balance text to display.
+     */
     public void setBalance(String balanceText) {
         balanceLabel.setText(balanceText);
     }
 }
-
-
