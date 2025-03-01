@@ -25,7 +25,7 @@ public class PlayerCardsPanel extends JPanel {
         Component[] components = getComponents();
         for (Component component : components) {
             if (glow) {
-                ((UICard) component).setBorder(new GlowBorder(Color.YELLOW, 4));
+                ((UICard) component).setBorder(new GlowBorder(Color.RED, 4));
             } else {
                 ((UICard) component).setBorder(null);
             }

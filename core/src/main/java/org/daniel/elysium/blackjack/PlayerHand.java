@@ -32,7 +32,12 @@ public class PlayerHand extends BJHand{
 
     @Override
     public boolean isBlackJack() {
-        return getHand().size() <= 2 && getHandValue() == 21 && !isHandSplit;
+        boolean eval = getHand().size() <= 2 && getHandValue() == 21 && !isHandSplit;
+        if (eval){
+            setState(HandState.BLACKJACK);
+            return true;
+        }
+        return false;
     }
 
     @Override

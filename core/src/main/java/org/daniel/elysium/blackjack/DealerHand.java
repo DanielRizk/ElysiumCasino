@@ -20,7 +20,12 @@ public class DealerHand extends BJHand{
 
     @Override
     public boolean isBlackJack() {
-        return getHand().size() <= 2 && getHandValue() == 21;
+        boolean eval = getHand().size() <= 2 && getHandValue() == 21;
+        if (eval){
+            setState(HandState.BLACKJACK);
+            return true;
+        }
+        return false;
     }
 
     @Override

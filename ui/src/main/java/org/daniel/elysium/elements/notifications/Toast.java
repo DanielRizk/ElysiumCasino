@@ -1,7 +1,6 @@
 package org.daniel.elysium.elements.notifications;
 
 import org.daniel.elysium.assets.BackgroundAsset;
-import org.daniel.elysium.debugUtils.DebugLevel;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
 

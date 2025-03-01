@@ -14,6 +14,8 @@ public class PlayerHandUI extends JPanel {
     private final BetPanel betPanel;
     private final PlayerHand hand;
 
+    public static final int FIRST_HAND = 0;
+
     public PlayerHandUI() {
         // Use BoxLayout for vertical stacking
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

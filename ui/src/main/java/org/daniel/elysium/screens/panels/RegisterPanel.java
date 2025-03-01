@@ -119,14 +119,10 @@ public class RegisterPanel extends JPanel {
         });
 
         // Back button action -> go to login page
-        backButton.addActionListener(e -> {
-            stateManager.switchPanel("Login");
-        });
+        backButton.addActionListener(e -> stateManager.switchPanel("Login"));
 
         // Quit button action -> confirm and quit
-        quitButton.addActionListener(e ->{
-            quit();
-        });
+        quitButton.addActionListener(e -> quit());
     }
 
     /**
