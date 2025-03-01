@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack;
+package org.daniel.elysium.screens.blackjack.center;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
@@ -7,14 +7,17 @@ import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.models.Chip;
 import org.daniel.elysium.models.UICard;
+import org.daniel.elysium.screens.blackjack.BlackjackMediator;
+import org.daniel.elysium.screens.blackjack.center.models.DealerHandUI;
+import org.daniel.elysium.screens.blackjack.constants.GameActions;
+import org.daniel.elysium.screens.blackjack.center.models.PlayerHandUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
-//TODO: fix deal button shifting other elements
 public class GameAreaPanel extends JPanel {
     private final JPanel dealerHandPanel;
     private final JPanel playerHandPanel;
@@ -47,7 +50,8 @@ public class GameAreaPanel extends JPanel {
         // Logo / Rules Label.
         gbc.gridy = 1;
         gbc.weighty = 0.10;
-        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(BackgroundAsset.BLACKJACK_RULES, 600, 230));
+        Dimension logoDimension = new Dimension(600, 230);
+        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(BackgroundAsset.BLACKJACK_RULES, logoDimension));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(logoLabel, gbc);
 
@@ -142,8 +146,8 @@ public class GameAreaPanel extends JPanel {
     public boolean addPlayerCard(int index, UICard card) {
         PlayerHandUI playerHandUI = (PlayerHandUI) playerHandPanel.getComponent(index);
         if(playerHandUI.addCard(card)){
-            playerHandUI.getPlayerHand().revalidate();
-            playerHandUI.getPlayerHand().repaint();
+            playerHandUI.getPlayerCards().revalidate();
+            playerHandUI.getPlayerCards().repaint();
             return true;
         }
         return false;
@@ -172,8 +176,8 @@ public class GameAreaPanel extends JPanel {
         PlayerHandUI split = new PlayerHandUI();
         playerHandPanel.removeAll();
 
-        UICard secondCard = (UICard) original.getPlayerHand().getComponent(1);
-        original.getPlayerHand().remove(1);
+        UICard secondCard = (UICard) original.getPlayerCards().getComponent(1);
+        original.getPlayerCards().remove(1);
         original.getHand().getHand().remove(1);
 
         split.addCard(secondCard);

@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack;
+package org.daniel.elysium.uiUtils;
 
 import javax.swing.border.AbstractBorder;
 import java.awt.*;

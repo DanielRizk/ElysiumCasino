@@ -1,6 +1,7 @@
-package org.daniel.elysium.screens.blackjack;
+package org.daniel.elysium.screens.blackjack.center.models;
 
 import org.daniel.elysium.models.UICard;
+import org.daniel.elysium.uiUtils.GlowBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,10 +15,12 @@ public class PlayerCardsPanel extends JPanel {
         setMinimumSize(new Dimension(getWidth(), 150));
     }
 
+    /** Add a card to player cards area */
     public void addCard(UICard card){
         add(card);
     }
 
+    /** Toggle the highlight of the cards area */
     public void setHighlight(boolean glow) {
         Component[] components = getComponents();
         for (Component component : components) {

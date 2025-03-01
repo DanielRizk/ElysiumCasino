@@ -9,22 +9,29 @@ import java.awt.*;
 public class Chip extends JButton {
     private final int value;
     private final ImageIcon icon;
+    public static final Dimension chipDimension = new Dimension(100, 100);
 
     public Chip(ChipAsset icon) {
         setOpaque(false);
-        setContentAreaFilled(false); // Prevents the button from painting a background.
+        setContentAreaFilled(false);
         setBorderPainted(false);
         setFocusPainted(false);
-        setPreferredSize(new Dimension(100, 100));
-        this.icon = AssetManager.getScaledIcon(icon, 100, 100);
-        setIcon(this.icon);
+
+        // Get the icon and the value of the chip
+        this.icon = AssetManager.getScaledIcon(icon, chipDimension);
         this.value = icon.getValue();
+
+        // Set default size and icon of the chip
+        setPreferredSize(chipDimension);
+        setIcon(this.icon);
     }
 
+    /** Getter for the chip value */
     public int getValue() {
         return value;
     }
 
+    /** Getter for the chip icon */
     public ImageIcon getIcon() {
         return icon;
     }

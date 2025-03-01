@@ -1,8 +1,5 @@
 package org.daniel.elysium.blackjack;
 
-import org.daniel.elysium.models.BJCard;
-import org.daniel.elysium.models.Card;
-
 import java.util.ArrayList;
 import java.util.List;
 

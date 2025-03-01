@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack;
+package org.daniel.elysium.screens.blackjack.constants;
 
 public enum GameState {
     BET_PHASE,

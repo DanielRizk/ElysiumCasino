@@ -23,12 +23,11 @@ public class BlackjackPanel extends JPanel {
         // Assemble sub_panels from the controller.
         background.add(controller.getTopPanel(), BorderLayout.NORTH);
         background.add(controller.getGameAreaPanel(), BorderLayout.CENTER);
-        //background.add(controller.getBettingPanel(), BorderLayout.SOUTH);
 
         add(background, BorderLayout.CENTER);
     }
 
-    // Add the chip panel to the frame's layered pane.
+    /** Add the chip panel to the frame's layered pane. */
     @Override
     public void addNotify() {
         super.addNotify();
@@ -39,8 +38,12 @@ public class BlackjackPanel extends JPanel {
                 if (controller.getChipPanel().getParent() != layeredPane) {
                     layeredPane.add(controller.getChipPanel(), JLayeredPane.POPUP_LAYER);
                 }
+
+                // Re-display the chip panel
                 repositionChipPanel();
                 controller.getChipPanel().setVisible(true);
+
+                // Adjust the location of the chip panel when the parent moves
                 frame.addComponentListener(new ComponentAdapter() {
                     @Override
                     public void componentResized(ComponentEvent e) {
@@ -51,6 +54,7 @@ public class BlackjackPanel extends JPanel {
         });
     }
 
+    /** Hide and remove the chip panel to the frame's layered pane. */
     @Override
     public void removeNotify() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -62,6 +66,7 @@ public class BlackjackPanel extends JPanel {
         super.removeNotify();
     }
 
+    /** Adjust the location of the chip panel relative to the parent */
     private void repositionChipPanel() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         if (frame != null) {

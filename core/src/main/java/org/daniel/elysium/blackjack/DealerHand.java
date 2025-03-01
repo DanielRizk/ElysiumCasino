@@ -2,9 +2,12 @@ package org.daniel.elysium.blackjack;
 
 import org.daniel.elysium.models.BJCard;
 
-import java.util.List;
-
 public class DealerHand extends BJHand{
+
+    @Override
+    public boolean canDealCard(BJCard card) {
+        return getHandValue() < 17;
+    }
 
     @Override
     public boolean dealCard(BJCard card) {

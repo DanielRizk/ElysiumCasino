@@ -1,11 +1,7 @@
 package org.daniel.elysium.assets;
 
-import org.daniel.elysium.debugUtils.DebugPrint;
-
-import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
-import java.util.Objects;
 
 public enum ChipAsset implements Asset {
     CHIP_1000(1000),
@@ -20,21 +16,14 @@ public enum ChipAsset implements Asset {
         this.value = value;
     }
 
+    /** Returns the value of the chips as integer */
     public int getValue(){
         return value;
     }
 
+    /** Loads all assets from the respective recourse directory */
     public static void loadAssets(Map<Asset, Image> imageCache){
-        for (ChipAsset asset: ChipAsset.values()){
-            try {
-                ImageIcon icon = new ImageIcon(
-                        Objects.requireNonNull(AssetManager.class.getClassLoader().
-                                getResource("assets/chips/" + asset.toString())));
-                imageCache.put(asset, icon.getImage());
-            } catch (Exception e) {
-                DebugPrint.println("Failed to load asset: " + asset, true);
-            }
-        }
+        AssetUtility.loadAssets(imageCache, "chips", ChipAsset.class);
     }
 
     @Override

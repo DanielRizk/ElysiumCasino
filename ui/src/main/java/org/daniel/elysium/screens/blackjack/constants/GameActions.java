@@ -1,8 +1,7 @@
-package org.daniel.elysium.screens.blackjack;
+package org.daniel.elysium.screens.blackjack.constants;
 
 public enum GameActions {
     HIT, STAND, DOUBLE, SPLIT, INSURE, DO_NOT_INSURE;
-
 
     @Override
     public String toString() {

@@ -8,11 +8,10 @@ import org.daniel.elysium.elements.panels.BackgroundPanel;
 import javax.swing.*;
 import java.awt.*;
 
-public class StyledConfirmDialog extends JDialog {
-    private boolean confirmed = false;
+public class StyledNotificationDialog extends JDialog {
 
-    public StyledConfirmDialog(JFrame owner, String message) {
-        super(owner, "Confirm", true);
+    public StyledNotificationDialog(JFrame owner, String message) {
+        super(owner, "Info", true);
         setUndecorated(true);
         setBackground(new Color(0, 0, 0, 0));
 
@@ -35,32 +34,15 @@ public class StyledConfirmDialog extends JDialog {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         buttonPanel.setOpaque(false);
 
-        // Create yes button
-        StyledButton yesButton = new StyledButton("Yes", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        // Create Ok button
+        StyledButton okButton = new StyledButton("Ok", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
 
-        // Create no button
-        StyledButton noButton = new StyledButton("No", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
-
-        // Add action listener to yes button -> set confirm
-        yesButton.addActionListener(e -> {
-            confirmed = true;
+        // Add action listener to Ok button -> do nothing
+        okButton.addActionListener(e -> {
             dispose();
         });
 
-        // Add action listener to no button -> do nothing
-        noButton.addActionListener(e -> {
-            dispose();
-        });
-
-        // Create an empty space between the buttons
-        JPanel spacer = new JPanel();
-        spacer.setOpaque(false);
-        spacer.setPreferredSize(new Dimension(50,50));
-
-        buttonPanel.add(yesButton);
-        buttonPanel.add(spacer);
-        buttonPanel.add(noButton);
-
+        buttonPanel.add(okButton);
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(backgroundPanel);
@@ -68,10 +50,4 @@ public class StyledConfirmDialog extends JDialog {
         // Has to be last statement to center the dialog
         setLocationRelativeTo(owner);
     }
-
-    /** Return user choice */
-    public boolean isConfirmed() {
-        return confirmed;
-    }
 }
-

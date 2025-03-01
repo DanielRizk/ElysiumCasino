@@ -9,13 +9,13 @@ import java.awt.*;
 
 public class BackgroundPanel extends JPanel {
     private Image backgroundImage;
-    boolean doNotScale;
+    private boolean doNotScale = false;
 
     public BackgroundPanel(Asset imageName) {
         try {
             backgroundImage =  AssetManager.getImage(imageName);
         } catch (Exception e) {
-            DebugPrint.println("Failed to load asset: "  + imageName.toString());
+            DebugPrint.println("Failed to load asset: "  + imageName.toString(), true);
         }
         setLayout(new BorderLayout());
     }
@@ -25,7 +25,7 @@ public class BackgroundPanel extends JPanel {
         try {
             backgroundImage =  AssetManager.getImage(imageName);
         } catch (Exception e) {
-            DebugPrint.println("Failed to load asset: "  + imageName.toString());
+            DebugPrint.println("Failed to load asset: "  + imageName.toString(), true);
         }
         setLayout(new BorderLayout());
     }
@@ -43,8 +43,8 @@ public class BackgroundPanel extends JPanel {
             int newWidth;
             int newHeight;
             if (doNotScale){
-                newWidth = (int) (imgWidth * 40);
-                newHeight = (int) (imgHeight * 40);
+                newWidth = imgWidth * 40;
+                newHeight = imgHeight * 40;
             } else {
                 newWidth = (int) (imgWidth * scale);
                 newHeight = (int) (imgHeight * scale);

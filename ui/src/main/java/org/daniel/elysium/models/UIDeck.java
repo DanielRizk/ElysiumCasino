@@ -7,6 +7,7 @@ import java.util.List;
 
 public class UIDeck extends Deck<UICard> {
 
+    /** Generates a deck of cards but iterating over all defined cards */
     @Override
     protected List<UICard> generateDeck() {
         List<UICard> cards = new ArrayList<>();

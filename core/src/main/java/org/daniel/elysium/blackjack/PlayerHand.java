@@ -17,6 +17,11 @@ public class PlayerHand extends BJHand{
     }
 
     @Override
+    public boolean canDealCard(BJCard card) {
+        return getHandValue() < 21;
+    }
+
+    @Override
     public boolean dealCard(BJCard card) {
         if (getHandValue() < 21){
             getHand().add(card);
@@ -54,7 +59,7 @@ public class PlayerHand extends BJHand{
     }
 
     public boolean isSplittable(){
-        return getHand().size() == 2 && getHand().get(0).getValue() == getHand().get(1).getValue();
+        return getHand().size() == 2 && getHand().get(0).getValue() == getHand().get(1).getValue() && !isHandSplit;
     }
 
     public void setHandSplit(boolean handSplit) {

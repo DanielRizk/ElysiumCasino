@@ -25,6 +25,8 @@ public abstract class BJHand {
         this.state = state;
     }
 
+    public abstract boolean canDealCard(BJCard card);
+
     public abstract boolean dealCard(BJCard card);
 
     public abstract boolean isBlackJack();

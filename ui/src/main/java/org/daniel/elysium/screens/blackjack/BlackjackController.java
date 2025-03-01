@@ -10,10 +10,18 @@ import org.daniel.elysium.models.Chip;
 import org.daniel.elysium.models.Shoe;
 import org.daniel.elysium.models.UICard;
 import org.daniel.elysium.models.UIDeck;
+import org.daniel.elysium.screens.blackjack.center.GameAreaPanel;
+import org.daniel.elysium.screens.blackjack.chips.ChipPanel;
+import org.daniel.elysium.screens.blackjack.center.models.PlayerHandUI;
+import org.daniel.elysium.screens.blackjack.constants.GameActions;
+import org.daniel.elysium.screens.blackjack.constants.GameState;
+import org.daniel.elysium.screens.blackjack.top.TopPanel;
 
 import javax.swing.*;
-import javax.swing.Timer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BlackjackController implements BlackjackMediator {
     private final StateManager stateManager;
@@ -245,12 +253,13 @@ public class BlackjackController implements BlackjackMediator {
         UICard dealerCard1 = getCardFromShoe();
         UICard playerCard2 = getCardFromShoe();
         UICard dealerCard2 = getCardFromShoe();
-        dealerCard2.setFaceDown();
+
 
         gameAreaPanel.addPlayerCard(0, playerCard1);
         gameAreaPanel.addDealerCard(dealerCard1);
         gameAreaPanel.addPlayerCard(0, playerCard2);
         gameAreaPanel.addDealerCard(dealerCard2);
+        gameAreaPanel.getDealerHand().flipCardDown();
     }
 
     @Override
@@ -278,16 +287,14 @@ public class BlackjackController implements BlackjackMediator {
     private void handleDoubleOption(int index){
         PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
         stateManager.getProfile().decreaseBalanceBy(playerHandUI.getBet());
-        playerHandUI.addDoubleBet();
+        playerHandUI.addDoubleChip();
         updateBalanceDisplay();
         UICard card = getCardFromShoe();
         gameAreaPanel.addPlayerCard(index, card);
 
-        if (checkForSecondHand() && index < 1){
-            calculatePlayerOptions(index);
-        } else {
-            handleStandOption(index);
-        }
+
+        handleStandOption(index);
+
     }
 
     private void handleInsureOption() {
