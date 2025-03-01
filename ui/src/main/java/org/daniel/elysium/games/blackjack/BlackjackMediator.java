@@ -1,7 +1,7 @@
-package org.daniel.elysium.screens.blackjack;
+package org.daniel.elysium.games.blackjack;
 
 import org.daniel.elysium.models.Chip;
-import org.daniel.elysium.screens.blackjack.constants.GameActions;
+import org.daniel.elysium.games.blackjack.constants.GameActions;
 
 /**
  * The {@code BlackjackMediator} interface defines a contract for coordinating interactions

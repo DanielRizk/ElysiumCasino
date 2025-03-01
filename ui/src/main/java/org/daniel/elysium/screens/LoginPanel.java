@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.panels;
+package org.daniel.elysium.screens;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
@@ -142,35 +142,33 @@ public class LoginPanel extends JPanel {
         String password = passwordField.getPassword();
         UserDAO userDAO = new UserDAO();
 
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-
         // Validate username
         if (userName.isEmpty() || userName.equals("Username")) {
-            new Toast(frame, "Please enter your Username", 3000).setVisible(true);
+            new Toast(stateManager.getFrame(), "Please enter your Username", 3000).setVisible(true);
             return null;
         }
 
         // Validate password
         if (password.isEmpty() || password.equals("Password")) {
-            new Toast(frame, "Please enter your Password", 3000).setVisible(true);
+            new Toast(stateManager.getFrame(), "Please enter your Password", 3000).setVisible(true);
             return null;
         }
 
         // Fetch user profile from database
         UserProfile profile = userDAO.getUserByUsername(userName);
         if (profile == null) {
-            new Toast(frame, "Username does not exist", 3000).setVisible(true);
+            new Toast(stateManager.getFrame(), "Username does not exist", 3000).setVisible(true);
             return null;
         }
 
         // Verify password
         if (!profile.getPass().equals(password)) {
-            new Toast(frame, "Wrong password, Try again", 3000).setVisible(true);
+            new Toast(stateManager.getFrame(), "Wrong password, Try again", 3000).setVisible(true);
             return null;
         }
 
         // Successful login
-        new Toast(frame, "Welcome " + userName + ", Your balance is: " + profile.getBalance(), 3000).setVisible(true);
+        new Toast(stateManager.getFrame(), "Welcome " + userName + ", Your balance is: " + profile.getBalance(), 3000).setVisible(true);
         return profile;
     }
 

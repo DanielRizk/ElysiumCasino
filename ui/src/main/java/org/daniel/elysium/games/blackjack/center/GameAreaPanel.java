@@ -1,16 +1,15 @@
-package org.daniel.elysium.screens.blackjack.center;
+package org.daniel.elysium.games.blackjack.center;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
-import org.daniel.elysium.models.Chip;
 import org.daniel.elysium.models.UICard;
-import org.daniel.elysium.screens.blackjack.BlackjackMediator;
-import org.daniel.elysium.screens.blackjack.center.models.DealerHandUI;
-import org.daniel.elysium.screens.blackjack.center.models.PlayerHandUI;
-import org.daniel.elysium.screens.blackjack.constants.GameActions;
+import org.daniel.elysium.games.blackjack.BlackjackMediator;
+import org.daniel.elysium.games.blackjack.center.models.DealerHandUI;
+import org.daniel.elysium.games.blackjack.center.models.PlayerHandUI;
+import org.daniel.elysium.games.blackjack.constants.GameActions;
 
 import javax.swing.*;
 import java.awt.*;

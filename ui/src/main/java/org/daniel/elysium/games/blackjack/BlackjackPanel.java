@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack;
+package org.daniel.elysium.games.blackjack;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.BackgroundAsset;

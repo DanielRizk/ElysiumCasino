@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack.constants;
+package org.daniel.elysium.games.blackjack.constants;
 
 /**
  * Enum representing the possible actions a player can take in Blackjack.

@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.panels;
+package org.daniel.elysium.screens;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
@@ -122,16 +122,12 @@ public class MainMenuPanel extends JPanel {
 
         // Profile button action -> display "Coming soon" notification
         profileButton.addActionListener(e -> {
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            StyledNotificationDialog dialog = new StyledNotificationDialog(frame, "Coming soon");
-            dialog.setVisible(true);
-            /*
             if (stateManager.isUserLoggedIn()) {
                 stateManager.switchPanel("Profile");
-            }*/
+            }
         });
 
-        // Logout button action -> log out the user and return to login screen
+        // Logout button action -> log out the user and return to log in screen
         logoutButton.addActionListener(e -> {
             stateManager.setProfile(null);
             stateManager.switchPanel("Login");

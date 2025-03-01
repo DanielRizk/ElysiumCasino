@@ -2,10 +2,8 @@ package org.daniel.elysium;
 
 import org.daniel.elysium.debugUtils.DebugLevel;
 import org.daniel.elysium.debugUtils.DebugPrint;
-import org.daniel.elysium.screens.blackjack.BlackjackPanel;
-import org.daniel.elysium.screens.panels.LoginPanel;
-import org.daniel.elysium.screens.panels.MainMenuPanel;
-import org.daniel.elysium.screens.panels.RegisterPanel;
+import org.daniel.elysium.games.blackjack.BlackjackPanel;
+import org.daniel.elysium.screens.*;
 import org.daniel.elysium.user.database.DatabaseConnection;
 import org.daniel.elysium.user.profile.UserProfile;
 
@@ -71,6 +69,8 @@ public class Launcher {
         stateManager.registerPanel("Login", () -> new LoginPanel(stateManager));
         stateManager.registerPanel("MainMenu", () -> new MainMenuPanel(stateManager));
         stateManager.registerPanel("Register", () -> new RegisterPanel(stateManager));
+        stateManager.registerPanel("Profile", () -> new ProfilePanel(stateManager));
+        stateManager.registerPanel("ChangePass", () -> new UpdatePasswordPanel(stateManager));
         stateManager.registerPanel("Blackjack", () -> new BlackjackPanel(stateManager));
 
         // Test user for testing

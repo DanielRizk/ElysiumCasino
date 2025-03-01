@@ -3,9 +3,6 @@ package org.daniel.elysium.assets;
 import java.awt.*;
 import java.util.Map;
 
-import java.awt.*;
-import java.util.Map;
-
 /**
  * Enum representing background assets used in the game.
  * Each asset corresponds to a background image resource.

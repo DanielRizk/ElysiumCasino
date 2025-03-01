@@ -2,8 +2,6 @@ package org.daniel.elysium.models;
 
 import java.util.List;
 
-import java.util.List;
-
 /**
  * Represents a generic deck of cards.
  * This class provides a base structure for creating different types of decks.

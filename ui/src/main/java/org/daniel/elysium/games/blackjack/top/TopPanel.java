@@ -1,9 +1,9 @@
-package org.daniel.elysium.screens.blackjack.top;
+package org.daniel.elysium.games.blackjack.top;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledTextField;
-import org.daniel.elysium.screens.blackjack.BlackjackMediator;
+import org.daniel.elysium.games.blackjack.BlackjackMediator;
 
 import javax.swing.*;
 import java.awt.*;

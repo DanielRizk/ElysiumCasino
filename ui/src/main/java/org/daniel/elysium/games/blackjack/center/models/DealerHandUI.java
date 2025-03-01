@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.blackjack.center.models;
+package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.blackjack.models.DealerHand;
 import org.daniel.elysium.models.UICard;

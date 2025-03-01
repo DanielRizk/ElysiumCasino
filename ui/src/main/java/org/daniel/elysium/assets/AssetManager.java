@@ -5,11 +5,6 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.*;
-
 /**
  * Manages the loading and caching of game assets such as images and icons.
  * This class provides utility methods to retrieve raw and scaled assets.

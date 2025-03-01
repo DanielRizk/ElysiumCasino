@@ -5,9 +5,6 @@ import org.daniel.elysium.blackjack.constants.HandState;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Represents a generic hand in Blackjack.
  * This abstract class provides common functionality for managing a hand of cards

@@ -1,4 +1,4 @@
-package org.daniel.elysium.screens.panels;
+package org.daniel.elysium.screens;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
@@ -6,7 +6,6 @@ import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledPasswordField;
-import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
@@ -19,23 +18,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 /**
- * Represents the user registration panel where new users can create an account.
+ * Represents the user update password panel where new users can change their password.
  */
-public class RegisterPanel extends JPanel {
-    private final StyledTextField usernameField;
+public class UpdatePasswordPanel extends JPanel {
+    private final StyledPasswordField oldPasswordField;
     private final StyledPasswordField passwordField;
     private final StyledPasswordField repeatPasswordField;
-    private final StyledButton registerButton;
+    private final StyledButton changePassButton;
     private final StyledButton backButton;
-    private final StyledButton quitButton;
     private final StateManager stateManager;
 
     /**
-     * Constructs a {@code RegisterPanel} with input fields for registration.
+     * Constructs a {@code UpdatePasswordPanel} with input fields for registration.
      *
      * @param stateManager The application's {@link StateManager} instance.
      */
-    public RegisterPanel(StateManager stateManager) {
+    public UpdatePasswordPanel(StateManager stateManager) {
         this.stateManager = stateManager;
         setLayout(new BorderLayout());
 
@@ -59,13 +57,13 @@ public class RegisterPanel extends JPanel {
         gbc.gridy = 0;
         inputPanel.add(logoLabel, gbc);
 
-        // Create and add username input text field
-        usernameField = new StyledTextField("Username");
+        // Create and add old password input password field
+        oldPasswordField = new StyledPasswordField("Old Password");
         gbc.gridy = 1;
-        inputPanel.add(usernameField, gbc);
+        inputPanel.add(oldPasswordField, gbc);
 
         // Create and add password input password field
-        passwordField = new StyledPasswordField("Password");
+        passwordField = new StyledPasswordField("New Password");
         gbc.gridy = 2;
         inputPanel.add(passwordField, gbc);
 
@@ -77,23 +75,18 @@ public class RegisterPanel extends JPanel {
         // Add spacing between inputs and buttons
         gbc.insets = new Insets(40, 0, 10, 0);
 
-        // Create and add register button
-        registerButton = new StyledButton("Register", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
-        gbc.gridy = 5;
-        inputPanel.add(registerButton, gbc);
+        // Create and add change button
+        changePassButton = new StyledButton("Change", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
+        gbc.gridy = 4;
+        inputPanel.add(changePassButton, gbc);
 
         // Revert original spacing
         gbc.insets = new Insets(10, 0, 10, 0);
 
         // Create and add back button
         backButton = new StyledButton("Back", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
-        gbc.gridy = 6;
+        gbc.gridy = 5;
         inputPanel.add(backButton, gbc);
-
-        // Create and add quit button
-        quitButton = new StyledButton("Quit", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
-        gbc.gridy = 7;
-        inputPanel.add(quitButton, gbc);
 
         // Register button actions
         registerButtonsActions();
@@ -109,10 +102,9 @@ public class RegisterPanel extends JPanel {
      */
     private void registerButtonsActions() {
         // Register button action -> create user account and go to main menu
-        registerButton.addActionListener(e -> {
-            stateManager.setProfile(register());
+        changePassButton.addActionListener(e -> {
             if (stateManager.isUserLoggedIn()) {
-                stateManager.switchPanel("MainMenu");
+                change();
             }
         });
 
@@ -123,76 +115,63 @@ public class RegisterPanel extends JPanel {
         getActionMap().put("registerAction", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                registerButton.doClick();
+                changePassButton.doClick();
             }
         });
 
         // Back button action -> switch to login panel
-        backButton.addActionListener(e -> stateManager.switchPanel("Login"));
-
-        // Quit button action -> confirm before quitting
-        quitButton.addActionListener(e -> quit());
+        backButton.addActionListener(e -> stateManager.switchPanel("Profile"));
     }
 
     /**
-     * Handles the registration logic by validating user input and creating a new user.
-     *
-     * @return The newly created {@link UserProfile}, or {@code null} if registration fails.
+     * Handles the change of the password logic by validating user input and updating the current user.
      */
-    private UserProfile register() {
-        String userName = usernameField.getText().trim();
-        String password = passwordField.getPassword();
+    private void change() {
+        String oldPassword = oldPasswordField.getPassword().trim();
+        String newPassword = passwordField.getPassword();
         String repeatPassword = repeatPasswordField.getPassword();
         UserDAO userDAO = new UserDAO();
 
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-
         // Validate username
-        if (userName.isEmpty() || userName.equals("Username")) {
-            new Toast(frame, "Please enter your Username", 3000).setVisible(true);
-            return null;
+        if (oldPassword.isEmpty() || oldPassword.equals("Old Password")) {
+            new Toast(stateManager.getFrame(), "Please enter your old password", 3000).setVisible(true);
+            return;
         }
 
-        // Check if username already exists
-        if (userDAO.getUserByUsername(userName) != null) {
-            new Toast(frame, "Username already exists", 3000).setVisible(true);
-            return null;
+        // Check if old pass is the same as the user input
+        if (!oldPassword.equals(stateManager.getProfile().getPass())) {
+            new Toast(stateManager.getFrame(), "Old password does not match", 3000).setVisible(true);
+            return;
+        }
+
+        // Check if old pass is the same as the new pass
+        if (oldPassword.equals(newPassword)) {
+            new Toast(stateManager.getFrame(), "New pass cannot be the same as the old pass", 3000).setVisible(true);
+            return;
         }
 
         // Validate password
-        if (password.isEmpty() || password.equals("Password")) {
-            new Toast(frame, "Please enter your Password", 3000).setVisible(true);
-            return null;
+        if (newPassword.isEmpty() || newPassword.equals("New Password")) {
+            new Toast(stateManager.getFrame(), "Please enter your new Password", 3000).setVisible(true);
+            return;
         }
 
         // Validate repeat password field
         if (repeatPassword.isEmpty() || repeatPassword.equals("Repeat Password")) {
-            new Toast(frame, "Please repeat your Password", 3000).setVisible(true);
-            return null;
+            new Toast(stateManager.getFrame(), "Please repeat your new Password", 3000).setVisible(true);
+            return;
         }
 
         // Check if passwords match
-        if (!password.equals(repeatPassword)) {
-            new Toast(frame, "Passwords do not match, Try again.", 3000).setVisible(true);
-            return null;
+        if (!newPassword.equals(repeatPassword)) {
+            new Toast(stateManager.getFrame(), "New passwords do not match, Try again.", 3000).setVisible(true);
+            return;
         }
 
-        // Create the user
-        UserProfile profile = userDAO.addUser(userName, password, 10000);
-        new Toast(frame, "Welcome " + userName + ", Your balance is: " + profile.getBalance(), 3000).setVisible(true);
-        return profile;
-    }
-
-    /**
-     * Prompts the user with a confirmation dialog before quitting the application.
-     */
-    private void quit() {
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        StyledConfirmDialog dialog = new StyledConfirmDialog(frame, "Are you sure you want to quit?");
-        dialog.setVisible(true);
-
-        if (dialog.isConfirmed()) {
-            System.exit(0);
-        }
+        // Update user password
+        UserProfile profile = userDAO.changePassword(stateManager.getProfile().getName(), oldPassword, newPassword);
+        stateManager.setProfile(profile);
+        new Toast(stateManager.getFrame(), "Password has been updated", 3000).setVisible(true);
+        stateManager.switchPanel("Profile");
     }
 }

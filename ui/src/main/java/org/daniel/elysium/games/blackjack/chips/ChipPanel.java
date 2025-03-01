@@ -1,9 +1,9 @@
-package org.daniel.elysium.screens.blackjack.chips;
+package org.daniel.elysium.games.blackjack.chips;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.ChipAsset;
 import org.daniel.elysium.models.Chip;
-import org.daniel.elysium.screens.blackjack.BlackjackMediator;
+import org.daniel.elysium.games.blackjack.BlackjackMediator;
 
 import javax.swing.*;
 
