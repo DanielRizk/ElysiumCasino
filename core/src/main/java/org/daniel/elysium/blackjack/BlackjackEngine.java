@@ -32,16 +32,17 @@ public class BlackjackEngine {
      */
     public List<String> getAvailableHandOptions(PlayerHand hand) {
         List<String> handOptions = new ArrayList<>();
-
-        if (hand.getHandValue() < 21) {
-            handOptions.add("HIT");
-            handOptions.add("STAND");
-        }
-        if (hand.getHand().size() <= 2 && hand.getHandValue() != 21) {
-            handOptions.add("DOUBLE");
-        }
-        if (hand.isSplittable()) {
-            handOptions.add("SPLIT");
+        if (!hand.didComeFromSplitAces()){
+            if (hand.getHandValue() < 21) {
+                handOptions.add("HIT");
+                handOptions.add("STAND");
+            }
+            if (hand.getHand().size() <= 2 && hand.getHandValue() != 21) {
+                handOptions.add("DOUBLE");
+            }
+            if (hand.isSplittable()) {
+                handOptions.add("SPLIT");
+            }
         }
         return handOptions;
     }

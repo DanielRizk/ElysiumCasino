@@ -9,6 +9,7 @@ import org.daniel.elysium.blackjack.constants.HandState;
 public class PlayerHand extends BJHand {
 
     private boolean isHandSplit = false;
+    private boolean isSplitAces = false;
     private int bet = 0;
     private int insuranceBet = 0;
 
@@ -26,16 +27,18 @@ public class PlayerHand extends BJHand {
 
     /**
      * Attempts to deal a card to the player's hand.
-     * The player can receive a card as long as their hand value is below 21.
+     * The player can receive a card as long as their hand value is below 21 and is not a split aces.
      *
      * @param card The {@link BJCard} to be added.
      * @return {@code true} if the card was successfully added, otherwise {@code false}.
      */
     @Override
     public boolean dealCard(BJCard card) {
-        if (getHandValue() < 21) {
-            getHand().add(card);
-            return true;
+        if (!(getHand().size() > 1 && isSplitAces)) {
+            if (getHandValue() < 21) {
+                getHand().add(card);
+                return true;
+            }
         }
         return false;
     }
@@ -104,6 +107,34 @@ public class PlayerHand extends BJHand {
      */
     public void setHandSplit(boolean handSplit) {
         this.isHandSplit = handSplit;
+    }
+
+    /**
+     * Checks if the hand is a split aces.
+     * A hand is split aces if it contains exactly two cards and both are aces and did not split before.
+     *
+     * @return {@code true} if the hand can be a split aces, otherwise {@code false}.
+     */
+    public boolean isSplitAces() {
+        return getHand().size() == 2 && getHand().get(0).getValue() == 11 && getHand().get(1).getValue() == 11 && !isHandSplit;
+    }
+
+    /**
+     * Returns if the hand did come from a split aces.
+     *
+     * @return {@code true} if the hand came from split aces, otherwise {@code false}.
+     */
+    public boolean didComeFromSplitAces() {
+        return isSplitAces;
+    }
+
+    /**
+     * Sets whether the hand has been a split aces.
+     *
+     * @param splitAces {@code true} if the hand has been a split aces, otherwise {@code false}.
+     */
+    public void setSplitAces(boolean splitAces) {
+        this.isSplitAces = splitAces;
     }
 
     /**

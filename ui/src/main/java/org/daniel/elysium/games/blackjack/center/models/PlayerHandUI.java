@@ -262,15 +262,15 @@ public class PlayerHandUI extends JPanel {
      */
     public void displayHandResult(){
         if (hand.getState() == HandState.BLACKJACK){
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.WIN, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.BLACKJACK, new Dimension(300, 200)));
         } else if (hand.getState() == HandState.INSURED){
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.WIN, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.INSURED, new Dimension(300, 200)));
         } else if (hand.getState() == HandState.WON) {
             playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.WIN, new Dimension(300, 200)));
         } else if (hand.getState() == HandState.PUSH) {
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.WIN, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.PUSH, new Dimension(300, 200)));
         } else {
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.WIN, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.LOST, new Dimension(300, 200)));
         }
     }
 

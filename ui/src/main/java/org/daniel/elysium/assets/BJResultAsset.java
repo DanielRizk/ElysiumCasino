@@ -10,7 +10,19 @@ import java.util.Map;
 public enum BJResultAsset implements Asset {
 
     /** The asset representing a win result. */
-    WIN;
+    WIN,
+
+    /** The asset representing a lost result. */
+    LOST,
+
+    /** The asset representing a push result. */
+    PUSH,
+
+    /** The asset representing an insured result. */
+    INSURED,
+
+    /** The asset representing a blackjack result. */
+    BLACKJACK;
 
     /**
      * Loads all Blackjack result assets from the respective resource directory.
@@ -18,7 +30,7 @@ public enum BJResultAsset implements Asset {
      * @param imageCache The cache where the loaded images will be stored.
      */
     public static void loadAssets(Map<Asset, Image> imageCache) {
-        AssetUtility.loadAssets(imageCache, "unused", BJResultAsset.class);
+        AssetUtility.loadAssets(imageCache, "results", BJResultAsset.class);
     }
 
     /**

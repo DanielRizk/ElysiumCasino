@@ -1,5 +1,7 @@
 package org.daniel.elysium;
 
+import org.daniel.elysium.assets.AssetManager;
+import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.debugUtils.DebugLevel;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.games.blackjack.BlackjackPanel;
@@ -26,6 +28,14 @@ public class Launcher {
         DatabaseConnection.initializeDatabase();
         DebugPrint.getInstance(DebugLevel.DEBUG); // Set to Disabled in production
 
+        // Set the look and feel to match the os
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            JFrame.setDefaultLookAndFeelDecorated(true); // Allows the OS theme to apply decorations
+        } catch (Exception e) {
+            DebugPrint.println(e);
+        }
+
         // Creating main Frame
         JFrame frame = new JFrame("Elysium Casino");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,6 +44,10 @@ public class Launcher {
         frame.setLocationRelativeTo(null);
         frame.setResizable(true);
         frame.pack();
+
+        // Set app icon
+        ImageIcon icon = AssetManager.getIcon(BackgroundAsset.APP_ICON);
+        frame.setIconImage(icon.getImage());
 
         // Creating main panel to hold all other panels
         JPanel mainPanel = new JPanel(new CardLayout());
@@ -74,7 +88,7 @@ public class Launcher {
         stateManager.registerPanel("Blackjack", () -> new BlackjackPanel(stateManager));
 
         // Test user for testing
-        stateManager.setProfile(new UserProfile("Test", "Test", 1000));
+        stateManager.setProfile(new UserProfile("Test", "Test", 10000));
         return stateManager;
     }
 }

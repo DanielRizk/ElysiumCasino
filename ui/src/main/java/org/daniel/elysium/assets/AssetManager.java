@@ -75,5 +75,15 @@ public class AssetManager {
     public static Image getImage(Asset assetName) {
         return imageCache.get(assetName);
     }
+
+    /**
+     * Retrieves the raw {@link ImageIcon} associated with the given asset.
+     *
+     * @param assetName The {@link Asset} to retrieve.
+     * @return The {@link ImageIcon} if found, otherwise {@code null}.
+     */
+    public static ImageIcon getIcon(Asset assetName) {
+        return new ImageIcon(imageCache.get(assetName));
+    }
 }
 

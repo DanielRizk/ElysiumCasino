@@ -5,6 +5,7 @@ import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.blackjack.BlackjackEngine;
 import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
+import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.models.Chip;
 import org.daniel.elysium.models.Shoe;
@@ -41,7 +42,7 @@ public class BlackjackController implements BlackjackMediator {
 
     // Game cards creation
     Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
-    private List<UICard> cards = shoe.cards();
+    private List<UICard> cards = getCustomDeck();//shoe.cards();
 
     /**
      * Constructs the BlackjackController and initializes game components.
@@ -432,7 +433,8 @@ public class BlackjackController implements BlackjackMediator {
         // If there is another hand (split) and this the first hand, go to the second hand
         if (checkForSecondHand() && index < 1){
             index++; // increment to second hand index
-            playerHandUI.getHand().setHandSplit(true); // to prevent black for split hands
+            PlayerHandUI playerHandUI2 = gameAreaPanel.getPlayerHand(index);
+            playerHandUI2.getHand().setHandSplit(true); // to prevent black for split hands
             gameAreaPanel.addPlayerCard(index, getCardFromShoe()); // second split hand has one card after split.
             calculatePlayerOptions(index);
         } else {
@@ -614,13 +616,25 @@ public class BlackjackController implements BlackjackMediator {
         // If player has no enough money, Player then escorted to main menu
         if (stateManager.getProfile().getBalance() < StateManager.MIN_BET){
             stateManager.switchPanel("MainMenu");
+
+            StyledNotificationDialog dialog = new StyledNotificationDialog(
+                    stateManager.getFrame(),
+                    "You don't have enough balance to continue playing. "
+            );
+
+            dialog.setVisible(true);
         }
 
-        // If the shoe has less than 10 cards, start a new shoe
-        if (shoe.cards().size() < 10){
+        // If the shoe has less than 15 cards, start a new shoe
+        if (cards.size() < 15){
             cards = Shoe.createShoe(4, UIDeck::new).cards();
-            new Toast(stateManager.getFrame(),
-                    "Shoe Ended", 3000).setVisible(true);
+
+            StyledNotificationDialog dialog = new StyledNotificationDialog(
+                    stateManager.getFrame(),
+                    "Shoe ended, Starting a new Shoe. "
+            );
+
+            dialog.setVisible(true);
         }
     }
 
@@ -720,16 +734,20 @@ public class BlackjackController implements BlackjackMediator {
     @SuppressWarnings("Unused")
     private List<UICard> getCustomDeck(){
         List<UICard> cards = new ArrayList<>();
-        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("10", "S", CardAsset.S10));
         cards.add(new UICard("10", "S", CardAsset.S10));
         cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("10", "H", CardAsset.H10));
+        cards.add(new UICard("10", "S", CardAsset.S10));
+        cards.add(new UICard("8", "C", CardAsset.C8));
         cards.add(new UICard("4", "H", CardAsset.H4));
+
+        cards.add(new UICard("K", "C", CardAsset.CK));
+        cards.add(new UICard("7", "S", CardAsset.S7));
+        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new UICard("8", "S", CardAsset.S8));
+        cards.add(new UICard("K", "S", CardAsset.SK));
         cards.add(new UICard("A", "S", CardAsset.SA));
-        cards.add(new UICard("4", "C", CardAsset.C4));
-        cards.add(new UICard("4", "H", CardAsset.H4));
-        cards.add(new UICard("4", "C", CardAsset.C4));
-        cards.add(new UICard("K", "S", CardAsset.SK));
-        cards.add(new UICard("K", "S", CardAsset.SK));
         cards.add(new UICard("K", "S", CardAsset.SK));
         cards.add(new UICard("K", "S", CardAsset.SK));
         cards.add(new UICard("K", "S", CardAsset.SK));

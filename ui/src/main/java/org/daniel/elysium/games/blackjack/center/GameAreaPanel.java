@@ -217,12 +217,19 @@ public class GameAreaPanel extends JPanel {
         PlayerHandUI split = new PlayerHandUI();
         playerHandPanel.removeAll();
 
+        boolean isSplitAces = original.getHand().isSplitAces();
+
         UICard secondCard = (UICard) original.getPlayerCards().getComponent(1);
         original.getPlayerCards().remove(1);
         original.getHand().getHand().remove(1);
 
         split.addCard(secondCard);
         split.getBetPanel().getChipsMain().addAll(original.getBetPanel().getChipsMain());
+        split.getHand().setBet(original.getBet());
+        split.getBetPanel().updateBetDisplay(split.getBet());
+
+        original.getHand().setSplitAces(isSplitAces);
+        split.getHand().setSplitAces(isSplitAces);
 
         playerHandPanel.add(original);
         playerHandPanel.add(split);

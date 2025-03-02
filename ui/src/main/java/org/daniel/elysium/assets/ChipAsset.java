@@ -22,7 +22,10 @@ public enum ChipAsset implements Asset {
     CHIP_50(50),
 
     /** Chip with a value of 10. */
-    CHIP_10(10);
+    CHIP_10(10),
+
+    /** Chip with a value of 5. */
+    CHIP_5(5);
 
     /** The numerical value of the chip. */
     private final int value;

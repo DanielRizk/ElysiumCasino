@@ -12,6 +12,9 @@ public enum BackgroundAsset implements Asset {
     /** The main game background. */
     BACKGROUND,
 
+    /** The main game background. */
+    APP_ICON,
+
     /** The raw version of the game logo. */
     LOGO_RAW,
 
