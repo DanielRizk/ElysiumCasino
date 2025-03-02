@@ -28,7 +28,10 @@ public enum BackgroundAsset implements Asset {
     DIALOG_BACKGROUND,
 
     /** The background for toast notifications. */
-    TOAST_BG;
+    TOAST_BG,
+
+    /** The background for the splash screen*/
+    SPLASH_SCREEN;
 
     /**
      * Loads all background assets from the respective resource directory.

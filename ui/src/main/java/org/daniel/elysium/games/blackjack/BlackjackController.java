@@ -45,7 +45,7 @@ public class BlackjackController implements BlackjackMediator {
 
     // Game cards creation
     Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
-    private List<UICard> cards = getCustomDeck();//shoe.cards();
+    private List<UICard> cards = shoe.cards();
 
     /**
      * Constructs the BlackjackController and initializes game components.
@@ -325,9 +325,7 @@ public class BlackjackController implements BlackjackMediator {
         state = GameState.PLAYER_TURN;
 
         // Turn of all highlights for all hands first
-        gameAreaPanel.getPlayerHands().forEach(playerHandUI -> {
-            playerHandUI.setHighlight(false);
-        });
+        gameAreaPanel.getPlayerHands().forEach(playerHandUI -> playerHandUI.setHighlight(false));
 
         // checkForSecond hand is true, Highlight is applied to the current hand
         gameAreaPanel.getPlayerHand(index).setHighlight(checkForSplitHands());

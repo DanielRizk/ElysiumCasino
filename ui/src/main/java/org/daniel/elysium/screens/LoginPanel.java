@@ -123,14 +123,10 @@ public class LoginPanel extends JPanel implements Resettable {
         });
 
         // Register button action -> switch to register panel
-        registerButton.addActionListener(e -> {
-            stateManager.switchPanel("Register");
-        });
+        registerButton.addActionListener(e -> stateManager.switchPanel("Register"));
 
         // Quit button action -> confirm before quitting
-        quitButton.addActionListener(e -> {
-            quit();
-        });
+        quitButton.addActionListener(e -> quit());
     }
 
     /**
