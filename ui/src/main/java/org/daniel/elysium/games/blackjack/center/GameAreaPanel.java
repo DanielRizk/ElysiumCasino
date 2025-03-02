@@ -210,13 +210,12 @@ public class GameAreaPanel extends JPanel {
     }
 
     /**
-     * Splits the player's hand into two.
+     * Splits the player's hand into two and handles the UI elements and the internal hand.
+     * @param index The index of the player hand.
      */
-    public void splitHand() {
-        //TODO: Theoretically we can split 4 time, explore the topic more.
-        PlayerHandUI original = getPlayerHand(0);
+    public void splitHand(int index) {
+        PlayerHandUI original = getPlayerHand(index);
         PlayerHandUI split = new PlayerHandUI();
-        playerHandPanel.removeAll();
 
         boolean isSplitAces = original.getHand().isSplitAces();
 
@@ -232,8 +231,7 @@ public class GameAreaPanel extends JPanel {
         original.getHand().setSplitAces(isSplitAces);
         split.getHand().setSplitAces(isSplitAces);
 
-        playerHandPanel.add(original);
-        playerHandPanel.add(split);
+        playerHandPanel.add(split, index + 1);
 
         revalidate();
         repaint();
@@ -255,9 +253,11 @@ public class GameAreaPanel extends JPanel {
         // Add new buttons based on the available actions
         if (availableActions != null && !availableActions.isEmpty()) {
             availableActions.forEach((action, index) -> {
-                StyledButton button = new StyledButton(action.toString());
-                button.addActionListener(e -> mediator.onActionSelected(action, index));
-                actionButtonsPanel.add(button);
+                if (!(action == GameActions.SPLIT && getPlayerHands().size() >= 4)) {
+                    StyledButton button = new StyledButton(action.toString());
+                    button.addActionListener(e -> mediator.onActionSelected(action, index));
+                    actionButtonsPanel.add(button);
+                }
             });
 
             // Ensure the panel layout updates after adding new buttons

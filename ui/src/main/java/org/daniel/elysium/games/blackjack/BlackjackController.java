@@ -2,7 +2,6 @@ package org.daniel.elysium.games.blackjack;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.CardAsset;
-import org.daniel.elysium.assets.ChipAsset;
 import org.daniel.elysium.blackjack.BlackjackEngine;
 import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
@@ -46,7 +45,7 @@ public class BlackjackController implements BlackjackMediator {
 
     // Game cards creation
     Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
-    private List<UICard> cards = shoe.cards();
+    private List<UICard> cards = getCustomDeck();//shoe.cards();
 
     /**
      * Constructs the BlackjackController and initializes game components.
@@ -325,8 +324,13 @@ public class BlackjackController implements BlackjackMediator {
     private void calculatePlayerOptions(int index) {
         state = GameState.PLAYER_TURN;
 
+        // Turn of all highlights for all hands first
+        gameAreaPanel.getPlayerHands().forEach(playerHandUI -> {
+            playerHandUI.setHighlight(false);
+        });
+
         // checkForSecond hand is true, Highlight is applied to the current hand
-        gameAreaPanel.getPlayerHand(index).setHighlight(checkForSecondHand());
+        gameAreaPanel.getPlayerHand(index).setHighlight(checkForSplitHands());
 
         // Get the available action from the backend logic.
         Map<GameActions, Integer> actions = getOptions(index);
@@ -383,7 +387,7 @@ public class BlackjackController implements BlackjackMediator {
             case HIT -> handleHitOption(index);
             case STAND -> handleStandOption(index);
             case DOUBLE -> handleDoubleOption(index);
-            case SPLIT -> handleSplitOption();
+            case SPLIT -> handleSplitOption(index);
             case INSURE -> handleInsureOption();
             case DO_NOT_INSURE -> handleDoNotInsureOption();
         }
@@ -405,14 +409,11 @@ public class BlackjackController implements BlackjackMediator {
             burnCard(); // remove the added card from the shoe
         }
 
-        // Calculate available options
-        calculatePlayerOptions(index);
-
         // If the player bust, move to next hand if any, or stand by default
         PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
         if (playerHandUI.getHand().getHandValue() >= 21){
             // If there is another hand (split) and this the first hand, go to the second hand
-            if (checkForSecondHand() && index < 1){
+            if (checkForSplitHands() && index + 1 <  gameAreaPanel.getPlayerHands().size()){
                 index++; // increment to second hand index
                 calculatePlayerOptions(index);
             } else {
@@ -435,10 +436,10 @@ public class BlackjackController implements BlackjackMediator {
         gameAreaPanel.clearActions();
 
         // If there is another hand (split) and this the first hand, go to the second hand
-        if (checkForSecondHand() && index < 1){
+        if (checkForSplitHands() && index + 1 <  gameAreaPanel.getPlayerHands().size()){
             index++; // increment to second hand index
             PlayerHandUI playerHandUI2 = gameAreaPanel.getPlayerHand(index);
-            playerHandUI2.getHand().setHandSplit(true); // to prevent black for split hands
+            playerHandUI2.getHand().setHandSplit(true); // to prevent blackjack for split hands
             gameAreaPanel.addPlayerCard(index, getCardFromShoe()); // second split hand has one card after split.
             calculatePlayerOptions(index);
         } else {
@@ -472,18 +473,20 @@ public class BlackjackController implements BlackjackMediator {
      * <p>
      * This method updates the UI to reflect the split, decreases the player's balance
      * accordingly, and assigns a second card to the first split hand. The game then proceeds
-     * with the first split hand.
+     * with the current split hand.
+     *
+     * @param index The index of the player's hand.
      */
-    private void handleSplitOption(){
-        gameAreaPanel.splitHand(); // The game area panel is responsible for the UI splitting of the hands
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHands().get(PlayerHandUI.FIRST_HAND);
+    private void handleSplitOption(int index){
+        gameAreaPanel.splitHand(index); // The game area panel is responsible for the UI splitting of the hands
+        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHands().get(index);
         stateManager.getProfile().decreaseBalanceBy(playerHandUI.getBet()); // decrease the same bet amount
         updateBalanceDisplay();
 
         // Add the second card to the first split hand
         playerHandUI.addCard(getCardFromShoe());
         playerHandUI.getHand().setHandSplit(true); // To prevent the blackjack for split hand
-        calculatePlayerOptions(PlayerHandUI.FIRST_HAND); // Start always with the first split hand
+        calculatePlayerOptions(index); // Start always with the first split hand
     }
 
     /*======================
@@ -762,7 +765,7 @@ public class BlackjackController implements BlackjackMediator {
      *
      * @return true if the player has multiple hands, false otherwise.
      */
-    private boolean checkForSecondHand(){
+    private boolean checkForSplitHands(){
         return gameAreaPanel.getPlayerHands().size() > 1;
     }
 
@@ -847,15 +850,14 @@ public class BlackjackController implements BlackjackMediator {
     private List<UICard> getCustomDeck(){
         List<UICard> cards = new ArrayList<>();
         cards.add(new UICard("10", "S", CardAsset.S10));
-        cards.add(new UICard("10", "S", CardAsset.S10));
-        cards.add(new UICard("K", "S", CardAsset.SK));
-        cards.add(new UICard("10", "H", CardAsset.H10));
-        cards.add(new UICard("10", "S", CardAsset.S10));
-        cards.add(new UICard("8", "C", CardAsset.C8));
-        cards.add(new UICard("4", "H", CardAsset.H4));
-
-        cards.add(new UICard("K", "C", CardAsset.CK));
         cards.add(new UICard("7", "S", CardAsset.S7));
+        cards.add(new UICard("10", "H", CardAsset.H10));
+        cards.add(new UICard("Q", "S", CardAsset.SQ));
+        cards.add(new UICard("10", "C", CardAsset.C10));
+        cards.add(new UICard("2", "H", CardAsset.H2));
+
+        cards.add(new UICard("9", "C", CardAsset.C9));
+        cards.add(new UICard("Q", "S", CardAsset.SQ));
         cards.add(new UICard("K", "S", CardAsset.SK));
         cards.add(new UICard("8", "S", CardAsset.S8));
         cards.add(new UICard("K", "S", CardAsset.SK));

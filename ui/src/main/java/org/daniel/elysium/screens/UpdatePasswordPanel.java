@@ -51,7 +51,7 @@ public class UpdatePasswordPanel extends JPanel implements Resettable {
         gbc.anchor = GridBagConstraints.CENTER;
 
         // Create and add the game logo
-        Dimension logoDimension = new Dimension(430, 350);
+        Dimension logoDimension = new Dimension(600, 500);
         JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(BackgroundAsset.LOGO_SHADE, logoDimension));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridy = 0;

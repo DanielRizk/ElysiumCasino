@@ -97,7 +97,7 @@ public class PlayerHand extends BJHand {
      * @return {@code true} if the hand can be split, otherwise {@code false}.
      */
     public boolean isSplittable() {
-        return getHand().size() == 2 && getHand().get(0).getValue() == getHand().get(1).getValue() && !isHandSplit;
+        return getHand().size() == 2 && getHand().get(0).getValue() == getHand().get(1).getValue();
     }
 
     /**

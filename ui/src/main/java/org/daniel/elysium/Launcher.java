@@ -39,7 +39,7 @@ public class Launcher {
         // Creating main Frame
         JFrame frame = new JFrame("Elysium Casino");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(1800, 1200));
+        frame.setMinimumSize(new Dimension(1600, 1200));
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
         frame.setResizable(true);
