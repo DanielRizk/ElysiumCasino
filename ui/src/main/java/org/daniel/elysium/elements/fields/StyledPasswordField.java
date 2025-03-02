@@ -184,11 +184,13 @@ public class StyledPasswordField extends JPanel {
     public void setText(String text) {
         if (text == null || text.isEmpty()) {
             passwordField.setText(placeholder);
+            passwordField.setEchoChar((char) 0); // Disable masking
             passwordField.setForeground(textColor);
             passwordField.setFont(new Font("Roboto", Font.ITALIC, 15));
             showingPlaceholder = true;
         } else {
             passwordField.setText(text);
+            passwordField.setEchoChar('*'); // Enable masking
             passwordField.setForeground(textColor);
             passwordField.setFont(new Font("Roboto", Font.PLAIN, 15));
             showingPlaceholder = false;

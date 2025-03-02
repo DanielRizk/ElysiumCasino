@@ -1,5 +1,6 @@
 package org.daniel.elysium.screens;
 
+import org.daniel.elysium.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
@@ -21,7 +22,7 @@ import java.awt.event.KeyEvent;
  * Represents the login panel where users can enter their credentials
  * to log in, register, or quit the application.
  */
-public class LoginPanel extends JPanel {
+public class LoginPanel extends JPanel implements Resettable {
     private final StyledTextField usernameField;
     private final StyledPasswordField passwordField;
     private final StyledButton loginButton;
@@ -183,5 +184,16 @@ public class LoginPanel extends JPanel {
         if (dialog.isConfirmed()) {
             System.exit(0);
         }
+    }
+
+    @Override
+    public void onRestart() {
+        // No need to do anything here
+    }
+
+    @Override
+    public void reset() {
+        this.usernameField.setText("");
+        this.passwordField.setText("");
     }
 }

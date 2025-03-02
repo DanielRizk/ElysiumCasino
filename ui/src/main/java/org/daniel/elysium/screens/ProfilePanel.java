@@ -1,5 +1,6 @@
 package org.daniel.elysium.screens;
 
+import org.daniel.elysium.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
@@ -20,7 +21,7 @@ import java.awt.event.KeyEvent;
  * Represents the Profile panel where users can manage their account
  * to view balance, change password, or delete the account.
  */
-public class ProfilePanel extends JPanel {
+public class ProfilePanel extends JPanel implements Resettable {
     private final StyledTextField balanceLabel;
     private final StyledTextField nameLabel;
     private final StyledButton changePasswordButton;
@@ -148,17 +149,37 @@ public class ProfilePanel extends JPanel {
         }
     }
 
+    /** Helper method to set and update the name label */
+    private void updateNameLabel(){
+        nameLabel.setText("Name: " + stateManager.getProfile().getName());
+    }
+
+    /** Helper method to set and update the balance label */
+    private void updateBalanceLabel(){
+        balanceLabel.setText("Balance: " + stateManager.getProfile().getBalance());
+    }
+
     /**
      * Increases the user's balance by 10,000 and displays a notification.
      * <p>
      * This method adds 10,000 to the user's balance, updates the balance display,
      * and shows a notification dialog informing the user about the balance increase.
      */
-
     private void topUpBalance(){
         stateManager.getProfile().increaseBalanceBy(10000);
         StyledNotificationDialog dialog = new StyledNotificationDialog(stateManager.getFrame(), "Your balance has increased by 10000");
         dialog.setVisible(true);
-        balanceLabel.setText("Balance: " + stateManager.getProfile().getBalance());
+        updateBalanceLabel();
+    }
+
+    @Override
+    public void reset() {
+        // Nothing to do here
+    }
+
+    @Override
+    public void onRestart() {
+        updateNameLabel();
+        updateBalanceLabel();
     }
 }

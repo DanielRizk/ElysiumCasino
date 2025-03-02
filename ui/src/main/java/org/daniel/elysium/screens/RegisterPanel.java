@@ -1,5 +1,6 @@
 package org.daniel.elysium.screens;
 
+import org.daniel.elysium.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
@@ -21,7 +22,7 @@ import java.awt.event.KeyEvent;
 /**
  * Represents the user registration panel where new users can create an account.
  */
-public class RegisterPanel extends JPanel {
+public class RegisterPanel extends JPanel implements Resettable {
     private final StyledTextField usernameField;
     private final StyledPasswordField passwordField;
     private final StyledPasswordField repeatPasswordField;
@@ -194,5 +195,17 @@ public class RegisterPanel extends JPanel {
         if (dialog.isConfirmed()) {
             System.exit(0);
         }
+    }
+
+    @Override
+    public void onRestart() {
+        // No need to do anything here
+    }
+
+    @Override
+    public void reset() {
+        this.usernameField.setText("");
+        this.passwordField.setText("");
+        this.repeatPasswordField.setText("");
     }
 }

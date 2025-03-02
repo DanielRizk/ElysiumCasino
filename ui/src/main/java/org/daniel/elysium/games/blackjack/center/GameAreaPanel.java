@@ -213,6 +213,7 @@ public class GameAreaPanel extends JPanel {
      * Splits the player's hand into two.
      */
     public void splitHand() {
+        //TODO: Theoretically we can split 4 time, explore the topic more.
         PlayerHandUI original = getPlayerHand(0);
         PlayerHandUI split = new PlayerHandUI();
         playerHandPanel.removeAll();

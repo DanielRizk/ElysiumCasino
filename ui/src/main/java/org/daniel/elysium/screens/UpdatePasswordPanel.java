@@ -1,12 +1,12 @@
 package org.daniel.elysium.screens;
 
+import org.daniel.elysium.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledPasswordField;
-import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
 import org.daniel.elysium.user.database.UserDAO;
@@ -20,7 +20,7 @@ import java.awt.event.KeyEvent;
 /**
  * Represents the user update password panel where new users can change their password.
  */
-public class UpdatePasswordPanel extends JPanel {
+public class UpdatePasswordPanel extends JPanel implements Resettable {
     private final StyledPasswordField oldPasswordField;
     private final StyledPasswordField passwordField;
     private final StyledPasswordField repeatPasswordField;
@@ -173,5 +173,17 @@ public class UpdatePasswordPanel extends JPanel {
         stateManager.setProfile(profile);
         new Toast(stateManager.getFrame(), "Password has been updated", 3000).setVisible(true);
         stateManager.switchPanel("Profile");
+    }
+
+    @Override
+    public void onRestart() {
+        // No need to do anything here
+    }
+
+    @Override
+    public void reset() {
+        this.oldPasswordField.setText("");
+        this.passwordField.setText("");
+        this.repeatPasswordField.setText("");
     }
 }

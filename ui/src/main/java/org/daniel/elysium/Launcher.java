@@ -56,7 +56,7 @@ public class Launcher {
         StateManager stateManager = createStateManager(mainPanel, frame);
 
         // Set the entry point of the app (initial panel)
-        stateManager.switchPanel("Blackjack");
+        stateManager.switchPanel("Login");
 
         // Set initial focus to the main panel
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -80,15 +80,17 @@ public class Launcher {
      */
     private static StateManager createStateManager(JPanel mainPanel, JFrame frame) {
         StateManager stateManager = new StateManager(mainPanel, frame);
-        stateManager.registerPanel("Login", () -> new LoginPanel(stateManager));
-        stateManager.registerPanel("MainMenu", () -> new MainMenuPanel(stateManager));
-        stateManager.registerPanel("Register", () -> new RegisterPanel(stateManager));
-        stateManager.registerPanel("Profile", () -> new ProfilePanel(stateManager));
-        stateManager.registerPanel("ChangePass", () -> new UpdatePasswordPanel(stateManager));
-        stateManager.registerPanel("Blackjack", () -> new BlackjackPanel(stateManager));
 
         // Test user for testing
         stateManager.setProfile(new UserProfile("Test", "Test", 10000));
+
+        stateManager.registerPanel("Login", new LoginPanel(stateManager));
+        stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));
+        stateManager.registerPanel("Register", new RegisterPanel(stateManager));
+        stateManager.registerPanel("Profile", new ProfilePanel(stateManager));
+        stateManager.registerPanel("ChangePass", new UpdatePasswordPanel(stateManager));
+        stateManager.registerPanel("Blackjack", new BlackjackPanel(stateManager));
+
         return stateManager;
     }
 }

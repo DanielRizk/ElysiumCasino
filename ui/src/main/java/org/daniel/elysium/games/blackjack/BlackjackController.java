@@ -2,6 +2,7 @@ package org.daniel.elysium.games.blackjack;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.CardAsset;
+import org.daniel.elysium.assets.ChipAsset;
 import org.daniel.elysium.blackjack.BlackjackEngine;
 import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
@@ -19,6 +20,9 @@ import org.daniel.elysium.games.blackjack.constants.GameState;
 import org.daniel.elysium.games.blackjack.top.TopPanel;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,7 +38,7 @@ public class BlackjackController implements BlackjackMediator {
 
     // References to subcomponents.
     private final TopPanel topPanel;
-    private final ChipPanel chipPanel;
+    private ChipPanel chipPanel;
     private final GameAreaPanel gameAreaPanel;
 
     // Define the game logic engine
@@ -42,7 +46,7 @@ public class BlackjackController implements BlackjackMediator {
 
     // Game cards creation
     Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
-    private List<UICard> cards = getCustomDeck();//shoe.cards();
+    private List<UICard> cards = shoe.cards();
 
     /**
      * Constructs the BlackjackController and initializes game components.
@@ -609,9 +613,9 @@ public class BlackjackController implements BlackjackMediator {
         state = GameState.GAME_ENDED;
         gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
-        chipPanel.setVisible(true);
         gameEngine = new BlackjackEngine();
         state = GameState.BET_PHASE;
+        regenerateChipPanel();
 
         // If player has no enough money, Player then escorted to main menu
         if (stateManager.getProfile().getBalance() < StateManager.MIN_BET){
@@ -638,9 +642,117 @@ public class BlackjackController implements BlackjackMediator {
         }
     }
 
+    /** Protected API for the {@link BlackjackPanel} to revert to initial state when exiting */
+    protected void resetScreen(){
+        state = GameState.BET_PHASE;
+        chipPanel.setVisible(false);
+        gameAreaPanel.clearActions();
+        gameAreaPanel.clearHands();
+        gameEngine = new BlackjackEngine();
+        removeChipPanel();
+        cards = Shoe.createShoe(4, UIDeck::new).cards();
+    }
+
+    /** Protected API for the BlackjackPanel to restart fresh and updated screen */
+    protected void restartScreen(){
+        revealChipPanel();
+        updateBalanceDisplay();
+    }
+
     /*======================
         Helper methods
     ======================*/
+
+    /**
+     * Regenerates the chip panel by first removing the existing one and then revealing a new instance.
+     * <p>
+     * This ensures that the chip panel is always freshly created and dynamically updated.
+     */
+    private void regenerateChipPanel(){
+        removeChipPanel();
+        revealChipPanel();
+    }
+
+    /**
+     * Creates and displays a new instance of the chip panel.
+     * <p>
+     * This method runs on the Swing Event Dispatch Thread (EDT) to ensure thread safety.
+     * It removes any existing chip panel, creates a new one, and adds it to the JLayeredPane.
+     * The chip panel is then repositioned and made visible.
+     * A component listener is also added to adjust its position when the main frame is resized.
+     */
+    private void revealChipPanel() {
+        SwingUtilities.invokeLater(() -> {
+            if (stateManager.getFrame() != null) {
+                JLayeredPane layeredPane = stateManager.getFrame().getRootPane().getLayeredPane();
+
+                // Remove any existing chip panel before creating a new one
+                //removeChipPanel();
+
+                // Create a new ChipPanel instance
+                chipPanel = new ChipPanel(this, stateManager);
+
+                // Add to the layered pane
+                layeredPane.add(chipPanel, JLayeredPane.POPUP_LAYER);
+
+                // Re-display the chip panel
+                repositionChipPanel();
+                chipPanel.setVisible(true);
+
+                // Ensure UI refresh
+                layeredPane.revalidate();
+                layeredPane.repaint();
+
+                // Adjust the location of the chip panel when the parent is resized
+                stateManager.getFrame().addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(ComponentEvent e) {
+                        repositionChipPanel();
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Removes the currently displayed chip panel from the layered pane.
+     * <p>
+     * This method ensures that the chip panel is properly removed from the UI before a new one is created.
+     * It runs on the Swing Event Dispatch Thread (EDT) to prevent concurrency issues and forces a UI update.
+     */
+    private void removeChipPanel() {
+        SwingUtilities.invokeLater(() -> {
+            if (stateManager.getFrame() != null) {
+                JLayeredPane layeredPane = stateManager.getFrame().getRootPane().getLayeredPane();
+
+                // Ensure the panel exists before trying to remove it
+                if (chipPanel != null) {
+                    layeredPane.remove(chipPanel);
+                    layeredPane.revalidate();
+                    layeredPane.repaint();
+                }
+            }
+        });
+    }
+
+    /**
+     * Adjusts the position of the chip panel within the main frame.
+     * <p>
+     * The panel is positioned near the bottom left of the screen with a fixed margin.
+     * This method ensures the chip panel is correctly placed after being added or when the window is resized.
+     */
+    private void repositionChipPanel() {
+        if (stateManager.getFrame() != null) {
+            Dimension pref = getChipPanel().getPreferredSize();
+            int chipPanelWidth = pref.width;
+            int chipPanelHeight = pref.height;
+            int yPos = stateManager.getFrame().getHeight() - chipPanelHeight - 60;  // Margin from bottom
+            int xPos = 20; // Margin from left
+            getChipPanel().setBounds(xPos, yPos, chipPanelWidth, chipPanelHeight);
+            getChipPanel().revalidate();
+            getChipPanel().repaint();
+        }
+    }
 
     /**
      * Checks if the player has split hands.

@@ -1,5 +1,6 @@
 package org.daniel.elysium.screens;
 
+import org.daniel.elysium.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
@@ -93,6 +94,13 @@ public class MainMenuPanel extends JPanel {
             if (stateManager.isUserLoggedIn() &&
                     stateManager.getProfile().getBalance() > StateManager.MIN_BET) {
                 stateManager.switchPanel("Blackjack");
+            } else {
+                StyledNotificationDialog dialog = new StyledNotificationDialog(
+                        stateManager.getFrame(),
+                        "You don't have enough balance to start the game. "
+                );
+
+                dialog.setVisible(true);
             }
         });
 
