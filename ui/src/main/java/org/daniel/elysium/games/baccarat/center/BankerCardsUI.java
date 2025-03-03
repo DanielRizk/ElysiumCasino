@@ -11,9 +11,13 @@ public class BankerCardsUI extends JPanel {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         setOpaque(false);
         setPreferredSize(new Dimension(200, 150));
+    }
 
-        add(new UICard("K", "H", CardAsset.HK)); // Example Card
-        add(new UICard("K", "H", CardAsset.HK)); // Example Card
-        add(new UICard("K", "H", CardAsset.HK)); // Example Card
+    public void addCard(UICard card){
+        add(card);
+    }
+
+    public void removeCards(){
+        removeAll();
     }
 }

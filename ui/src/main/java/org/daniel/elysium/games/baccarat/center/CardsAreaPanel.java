@@ -1,24 +1,29 @@
 package org.daniel.elysium.games.baccarat.center;
 
 import org.daniel.elysium.elements.panels.VerticalLinePanel;
+import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class CardsAreaPanel extends JPanel {
+    private final PlayerAreaUI playerAreaUI;
+    private final BankerAreaUI bankerAreaUI;
+
     public CardsAreaPanel() {
         setLayout(new GridBagLayout());
         setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weighty = 1.0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridx = 0;
         gbc.insets = new Insets(0, 40, 0, 40);
 
         // Add Player Area
-        add(new PlayerAreaUI(), gbc);
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        playerAreaUI = new PlayerAreaUI();
+        add(playerAreaUI, gbc);
 
         // Add Vertical Line
         gbc.gridx = 1;
@@ -32,6 +37,20 @@ public class CardsAreaPanel extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.CENTER;
-        add(new BankerAreaUI(), gbc);
+        bankerAreaUI = new BankerAreaUI();
+        add(bankerAreaUI, gbc);
+    }
+
+    public void addPlayerCard(UICard card){
+        playerAreaUI.addCard(card);
+    }
+
+    public void addBankerCard(UICard card){
+        bankerAreaUI.addCard(card);
+    }
+
+    public void removeCards(){
+        playerAreaUI.removeCards();
+        bankerAreaUI.removeCards();
     }
 }

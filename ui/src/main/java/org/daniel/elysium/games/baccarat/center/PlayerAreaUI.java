@@ -1,10 +1,12 @@
 package org.daniel.elysium.games.baccarat.center;
 
+import org.daniel.elysium.models.cards.UICard;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class PlayerAreaUI extends JPanel {
-
+    private final PlayerCardsUI cardsUI;
     public PlayerAreaUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);
@@ -17,7 +19,7 @@ public class PlayerAreaUI extends JPanel {
         PlayerTextUI textUI = new PlayerTextUI();
         textUI.setAlignmentX(CENTER_ALIGNMENT);
 
-        PlayerCardsUI cardsUI = new PlayerCardsUI();
+        cardsUI = new PlayerCardsUI();
         cardsUI.setAlignmentX(CENTER_ALIGNMENT);
 
         add(Box.createVerticalGlue()); // Push content towards center
@@ -25,5 +27,13 @@ public class PlayerAreaUI extends JPanel {
         add(Box.createRigidArea(new Dimension(0, 30))); // Space between text & cards
         add(cardsUI);
         add(Box.createVerticalGlue()); // Push content towards center
+    }
+
+    public void addCard(UICard card){
+        cardsUI.add(card);
+    }
+
+    public void removeCards(){
+        cardsUI.removeAll();
     }
 }

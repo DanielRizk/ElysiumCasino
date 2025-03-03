@@ -11,9 +11,13 @@ public class PlayerCardsUI extends JPanel {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         setOpaque(false);
         setPreferredSize(new Dimension(200, 150)); // Ensure size consistency
+    }
 
-        add(new UICard("A", "S", CardAsset.SA));
-        add(new UICard("A", "S", CardAsset.SA));
-        add(new UICard("A", "S", CardAsset.SA));
+    public void addCard(UICard card){
+        add(card);
+    }
+
+    public void removeCards(){
+        removeAll();
     }
 }
