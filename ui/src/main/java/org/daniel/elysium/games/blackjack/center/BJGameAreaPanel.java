@@ -6,6 +6,7 @@ import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
+import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.models.cards.UICard;
 import org.daniel.elysium.interfaces.Mediator;
 import org.daniel.elysium.games.blackjack.center.models.DealerHandUI;
@@ -180,10 +181,10 @@ public class BJGameAreaPanel extends JPanel {
     /**
      * Adds a card to the dealer's hand.
      *
-     * @param card The {@link UICard} to be added.
+     * @param card The {@link BJCardUI} to be added.
      * @return {@code true} if successfully added, otherwise {@code false}.
      */
-    public boolean addDealerCard(UICard card) {
+    public boolean addDealerCard(BJCardUI card) {
         DealerHandUI dealerHandUI = getDealerHand();
         if (dealerHandUI.addCard(card)) {
             dealerHandUI.revalidate();
@@ -197,10 +198,10 @@ public class BJGameAreaPanel extends JPanel {
      * Adds a card to the player's hand.
      *
      * @param index The index of the player hand.
-     * @param card  The {@link UICard} to be added.
+     * @param card  The {@link BJCardUI} to be added.
      * @return {@code true} if successfully added, otherwise {@code false}.
      */
-    public boolean addPlayerCard(int index, UICard card) {
+    public boolean addPlayerCard(int index, BJCardUI card) {
         PlayerHandUI playerHandUI = getPlayerHand(index);
         if (playerHandUI.addCard(card)) {
             playerHandUI.revalidate();
@@ -220,7 +221,7 @@ public class BJGameAreaPanel extends JPanel {
 
         boolean isSplitAces = original.getHand().isSplitAces();
 
-        UICard secondCard = (UICard) original.getPlayerCards().getComponent(1);
+        BJCardUI secondCard = (BJCardUI) original.getPlayerCards().getComponent(1);
         original.getPlayerCards().remove(1);
         original.getHand().getHand().remove(1);
 

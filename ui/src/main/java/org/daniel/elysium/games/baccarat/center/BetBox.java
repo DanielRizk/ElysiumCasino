@@ -11,7 +11,6 @@ import java.util.List;
 
 public class BetBox extends JPanel {
     private final String label;
-    private boolean isSelected = false;
     private SelectionListener selectionListener;
 
     private final List<Chip> chips;
@@ -52,7 +51,6 @@ public class BetBox extends JPanel {
 
     // Toggle selection
     public void setSelected(boolean selected) {
-        isSelected = selected;
         setBorder(selected
                 ? BorderFactory.createLineBorder(Color.YELLOW, 7) // Highlight selected box
                 : BorderFactory.createLineBorder(Color.WHITE, 7)); // Default
@@ -67,6 +65,19 @@ public class BetBox extends JPanel {
     // Interface for callback
     public interface SelectionListener {
         void onSelected(BetBox selectedBox);
+    }
+
+
+    public void payWin(){
+        List<Chip> chipList = new ArrayList<>(chips);
+        chips.addAll(chipList);
+    }
+
+    public void payTie(){
+        List<Chip> chipList = Chip.getChipCombination(chips.stream()
+                .mapToInt(Chip::getValue) // Extract values
+                .sum() * 9);
+        chips.addAll(chipList);
     }
 
     /**
@@ -142,8 +153,10 @@ public class BetBox extends JPanel {
         int baseX = (getWidth() - chipSize) / 2;
         int baseY = (getHeight() - chipSize + 30) / 2;
         for (int i = 0; i < chips.size(); i++) {
-            int chipY = baseY - (i * offset);
-            g2.drawImage(chips.get(i).getIcon().getImage(), baseX, chipY, chipSize, chipSize, null);
+            if (i < maxChips) {
+                int chipY = baseY - (i * offset);
+                g2.drawImage(chips.get(i).getIcon().getImage(), baseX, chipY, chipSize, chipSize, null);
+            }
         }
         g2.dispose();
     }

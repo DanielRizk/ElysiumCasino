@@ -1,11 +1,11 @@
 package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.assets.AssetManager;
-import org.daniel.elysium.assets.BJResultAsset;
+import org.daniel.elysium.assets.ResultAsset;
 import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.blackjack.models.PlayerHand;
+import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.models.chips.Chip;
-import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -127,7 +127,7 @@ public class PlayerHandUI extends JPanel {
      * @param uiCard The card to add.
      * @return {@code true} if the card was successfully added, {@code false} otherwise.
      */
-    public boolean addCard(UICard uiCard) {
+    public boolean addCard(BJCardUI uiCard) {
         if (hand.canDealCard(uiCard.getCard())) {
             hand.dealCard(uiCard.getCard());
             playerCards.addCard(uiCard);
@@ -181,11 +181,12 @@ public class PlayerHandUI extends JPanel {
         updateBetDisplay(getBet());
     }
 
+    // TODO: make them like you did in baccarat in BetBOX
     /**
      * Adds an insurance bet equivalent to half of the original bet.
      */
     public void addInsuranceBet() {
-        List<Chip> chips = getBetPanel().getChipCombination((int) (getBet() * 0.5));
+        List<Chip> chips = Chip.getChipCombination((int) (getBet() * 0.5));
         for (Chip chip : chips) {
             getBetPanel().addChipExtra(chip);
         }
@@ -196,7 +197,7 @@ public class PlayerHandUI extends JPanel {
      * Pays out winnings for a blackjack hand.
      */
     public void payBlackjackWin() {
-        List<Chip> chips = getBetPanel().getChipCombination((getBet() * 3 / 5));
+        List<Chip> chips = Chip.getChipCombination((getBet() * 3 / 5));
         for (Chip chip : chips) {
             getBetPanel().addChipMain(chip);
         }
@@ -206,7 +207,7 @@ public class PlayerHandUI extends JPanel {
      * Pays out winnings for an insurance bet.
      */
     public void payInsurance() {
-        List<Chip> chips = getBetPanel().getChipCombination((getInsuranceBet() * 2 / 3));
+        List<Chip> chips = Chip.getChipCombination((getInsuranceBet() * 2 / 3));
         for (Chip chip : chips) {
             getBetPanel().addChipExtra(chip);
         }
@@ -262,15 +263,15 @@ public class PlayerHandUI extends JPanel {
      */
     public void displayHandResult(){
         if (hand.getState() == HandState.BLACKJACK){
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.BLACKJACK, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.BLACKJACK, new Dimension(300, 200)));
         } else if (hand.getState() == HandState.INSURED){
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.INSURED, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.INSURED, new Dimension(300, 200)));
         } else if (hand.getState() == HandState.WON) {
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.WIN, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.WON, new Dimension(300, 200)));
         } else if (hand.getState() == HandState.PUSH) {
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.PUSH, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.PUSH, new Dimension(300, 200)));
         } else {
-            playerCards.showOverlay(AssetManager.getScaledImage(BJResultAsset.LOST, new Dimension(300, 200)));
+            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.LOST, new Dimension(300, 200)));
         }
     }
 

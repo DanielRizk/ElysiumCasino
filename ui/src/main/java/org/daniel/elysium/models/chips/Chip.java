@@ -5,6 +5,10 @@ import org.daniel.elysium.assets.ChipAsset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Represents a casino chip as a styled button.
@@ -59,5 +63,27 @@ public class Chip extends JButton {
     @Override
     public ImageIcon getIcon() {
         return icon;
+    }
+
+    /**
+     * Generates a possible combination of chips from the available denominations to match the given bet amount.
+     *
+     * @param bet The total bet amount to be represented in chips.
+     * @return A list of chips representing the given bet amount.
+     */
+    public static List<Chip> getChipCombination(int bet) {
+        List<ChipAsset> assetsSorted = Arrays.stream(ChipAsset.values())
+                .sorted(Comparator.comparingInt(ChipAsset::getValue).reversed())
+                .toList();
+
+        List<Chip> combination = new ArrayList<>();
+
+        for (ChipAsset chipAsset : assetsSorted) {
+            while (bet >= chipAsset.getValue()) {
+                combination.add(new Chip(chipAsset));
+                bet -= chipAsset.getValue();
+            }
+        }
+        return combination;
     }
 }

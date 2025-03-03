@@ -3,7 +3,7 @@ package org.daniel.elysium.games.blackjack.constants;
 /**
  * Enum representing the different states of a Blackjack game.
  */
-public enum BlackjackGameState {
+public enum BJGameState {
     /** The phase where players place their bets before the game starts. */
     BET_PHASE,
 

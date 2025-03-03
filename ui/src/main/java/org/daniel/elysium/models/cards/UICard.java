@@ -4,21 +4,25 @@ import org.daniel.elysium.assets.Asset;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.blackjack.models.BJCard;
+import org.daniel.elysium.models.Card;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Represents a visual representation of a Blackjack card in the UI.
+ * Represents a visual representation of a card in the UI.
  * Each {@code UICard} is linked to a logical {@link BJCard} instance.
  */
 public class UICard extends JLabel {
 
     /** The logical backend representation of the card. */
-    private final BJCard card;
+    private final Card card;
 
     /** The icon representing the front face of the card. */
     private final ImageIcon icon;
+
+    /** The Asset representing the icon the card. */
+    private final Asset asset;
 
     /** The default dimensions for a card. */
     public static final Dimension defaultDimension = new Dimension(110, 150);
@@ -32,8 +36,9 @@ public class UICard extends JLabel {
      */
     public UICard(String rank, String suit, Asset icon) {
         // Create logical backend card
-        this.card = new BJCard(rank, suit);
+        this.card = new Card(rank, suit);
         this.icon = AssetManager.getScaledIcon(icon, defaultDimension);
+        this.asset = icon;
         setIcon(this.icon);
     }
 
@@ -58,10 +63,19 @@ public class UICard extends JLabel {
     /**
      * Returns the logical backend representation of the card.
      *
-     * @return The corresponding {@link BJCard} instance.
+     * @return The corresponding {@link Card} instance.
      */
-    public BJCard getCard() {
+    public Card getCard() {
         return card;
+    }
+
+    /**
+     * Returns the asset of the card.
+     *
+     * @return The corresponding {@link Asset} instance.
+     */
+    public Asset getAsset() {
+        return asset;
     }
 
     /**

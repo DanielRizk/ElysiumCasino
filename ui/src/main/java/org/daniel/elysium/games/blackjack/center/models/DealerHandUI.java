@@ -1,6 +1,7 @@
 package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.blackjack.models.DealerHand;
+import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
@@ -42,7 +43,7 @@ public class DealerHandUI extends JPanel {
      * @param uiCard The UI card representation to be added.
      * @return {@code true} if the card was successfully added, {@code false} otherwise.
      */
-    public boolean addCard(UICard uiCard) {
+    public boolean addCard(BJCardUI uiCard) {
         if (hand.canDealCard(uiCard.getCard())) {
             hand.dealCard(uiCard.getCard());
             add(uiCard);
@@ -57,7 +58,7 @@ public class DealerHandUI extends JPanel {
      */
     public void flipCardUp() {
         if (getComponents().length > 1) {
-            ((UICard) getComponents()[1]).setFaceUp();
+            ((BJCardUI) getComponents()[1]).setFaceUp();
         }
     }
 
@@ -67,7 +68,7 @@ public class DealerHandUI extends JPanel {
      */
     public void flipCardDown() {
         if (getComponents().length > 1) {
-            ((UICard) getComponents()[1]).setFaceDown();
+            ((BJCardUI) getComponents()[1]).setFaceDown();
         }
     }
 }

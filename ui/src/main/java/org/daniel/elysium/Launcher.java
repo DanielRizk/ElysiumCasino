@@ -40,7 +40,7 @@ public class Launcher {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                initializeApplication(); // Simulate loading resources
+                initializeApplication();
                 return null;
             }
 
@@ -170,7 +170,7 @@ public class Launcher {
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));
         //stateManager.registerPanel("Profile", new ProfilePanel(stateManager));
         //stateManager.registerPanel("ChangePass", new UpdatePasswordPanel(stateManager));
-        //stateManager.registerPanel("Blackjack", new BlackjackPanel(stateManager));
+        stateManager.registerPanel("Blackjack", new BlackjackPanel(stateManager));
         stateManager.registerPanel("Baccarat", new BaccaratPanel(stateManager));
 
         return stateManager;

@@ -20,7 +20,7 @@ public class AssetManager {
         ButtonAsset.loadAssets(imageCache);
         BackgroundAsset.loadAssets(imageCache);
         CardAsset.loadAssets(imageCache);
-        BJResultAsset.loadAssets(imageCache);
+        ResultAsset.loadAssets(imageCache);
     }
 
     /**

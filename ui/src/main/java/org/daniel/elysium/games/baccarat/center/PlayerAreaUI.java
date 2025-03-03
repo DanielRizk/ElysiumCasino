@@ -1,5 +1,9 @@
 package org.daniel.elysium.games.baccarat.center;
 
+import org.daniel.elysium.assets.AssetManager;
+import org.daniel.elysium.assets.ResultAsset;
+import org.daniel.elysium.baccarat.BacHand;
+import org.daniel.elysium.baccarat.BacHandState;
 import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
@@ -7,6 +11,8 @@ import java.awt.*;
 
 public class PlayerAreaUI extends JPanel {
     private final PlayerCardsUI cardsUI;
+    private BacHand hand;
+
     public PlayerAreaUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);
@@ -27,13 +33,31 @@ public class PlayerAreaUI extends JPanel {
         add(Box.createRigidArea(new Dimension(0, 30))); // Space between text & cards
         add(cardsUI);
         add(Box.createVerticalGlue()); // Push content towards center
+
+        this.hand = new BacHand();
     }
 
-    public void addCard(UICard card){
-        cardsUI.add(card);
+    public void addCard(BacCardUI card){
+        cardsUI.addCard(card);
+        hand.dealCard(card.getCard());
+    }
+
+    public BacHand getHand(){
+        return hand;
     }
 
     public void removeCards(){
-        cardsUI.removeAll();
+        cardsUI.removeCards();
+        hand = new BacHand();
+    }
+
+    public void showOverlay(){
+        if (hand.getState() == BacHandState.WON){
+            cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.WON, new Dimension(300, 200)));
+        } else if (hand.getState() == BacHandState.LOST){
+            cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.LOST, new Dimension(300, 200)));
+        } else if (hand.getState() == BacHandState.TIE){
+            cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.TIE, new Dimension(300, 200)));
+        }
     }
 }

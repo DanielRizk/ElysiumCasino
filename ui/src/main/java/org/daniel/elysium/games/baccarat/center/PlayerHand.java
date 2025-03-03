@@ -1,5 +1,7 @@
 package org.daniel.elysium.games.baccarat.center;
 
+import org.daniel.elysium.baccarat.HandType;
+
 public class PlayerHand {
     private int bet = 0;
     private HandType type;

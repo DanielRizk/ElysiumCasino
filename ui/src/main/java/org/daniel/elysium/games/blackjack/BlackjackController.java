@@ -8,24 +8,22 @@ import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
+import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.interfaces.ChipPanelConsumer;
 import org.daniel.elysium.interfaces.Mediator;
-import org.daniel.elysium.models.chips.Chip;
 import org.daniel.elysium.models.Shoe;
-import org.daniel.elysium.models.cards.UICard;
 import org.daniel.elysium.models.cards.UIDeck;
+import org.daniel.elysium.models.chips.Chip;
+import org.daniel.elysium.models.cards.UICard;
 import org.daniel.elysium.games.blackjack.center.BJGameAreaPanel;
 import org.daniel.elysium.games.blackjack.center.models.PlayerHandUI;
 import org.daniel.elysium.models.panels.ChipPanel;
 import org.daniel.elysium.interfaces.GameActions;
-import org.daniel.elysium.games.blackjack.constants.BlackjackGameState;
+import org.daniel.elysium.games.blackjack.constants.BJGameState;
 import org.daniel.elysium.models.panels.ChipPanelUtil;
 import org.daniel.elysium.models.panels.TopPanel;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,7 +35,7 @@ import java.util.Map;
 public class BlackjackController implements Mediator, ChipPanelConsumer {
     // State managers
     private final StateManager stateManager;
-    private BlackjackGameState state = BlackjackGameState.BET_PHASE;
+    private BJGameState state = BJGameState.BET_PHASE;
 
     // References to subcomponents.
     private final TopPanel topPanel;
@@ -148,7 +146,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         }
 
         // Set tha game area to proper setup
-        state = BlackjackGameState.GAME_STARTED;
+        state = BJGameState.GAME_STARTED;
         chipPanel.setVisible(false);
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.clearActions();
@@ -188,7 +186,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     @Override
     public void dealInitialCards() {
-        state = BlackjackGameState.DEALING_CARDS;
+        state = BJGameState.DEALING_CARDS;
         gameAreaPanel.addPlayerCard(PlayerHandUI.FIRST_HAND, getCardFromShoe());
         gameAreaPanel.addDealerCard(getCardFromShoe());
         gameAreaPanel.addPlayerCard(PlayerHandUI.FIRST_HAND, getCardFromShoe());
@@ -206,7 +204,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     @Override
     public void returnToMainMenu() {
-        if (state.ordinal() > BlackjackGameState.GAME_STARTED.ordinal()) {
+        if (state.ordinal() > BJGameState.GAME_STARTED.ordinal()) {
             StyledConfirmDialog dialog = new StyledConfirmDialog(stateManager.getFrame(),
                     "If you exit now you will lose your bet, Continue?");
             dialog.setVisible(true);
@@ -272,7 +270,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * to choose between insuring their bet or declining insurance.
      */
     private void displayInsuranceOptions(){
-        state = BlackjackGameState.PLAYER_TURN;
+        state = BJGameState.PLAYER_TURN;
         Map<BlackjackActions, Integer> actions = new LinkedHashMap<>();
         actions.put(BlackjackActions.INSURE, PlayerHandUI.FIRST_HAND);
         actions.put(BlackjackActions.DO_NOT_INSURE, PlayerHandUI.FIRST_HAND);
@@ -334,7 +332,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * @param index The index of the player's hand.
      */
     private void calculatePlayerOptions(int index) {
-        state = BlackjackGameState.PLAYER_TURN;
+        state = BJGameState.PLAYER_TURN;
 
         // Turn of all highlights for all hands first
         gameAreaPanel.getPlayerHands().forEach(playerHandUI -> playerHandUI.setHighlight(false));
@@ -515,7 +513,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * Once the dealer's turn is completed, the game results are evaluated.
      */
     private void dealerTurn(){
-        state = BlackjackGameState.DEALER_TURN;
+        state = BJGameState.DEALER_TURN;
         gameAreaPanel.getDealerHand().flipCardUp(); // expose dealer's second card
 
         // This flags tells, if the dealer should just expose (all player hands bust)
@@ -553,7 +551,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * to display the results.
      */
     private void evaluateGameResults(){
-        state = BlackjackGameState.EVALUATION_PHASE;
+        state = BJGameState.EVALUATION_PHASE;
         for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             gameEngine.resolvePlayerResult(playerHandUI.getHand(),
                     gameAreaPanel.getDealerHand().getHand());
@@ -569,7 +567,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * the payout phase.
      */
     private void displayResults(){
-        state = BlackjackGameState.DISPLAY_RESULT;
+        state = BJGameState.DISPLAY_RESULT;
         for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             playerHandUI.displayHandResult();
         }
@@ -585,7 +583,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * to a reset routine after a delay to start a new round.
      */
     private void proceedToPayouts(){
-        state = BlackjackGameState.PAYOUT;
+        state = BJGameState.PAYOUT;
         List<PlayerHandUI> allHands = gameAreaPanel.getPlayerHands();
         for (PlayerHandUI playerHandUI : allHands) {
             if (playerHandUI.getHand().getState() == HandState.BLACKJACK){
@@ -625,11 +623,11 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * 10 cards remaining, a new shoe is created.
      */
     private void reset(){
-        state = BlackjackGameState.GAME_ENDED;
+        state = BJGameState.GAME_ENDED;
         gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
         gameEngine = new BlackjackEngine();
-        state = BlackjackGameState.BET_PHASE;
+        state = BJGameState.BET_PHASE;
         ChipPanelUtil.regenerateChipPanel(this, stateManager);
 
         // If player has no enough money, Player then escorted to main menu
@@ -659,11 +657,10 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
 
     /** Protected API for the {@link BlackjackPanel} to revert to initial state when exiting */
     protected void resetScreen(){
-        state = BlackjackGameState.BET_PHASE;
+        state = BJGameState.BET_PHASE;
         chipPanel.setVisible(false);
         gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
-        gameEngine = new BlackjackEngine();
         ChipPanelUtil.removeChipPanel(this, stateManager);
         cards = Shoe.createShoe(4, UIDeck::new).cards();
     }
@@ -709,8 +706,9 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      *
      * @return The top card from the shoe.
      */
-    private UICard getCardFromShoe() {
-        return cards.remove(0);
+    private BJCardUI getCardFromShoe() {
+        UICard card = cards.remove(0);
+        return new BJCardUI(card.getRank(), card.getSuit(), card.getAsset());
     }
 
     /**
@@ -721,8 +719,9 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      *
      * @return The top card from the shoe.
      */
-    private UICard peekCardFromShoe(){
-        return cards.get(0);
+    private BJCardUI peekCardFromShoe(){
+        UICard card = cards.get(0);
+        return new BJCardUI(card.getRank(), card.getSuit(), card.getAsset());
     }
 
     /**
@@ -780,23 +779,23 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     @SuppressWarnings("Unused")
     private List<UICard> getCustomDeck(){
         List<UICard> cards = new ArrayList<>();
-        cards.add(new UICard("10", "S", CardAsset.S10));
-        cards.add(new UICard("7", "S", CardAsset.S7));
-        cards.add(new UICard("10", "H", CardAsset.H10));
-        cards.add(new UICard("Q", "S", CardAsset.SQ));
-        cards.add(new UICard("10", "C", CardAsset.C10));
-        cards.add(new UICard("2", "H", CardAsset.H2));
+        cards.add(new BJCardUI("10", "S", CardAsset.S10));
+        cards.add(new BJCardUI("7", "S", CardAsset.S7));
+        cards.add(new BJCardUI("10", "H", CardAsset.H10));
+        cards.add(new BJCardUI("Q", "S", CardAsset.SQ));
+        cards.add(new BJCardUI("10", "C", CardAsset.C10));
+        cards.add(new BJCardUI("2", "H", CardAsset.H2));
 
-        cards.add(new UICard("9", "C", CardAsset.C9));
-        cards.add(new UICard("Q", "S", CardAsset.SQ));
-        cards.add(new UICard("K", "S", CardAsset.SK));
-        cards.add(new UICard("8", "S", CardAsset.S8));
-        cards.add(new UICard("K", "S", CardAsset.SK));
-        cards.add(new UICard("A", "S", CardAsset.SA));
-        cards.add(new UICard("K", "S", CardAsset.SK));
-        cards.add(new UICard("K", "S", CardAsset.SK));
-        cards.add(new UICard("K", "S", CardAsset.SK));
-        cards.add(new UICard("K", "S", CardAsset.SK));
+        cards.add(new BJCardUI("9", "C", CardAsset.C9));
+        cards.add(new BJCardUI("Q", "S", CardAsset.SQ));
+        cards.add(new BJCardUI("K", "S", CardAsset.SK));
+        cards.add(new BJCardUI("8", "S", CardAsset.S8));
+        cards.add(new BJCardUI("K", "S", CardAsset.SK));
+        cards.add(new BJCardUI("A", "S", CardAsset.SA));
+        cards.add(new BJCardUI("K", "S", CardAsset.SK));
+        cards.add(new BJCardUI("K", "S", CardAsset.SK));
+        cards.add(new BJCardUI("K", "S", CardAsset.SK));
+        cards.add(new BJCardUI("K", "S", CardAsset.SK));
         return cards;
     }
 }

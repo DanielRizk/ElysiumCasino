@@ -4,6 +4,8 @@ import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.baccarat.BacHand;
+import org.daniel.elysium.baccarat.HandType;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.interfaces.Mediator;
 import org.daniel.elysium.models.cards.UICard;
@@ -119,15 +121,31 @@ public class BacGameAreaPanel extends JPanel {
         return bettingAreaPanel.getSelectedBet();
     }
 
+    public HandType getSelectedBoxType(){
+        return bettingAreaPanel.getBoxType();
+    }
+
     public void resetSelection(){
         bettingAreaPanel.resetAllSelections();
     }
 
-    public void addPlayerCard(UICard card){
+    public void addPlayerCard(BacCardUI card){
         cardsAreaPanel.addPlayerCard(card);
     }
 
-    public void addBankerCard(UICard card){
+    public void addBankerCard(BacCardUI card){
         cardsAreaPanel.addBankerCard(card);
+    }
+
+    public PlayerAreaUI getPlayerHand(){
+        return cardsAreaPanel.getPlayerHand();
+    }
+
+    public BankerAreaUI getBankerHand(){
+        return cardsAreaPanel.getBankerHand();
+    }
+
+    public void removeCards(){
+        cardsAreaPanel.removeCards();
     }
 }

@@ -1,5 +1,6 @@
 package org.daniel.elysium.games.baccarat.center;
 
+import org.daniel.elysium.baccarat.HandType;
 import org.daniel.elysium.models.cards.UICard;
 import org.daniel.elysium.models.chips.Chip;
 
@@ -64,6 +65,16 @@ public class BettingAreaPanel extends JPanel implements BetBox.SelectionListener
         return selectedBox;
     }
 
+    public HandType getBoxType(){
+        if (selectedBox.getLabel().equals("BANKER")){
+            return HandType.BANKER;
+        } else if (selectedBox.getLabel().equals("PLAYER")){
+            return HandType.PLAYER;
+        } else {
+            return HandType.TIE;
+        }
+    }
+
     public void clearChips(){
         playerBetBox.clearChips();
         bankerBetBox.clearChips();
@@ -76,13 +87,6 @@ public class BettingAreaPanel extends JPanel implements BetBox.SelectionListener
         }
     }
 
-    public void addPlayerCard(UICard card){
-
-    }
-
-    public void addBankerCard(UICard card){
-
-    }
 }
 
 

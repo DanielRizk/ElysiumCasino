@@ -1,7 +1,7 @@
 package org.daniel.elysium.games.baccarat.center;
 
+import org.daniel.elysium.baccarat.BacHand;
 import org.daniel.elysium.elements.panels.VerticalLinePanel;
-import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,16 +41,24 @@ public class CardsAreaPanel extends JPanel {
         add(bankerAreaUI, gbc);
     }
 
-    public void addPlayerCard(UICard card){
+    public void addPlayerCard(BacCardUI card){
         playerAreaUI.addCard(card);
     }
 
-    public void addBankerCard(UICard card){
+    public void addBankerCard(BacCardUI card){
         bankerAreaUI.addCard(card);
     }
 
     public void removeCards(){
         playerAreaUI.removeCards();
         bankerAreaUI.removeCards();
+    }
+
+    public PlayerAreaUI getPlayerHand(){
+        return playerAreaUI;
+    }
+
+    public BankerAreaUI getBankerHand(){
+        return bankerAreaUI;
     }
 }

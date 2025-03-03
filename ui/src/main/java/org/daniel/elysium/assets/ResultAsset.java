@@ -4,19 +4,22 @@ import java.awt.*;
 import java.util.Map;
 
 /**
- * Enum representing Blackjack result assets.
- * These assets are used to display the outcomes of a Blackjack game.
+ * Enum representing games result assets.
+ * These assets are used to display the outcomes of all games.
  */
-public enum BJResultAsset implements Asset {
+public enum ResultAsset implements Asset {
 
     /** The asset representing a win result. */
-    WIN,
+    WON,
 
     /** The asset representing a lost result. */
     LOST,
 
     /** The asset representing a push result. */
     PUSH,
+
+    /** The asset representing a tie result. */
+    TIE,
 
     /** The asset representing an insured result. */
     INSURED,
@@ -30,7 +33,7 @@ public enum BJResultAsset implements Asset {
      * @param imageCache The cache where the loaded images will be stored.
      */
     public static void loadAssets(Map<Asset, Image> imageCache) {
-        AssetUtility.loadAssets(imageCache, "results", BJResultAsset.class);
+        AssetUtility.loadAssets(imageCache, "results", ResultAsset.class);
     }
 
     /**

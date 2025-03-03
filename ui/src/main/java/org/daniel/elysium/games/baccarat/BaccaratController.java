@@ -1,11 +1,17 @@
 package org.daniel.elysium.games.baccarat;
 
 import org.daniel.elysium.StateManager;
+import org.daniel.elysium.assets.CardAsset;
+import org.daniel.elysium.baccarat.*;
+import org.daniel.elysium.blackjack.BlackjackEngine;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
+import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
+import org.daniel.elysium.games.baccarat.center.BacCardUI;
 import org.daniel.elysium.games.baccarat.center.BacGameAreaPanel;
 import org.daniel.elysium.games.baccarat.center.PlayerHand;
 import org.daniel.elysium.games.baccarat.constants.BaccaratGameState;
+import org.daniel.elysium.games.blackjack.constants.BJGameState;
 import org.daniel.elysium.interfaces.ChipPanelConsumer;
 import org.daniel.elysium.interfaces.GameActions;
 import org.daniel.elysium.interfaces.Mediator;
@@ -17,6 +23,9 @@ import org.daniel.elysium.models.panels.ChipPanel;
 import org.daniel.elysium.models.panels.ChipPanelUtil;
 import org.daniel.elysium.models.panels.TopPanel;
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /** Controls the Baccarat game flow, handling state transitions, UI updates, and interactions. */
@@ -31,10 +40,10 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     private final BacGameAreaPanel gameAreaPanel;
 
     // Define the player's betting hand
-    private final PlayerHand playerHand;
+    private BetHand hand;
 
     // Define the game logic engine
-    //private BlackjackEngine gameEngine;
+    private BaccaratGameEngine gameEngine;
 
     /** The minimum bet allowed in the game. */
     public static final int MIN_BET = 100;
@@ -45,11 +54,11 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
 
     public BaccaratController(StateManager stateManager) {
         this.stateManager = stateManager;
-        // gameEngine
+        this.gameEngine = new BaccaratGameEngine();
         this.topPanel = new TopPanel(this, stateManager);
         this.chipPanel = new ChipPanel(this, stateManager);
         this.gameAreaPanel = new BacGameAreaPanel(this, stateManager);
-        this.playerHand = new PlayerHand();
+        this.hand = new BetHand();
     }
 
     /*======================
@@ -91,7 +100,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         // Continue the login normally
         gameAreaPanel.addChip(chip);
         stateManager.getProfile().decreaseBalanceBy(chip.getValue());
-        playerHand.setBet(chip.getValue());
+        hand.setBet(hand.getBet() + chip.getValue());
         gameAreaPanel.showClearBetButton(true);
         gameAreaPanel.showDealButton(true);
         updateBalanceDisplay();
@@ -108,8 +117,8 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     public void onClearBet() {
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.showClearBetButton(false);
-        stateManager.getProfile().increaseBalanceBy(playerHand.getBet());
-        playerHand.setBet(0);
+        stateManager.getProfile().increaseBalanceBy(hand.getBet());
+        hand.setBet(0);
         gameAreaPanel.resetSelection();
         gameAreaPanel.clearChips();
         updateBalanceDisplay();
@@ -127,7 +136,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     @Override
     public void onDealRequested() {
         // Handle invalid bet
-        if (playerHand.getBet() < MIN_BET) {
+        if (hand.getBet() < MIN_BET) {
             new Toast(stateManager.getFrame(), "Min bet is 100$", 3000).setVisible(true);
             return;
         }
@@ -137,7 +146,9 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         chipPanel.setVisible(false);
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.showClearBetButton(false);
-        gameAreaPanel.resetSelection();
+        //gameAreaPanel.resetSelection();
+
+        hand.setHandType(gameAreaPanel.getSelectedBoxType());
 
         // Deal the cards to the players
         dealInitialCards();
@@ -157,16 +168,120 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.addBankerCard(getCardFromShoe());
         gameAreaPanel.addPlayerCard(getCardFromShoe());
         gameAreaPanel.addBankerCard(getCardFromShoe());
+
+        evaluateHands();
     }
 
+    private void evaluateHands(){
+        state = BaccaratGameState.EVALUATION_PHASE;
+
+        BacHand banker = gameAreaPanel.getBankerHand().getHand();
+        BacHand player = gameAreaPanel.getPlayerHand().getHand();
+
+        gameEngine.evaluatePlayer(banker, player);
+        executePlayerAction(player);
+        gameEngine.evaluateBanker(banker, player);
+        executeBankerAction(banker);
+        gameEngine.evaluateHands(banker ,player);
+
+        proceedTopPayouts();
+    }
+
+    private void executePlayerAction(BacHand hand){
+        if (hand.getAction() == BacHandAction.DRAW){
+            gameAreaPanel.addPlayerCard(getCardFromShoe());
+        }
+    }
+
+    private void executeBankerAction(BacHand hand){
+        if (hand.getAction() == BacHandAction.DRAW){
+            gameAreaPanel.addBankerCard(getCardFromShoe());
+        }
+    }
+
+    private void displayResults(){
+        state = BaccaratGameState.DISPLAY_RESULT;
+        gameAreaPanel.getPlayerHand().showOverlay();
+        gameAreaPanel.getBankerHand().showOverlay();
+
+        // Go to reset to start a new game after 5 seconds
+        Timer timer = new Timer(5000, e -> reset());
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void proceedTopPayouts(){
+        gameEngine.calculateResult(gameAreaPanel.getBankerHand().getHand(), gameAreaPanel.getPlayerHand().getHand(), hand);
+        stateManager.getProfile().increaseBalanceBy(hand.getBet());
+
+        if (hand.getState() == BacHandState.WON){
+            gameAreaPanel.getSelectedBox().payWin();
+        } else if (hand.getState() == BacHandState.TIE) {
+            gameAreaPanel.getSelectedBox().payTie();
+        }
+
+        updateBalanceDisplay();
+        displayResults();
+    }
+
+    private void reset(){
+        state = BaccaratGameState.GAME_ENDED;
+        gameAreaPanel.removeCards();
+        gameAreaPanel.resetSelection();
+        gameAreaPanel.clearChips();
+        hand = new BetHand();
+        state = BaccaratGameState.BET_PHASE;
+        ChipPanelUtil.regenerateChipPanel(this, stateManager);
+
+        // If player has no enough money, Player then escorted to main menu
+        if (stateManager.getProfile().getBalance() < MIN_BET){
+            stateManager.switchPanel("MainMenu");
+
+            StyledNotificationDialog dialog = new StyledNotificationDialog(
+                    stateManager.getFrame(),
+                    "You don't have enough balance to continue playing. "
+            );
+
+            dialog.setVisible(true);
+        }
+
+        // If the shoe has less than 15 cards, start a new shoe
+        if (cards.size() < 15){
+            cards = Shoe.createShoe(4, UIDeck::new).cards();
+
+            StyledNotificationDialog dialog = new StyledNotificationDialog(
+                    stateManager.getFrame(),
+                    "Shoe ended, Starting a new Shoe. "
+            );
+
+            dialog.setVisible(true);
+        }
+    }
+
+
+    /**
+     * Updates the balance display with the current balance.
+     * <p>
+     * Retrieves the player's current balance from the profile and updates
+     * the UI's balance display accordingly.
+     */
     @Override
     public void updateBalanceDisplay() {
         topPanel.setBalance(stateManager.getProfile().getBalance());
     }
 
+    /**
+     * Handles the player's selected action from the action buttons.
+     * <p>
+     * This method maps each selected action to its corresponding handler,
+     * ensuring the correct game logic is executed.
+     *
+     * @param action The selected game action.
+     * @param index  The index of the player's hand affected by the action.
+     */
     @Override
     public void onActionSelected(GameActions action, int index) {
-
+        // No action needed in baccarat
     }
 
     /**
@@ -185,6 +300,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
             dialog.setVisible(true);
             if (dialog.isConfirmed()) {
                 stateManager.switchPanel("MainMenu");
+                gameAreaPanel.clearChips();
             }
         } else {
             onClearBet();
@@ -200,9 +316,8 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     protected void resetScreen(){
         state = BaccaratGameState.BET_PHASE;
         chipPanel.setVisible(false);
-        //gameAreaPanel.clearActions();
-        //gameAreaPanel.clearHands();
-        //gameEngine = new BlackjackEngine();
+        gameAreaPanel.removeCards();
+        gameAreaPanel.resetSelection();
         ChipPanelUtil.removeChipPanel(this, stateManager);
         cards = Shoe.createShoe(4, UIDeck::new).cards();
     }
@@ -225,10 +340,10 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
      *
      * @return The top card from the shoe.
      */
-    private UICard getCardFromShoe() {
-        return cards.remove(0);
+    private BacCardUI getCardFromShoe() {
+        UICard card = cards.remove(0);
+        return new BacCardUI(card.getRank(), card.getSuit(), card.getAsset());
     }
-
 
     /**
      * Returns the top panel containing game status and return button.
@@ -265,5 +380,29 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
      */
     public BacGameAreaPanel getGameAreaPanel() {
         return gameAreaPanel;
+    }
+
+    //TODO: remove before production
+    @SuppressWarnings("Unused")
+    private List<UICard> getCustomDeck(){
+        List<UICard> cards = new ArrayList<>();
+        cards.add(new BacCardUI("10", "S", CardAsset.S10));
+        cards.add(new BacCardUI("6", "S", CardAsset.S6));
+        cards.add(new BacCardUI("7", "H", CardAsset.H7));
+        cards.add(new BacCardUI("Q", "S", CardAsset.SQ));
+        cards.add(new BacCardUI("10", "C", CardAsset.C10));
+        cards.add(new BacCardUI("2", "H", CardAsset.H2));
+
+        cards.add(new BacCardUI("9", "C", CardAsset.C9));
+        cards.add(new BacCardUI("Q", "S", CardAsset.SQ));
+        cards.add(new BacCardUI("K", "S", CardAsset.SK));
+        cards.add(new BacCardUI("8", "S", CardAsset.S8));
+        cards.add(new BacCardUI("K", "S", CardAsset.SK));
+        cards.add(new BacCardUI("A", "S", CardAsset.SA));
+        cards.add(new BacCardUI("K", "S", CardAsset.SK));
+        cards.add(new BacCardUI("K", "S", CardAsset.SK));
+        cards.add(new BacCardUI("K", "S", CardAsset.SK));
+        cards.add(new BacCardUI("K", "S", CardAsset.SK));
+        return cards;
     }
 }

@@ -1,14 +1,10 @@
 package org.daniel.elysium.games.blackjack.center.models;
 
-import org.daniel.elysium.assets.ChipAsset;
 import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.models.chips.Chip;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -115,27 +111,5 @@ public class BetPanel extends JPanel {
      */
     public void updateBetDisplay(int bet) {
         currentBetLabel.setText(String.valueOf(bet));
-    }
-
-    /**
-     * Generates a possible combination of chips from the available denominations to match the given bet amount.
-     *
-     * @param bet The total bet amount to be represented in chips.
-     * @return A list of chips representing the given bet amount.
-     */
-    public List<Chip> getChipCombination(int bet) {
-        List<ChipAsset> assetsSorted = Arrays.stream(ChipAsset.values())
-                .sorted(Comparator.comparingInt(ChipAsset::getValue).reversed())
-                .toList();
-
-        List<Chip> combination = new ArrayList<>();
-
-        for (ChipAsset chipAsset : assetsSorted) {
-            while (bet >= chipAsset.getValue()) {
-                combination.add(new Chip(chipAsset));
-                bet -= chipAsset.getValue();
-            }
-        }
-        return combination;
     }
 }
