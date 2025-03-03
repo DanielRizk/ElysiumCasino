@@ -5,11 +5,12 @@ import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
-import org.daniel.elysium.models.UICard;
-import org.daniel.elysium.games.blackjack.BlackjackMediator;
+import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
+import org.daniel.elysium.models.cards.UICard;
+import org.daniel.elysium.interfaces.Mediator;
 import org.daniel.elysium.games.blackjack.center.models.DealerHandUI;
 import org.daniel.elysium.games.blackjack.center.models.PlayerHandUI;
-import org.daniel.elysium.games.blackjack.constants.GameActions;
+import org.daniel.elysium.interfaces.GameActions;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,11 +22,11 @@ import java.util.Map;
  * GameAreaPanel represents the main play area where dealer and player hands are displayed.
  * It also handles buttons for game actions like betting, dealing, and hitting.
  */
-public class GameAreaPanel extends JPanel {
+public class BJGameAreaPanel extends JPanel {
     private final JPanel dealerHandPanel;
     private final JPanel playerHandPanel;
     private final StyledButton dealButton;
-    private final BlackjackMediator mediator;
+    private final Mediator mediator;
     private final JPanel buttonSwitcherPanel;
     private final CardLayout cardLayout;
     private final JPanel actionButtonsPanel;
@@ -36,7 +37,7 @@ public class GameAreaPanel extends JPanel {
      * @param mediator   The mediator handling communication between UI and logic.
      * @param stateManager The state manager tracking the game's state.
      */
-    public GameAreaPanel(BlackjackMediator mediator, StateManager stateManager) {
+    public BJGameAreaPanel(Mediator mediator, StateManager stateManager) {
         this.mediator = mediator;
         setLayout(new GridBagLayout());
         setOpaque(false);
@@ -246,14 +247,14 @@ public class GameAreaPanel extends JPanel {
      *
      * @param availableActions A map containing available {@link GameActions} and their respective hand indices.
      */
-    public void updateActionButtons(Map<GameActions, Integer> availableActions) {
+    public void updateActionButtons(Map<BlackjackActions, Integer> availableActions) {
         // Clear existing buttons
         actionButtonsPanel.removeAll();
 
         // Add new buttons based on the available actions
         if (availableActions != null && !availableActions.isEmpty()) {
             availableActions.forEach((action, index) -> {
-                if (!(action == GameActions.SPLIT && getPlayerHands().size() >= 4)) {
+                if (!(action == BlackjackActions.SPLIT && getPlayerHands().size() >= 4)) {
                     StyledButton button = new StyledButton(action.toString());
                     button.addActionListener(e -> mediator.onActionSelected(action, index));
                     actionButtonsPanel.add(button);

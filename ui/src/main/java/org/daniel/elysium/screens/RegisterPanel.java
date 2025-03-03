@@ -1,6 +1,6 @@
 package org.daniel.elysium.screens;
 
-import org.daniel.elysium.Resettable;
+import org.daniel.elysium.interfaces.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;

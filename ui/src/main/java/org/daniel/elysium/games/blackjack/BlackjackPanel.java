@@ -1,15 +1,12 @@
 package org.daniel.elysium.games.blackjack;
 
-import org.daniel.elysium.Resettable;
+import org.daniel.elysium.interfaces.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.BackgroundAsset;
-import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 /**
  * The {@code BlackjackPanel} class represents the main panel for the Blackjack game.
@@ -38,12 +35,12 @@ public class BlackjackPanel extends JPanel implements Resettable {
     }
 
     @Override
-    public void onRestart() {
-        controller.restartScreen();
+    public void reset() {
+        controller.resetScreen();
     }
 
     @Override
-    public void reset() {
-        controller.resetScreen();
+    public void onRestart() {
+        controller.restartScreen();
     }
 }

@@ -7,16 +7,20 @@ import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
-import org.daniel.elysium.models.Chip;
+import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
+import org.daniel.elysium.interfaces.ChipPanelConsumer;
+import org.daniel.elysium.interfaces.Mediator;
+import org.daniel.elysium.models.chips.Chip;
 import org.daniel.elysium.models.Shoe;
-import org.daniel.elysium.models.UICard;
-import org.daniel.elysium.models.UIDeck;
-import org.daniel.elysium.games.blackjack.center.GameAreaPanel;
+import org.daniel.elysium.models.cards.UICard;
+import org.daniel.elysium.models.cards.UIDeck;
+import org.daniel.elysium.games.blackjack.center.BJGameAreaPanel;
 import org.daniel.elysium.games.blackjack.center.models.PlayerHandUI;
-import org.daniel.elysium.games.blackjack.chips.ChipPanel;
-import org.daniel.elysium.games.blackjack.constants.GameActions;
-import org.daniel.elysium.games.blackjack.constants.GameState;
-import org.daniel.elysium.games.blackjack.top.TopPanel;
+import org.daniel.elysium.models.panels.ChipPanel;
+import org.daniel.elysium.interfaces.GameActions;
+import org.daniel.elysium.games.blackjack.constants.BlackjackGameState;
+import org.daniel.elysium.models.panels.ChipPanelUtil;
+import org.daniel.elysium.models.panels.TopPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,18 +34,21 @@ import java.util.Map;
 /**
  * Controls the Blackjack game flow, handling state transitions, UI updates, and interactions.
  */
-public class BlackjackController implements BlackjackMediator {
+public class BlackjackController implements Mediator, ChipPanelConsumer {
     // State managers
     private final StateManager stateManager;
-    private GameState state = GameState.BET_PHASE;
+    private BlackjackGameState state = BlackjackGameState.BET_PHASE;
 
     // References to subcomponents.
     private final TopPanel topPanel;
     private ChipPanel chipPanel;
-    private final GameAreaPanel gameAreaPanel;
+    private final BJGameAreaPanel gameAreaPanel;
 
     // Define the game logic engine
     private BlackjackEngine gameEngine;
+
+    /** The minimum bet allowed in the game. */
+    public static final int MIN_BET = 10;
 
     // Game cards creation
     Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
@@ -57,7 +64,7 @@ public class BlackjackController implements BlackjackMediator {
         this.gameEngine = new BlackjackEngine();
         this.topPanel = new TopPanel(this, stateManager);
         this.chipPanel = new ChipPanel(this, stateManager);
-        this.gameAreaPanel = new GameAreaPanel(this, stateManager);
+        this.gameAreaPanel = new BJGameAreaPanel(this, stateManager);
     }
 
     /*======================
@@ -130,13 +137,13 @@ public class BlackjackController implements BlackjackMediator {
         if (playerHandUI.getHand().getBet() == 0) {
             new Toast(stateManager.getFrame(), "No bet placed yet.", 3000).setVisible(true);
             return;
-        } else if (playerHandUI.getHand().getBet() < StateManager.MIN_BET) {
+        } else if (playerHandUI.getHand().getBet() < MIN_BET) {
             new Toast(stateManager.getFrame(), "Min bet is 10$", 3000).setVisible(true);
             return;
         }
 
         // Set tha game area to proper setup
-        state = GameState.GAME_STARTED;
+        state = BlackjackGameState.GAME_STARTED;
         chipPanel.setVisible(false);
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.clearActions();
@@ -176,7 +183,7 @@ public class BlackjackController implements BlackjackMediator {
      */
     @Override
     public void dealInitialCards() {
-        state = GameState.DEALING_CARDS;
+        state = BlackjackGameState.DEALING_CARDS;
         gameAreaPanel.addPlayerCard(PlayerHandUI.FIRST_HAND, getCardFromShoe());
         gameAreaPanel.addDealerCard(getCardFromShoe());
         gameAreaPanel.addPlayerCard(PlayerHandUI.FIRST_HAND, getCardFromShoe());
@@ -194,7 +201,7 @@ public class BlackjackController implements BlackjackMediator {
      */
     @Override
     public void returnToMainMenu() {
-        if (state.ordinal() > GameState.GAME_STARTED.ordinal()) {
+        if (state.ordinal() > BlackjackGameState.GAME_STARTED.ordinal()) {
             StyledConfirmDialog dialog = new StyledConfirmDialog(stateManager.getFrame(),
                     "If you exit now you will lose your bet, Continue?");
             dialog.setVisible(true);
@@ -260,10 +267,10 @@ public class BlackjackController implements BlackjackMediator {
      * to choose between insuring their bet or declining insurance.
      */
     private void displayInsuranceOptions(){
-        state = GameState.PLAYER_TURN;
-        Map<GameActions, Integer> actions = new LinkedHashMap<>();
-        actions.put(GameActions.INSURE, PlayerHandUI.FIRST_HAND);
-        actions.put(GameActions.DO_NOT_INSURE, PlayerHandUI.FIRST_HAND);
+        state = BlackjackGameState.PLAYER_TURN;
+        Map<BlackjackActions, Integer> actions = new LinkedHashMap<>();
+        actions.put(BlackjackActions.INSURE, PlayerHandUI.FIRST_HAND);
+        actions.put(BlackjackActions.DO_NOT_INSURE, PlayerHandUI.FIRST_HAND);
         gameAreaPanel.updateActionButtons(actions);
     }
 
@@ -322,7 +329,7 @@ public class BlackjackController implements BlackjackMediator {
      * @param index The index of the player's hand.
      */
     private void calculatePlayerOptions(int index) {
-        state = GameState.PLAYER_TURN;
+        state = BlackjackGameState.PLAYER_TURN;
 
         // Turn of all highlights for all hands first
         gameAreaPanel.getPlayerHands().forEach(playerHandUI -> playerHandUI.setHighlight(false));
@@ -331,7 +338,7 @@ public class BlackjackController implements BlackjackMediator {
         gameAreaPanel.getPlayerHand(index).setHighlight(checkForSplitHands());
 
         // Get the available action from the backend logic.
-        Map<GameActions, Integer> actions = getOptions(index);
+        Map<BlackjackActions, Integer> actions = getOptions(index);
         gameAreaPanel.updateActionButtons(actions);
 
         // If there are no more available options, treat it as a stand
@@ -349,20 +356,20 @@ public class BlackjackController implements BlackjackMediator {
      * @param index The index of the player's hand.
      * @return A map of available game actions for the specified hand.
      */
-    private Map<GameActions, Integer> getOptions(int index){
-        Map<GameActions, Integer> actions = new LinkedHashMap<>(); // LinkedHashMap is used to preserve the order
+    private Map<BlackjackActions, Integer> getOptions(int index){
+        Map<BlackjackActions, Integer> actions = new LinkedHashMap<>(); // LinkedHashMap is used to preserve the order
         for (String option: gameEngine.getAvailableHandOptions(gameAreaPanel.getPlayerHand(index).getHand())){
             switch (option){
-                case "HIT" -> actions.put(GameActions.HIT, index);
-                case "STAND" -> actions.put(GameActions.STAND, index);
+                case "HIT" -> actions.put(BlackjackActions.HIT, index);
+                case "STAND" -> actions.put(BlackjackActions.STAND, index);
                 case "DOUBLE" -> {
                     if (gameAreaPanel.getPlayerHand(index).getHand().getBet() <= stateManager.getProfile().getBalance()) {
-                        actions.put(GameActions.DOUBLE, index);
+                        actions.put(BlackjackActions.DOUBLE, index);
                     }
                 }
                 case "SPLIT" -> {
                     if (gameAreaPanel.getPlayerHand(index).getHand().getBet() <= stateManager.getProfile().getBalance()) {
-                        actions.put(GameActions.SPLIT, index);
+                        actions.put(BlackjackActions.SPLIT, index);
                     }
                 }
             }
@@ -381,13 +388,15 @@ public class BlackjackController implements BlackjackMediator {
      */
     @Override
     public void onActionSelected(GameActions action, int index) {
-        switch (action){
-            case HIT -> handleHitOption(index);
-            case STAND -> handleStandOption(index);
-            case DOUBLE -> handleDoubleOption(index);
-            case SPLIT -> handleSplitOption(index);
-            case INSURE -> handleInsureOption();
-            case DO_NOT_INSURE -> handleDoNotInsureOption();
+        if (action instanceof BlackjackActions blackjackActions){
+            switch (blackjackActions) {
+                case HIT -> handleHitOption(index);
+                case STAND -> handleStandOption(index);
+                case DOUBLE -> handleDoubleOption(index);
+                case SPLIT -> handleSplitOption(index);
+                case INSURE -> handleInsureOption();
+                case DO_NOT_INSURE -> handleDoNotInsureOption();
+            }
         }
     }
 
@@ -501,7 +510,7 @@ public class BlackjackController implements BlackjackMediator {
      * Once the dealer's turn is completed, the game results are evaluated.
      */
     private void dealerTurn(){
-        state = GameState.DEALER_TURN;
+        state = BlackjackGameState.DEALER_TURN;
         gameAreaPanel.getDealerHand().flipCardUp(); // expose dealer's second card
 
         // This flags tells, if the dealer should just expose (all player hands bust)
@@ -539,7 +548,7 @@ public class BlackjackController implements BlackjackMediator {
      * to display the results.
      */
     private void evaluateGameResults(){
-        state = GameState.EVALUATION_PHASE;
+        state = BlackjackGameState.EVALUATION_PHASE;
         for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             gameEngine.resolvePlayerResult(playerHandUI.getHand(),
                     gameAreaPanel.getDealerHand().getHand());
@@ -555,7 +564,7 @@ public class BlackjackController implements BlackjackMediator {
      * the payout phase.
      */
     private void displayResults(){
-        state = GameState.DISPLAY_RESULT;
+        state = BlackjackGameState.DISPLAY_RESULT;
         for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             playerHandUI.displayHandResult();
         }
@@ -571,7 +580,7 @@ public class BlackjackController implements BlackjackMediator {
      * to a reset routine after a delay to start a new round.
      */
     private void proceedToPayouts(){
-        state = GameState.PAYOUT;
+        state = BlackjackGameState.PAYOUT;
         List<PlayerHandUI> allHands = gameAreaPanel.getPlayerHands();
         for (PlayerHandUI playerHandUI : allHands) {
             if (playerHandUI.getHand().getState() == HandState.BLACKJACK){
@@ -611,15 +620,15 @@ public class BlackjackController implements BlackjackMediator {
      * 10 cards remaining, a new shoe is created.
      */
     private void reset(){
-        state = GameState.GAME_ENDED;
+        state = BlackjackGameState.GAME_ENDED;
         gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
         gameEngine = new BlackjackEngine();
-        state = GameState.BET_PHASE;
-        regenerateChipPanel();
+        state = BlackjackGameState.BET_PHASE;
+        ChipPanelUtil.regenerateChipPanel(this, stateManager);
 
         // If player has no enough money, Player then escorted to main menu
-        if (stateManager.getProfile().getBalance() < StateManager.MIN_BET){
+        if (stateManager.getProfile().getBalance() < MIN_BET){
             stateManager.switchPanel("MainMenu");
 
             StyledNotificationDialog dialog = new StyledNotificationDialog(
@@ -645,115 +654,24 @@ public class BlackjackController implements BlackjackMediator {
 
     /** Protected API for the {@link BlackjackPanel} to revert to initial state when exiting */
     protected void resetScreen(){
-        state = GameState.BET_PHASE;
+        state = BlackjackGameState.BET_PHASE;
         chipPanel.setVisible(false);
         gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
         gameEngine = new BlackjackEngine();
-        removeChipPanel();
+        ChipPanelUtil.removeChipPanel(this, stateManager);
         cards = Shoe.createShoe(4, UIDeck::new).cards();
     }
 
-    /** Protected API for the BlackjackPanel to restart fresh and updated screen */
+    /** Protected API for the {@link BlackjackPanel} to restart fresh and updated screen */
     protected void restartScreen(){
-        revealChipPanel();
+        ChipPanelUtil.revealChipPanel(this, stateManager);
         updateBalanceDisplay();
     }
 
     /*======================
         Helper methods
     ======================*/
-
-    /**
-     * Regenerates the chip panel by first removing the existing one and then revealing a new instance.
-     * <p>
-     * This ensures that the chip panel is always freshly created and dynamically updated.
-     */
-    private void regenerateChipPanel(){
-        removeChipPanel();
-        revealChipPanel();
-    }
-
-    /**
-     * Creates and displays a new instance of the chip panel.
-     * <p>
-     * This method runs on the Swing Event Dispatch Thread (EDT) to ensure thread safety.
-     * It removes any existing chip panel, creates a new one, and adds it to the JLayeredPane.
-     * The chip panel is then repositioned and made visible.
-     * A component listener is also added to adjust its position when the main frame is resized.
-     */
-    private void revealChipPanel() {
-        SwingUtilities.invokeLater(() -> {
-            if (stateManager.getFrame() != null) {
-                JLayeredPane layeredPane = stateManager.getFrame().getRootPane().getLayeredPane();
-
-                // Remove any existing chip panel before creating a new one
-                //removeChipPanel();
-
-                // Create a new ChipPanel instance
-                chipPanel = new ChipPanel(this, stateManager);
-
-                // Add to the layered pane
-                layeredPane.add(chipPanel, JLayeredPane.POPUP_LAYER);
-
-                // Re-display the chip panel
-                repositionChipPanel();
-                chipPanel.setVisible(true);
-
-                // Ensure UI refresh
-                layeredPane.revalidate();
-                layeredPane.repaint();
-
-                // Adjust the location of the chip panel when the parent is resized
-                stateManager.getFrame().addComponentListener(new ComponentAdapter() {
-                    @Override
-                    public void componentResized(ComponentEvent e) {
-                        repositionChipPanel();
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * Removes the currently displayed chip panel from the layered pane.
-     * <p>
-     * This method ensures that the chip panel is properly removed from the UI before a new one is created.
-     * It runs on the Swing Event Dispatch Thread (EDT) to prevent concurrency issues and forces a UI update.
-     */
-    private void removeChipPanel() {
-        SwingUtilities.invokeLater(() -> {
-            if (stateManager.getFrame() != null) {
-                JLayeredPane layeredPane = stateManager.getFrame().getRootPane().getLayeredPane();
-
-                // Ensure the panel exists before trying to remove it
-                if (chipPanel != null) {
-                    layeredPane.remove(chipPanel);
-                    layeredPane.revalidate();
-                    layeredPane.repaint();
-                }
-            }
-        });
-    }
-
-    /**
-     * Adjusts the position of the chip panel within the main frame.
-     * <p>
-     * The panel is positioned near the bottom left of the screen with a fixed margin.
-     * This method ensures the chip panel is correctly placed after being added or when the window is resized.
-     */
-    private void repositionChipPanel() {
-        if (stateManager.getFrame() != null) {
-            Dimension pref = getChipPanel().getPreferredSize();
-            int chipPanelWidth = pref.width;
-            int chipPanelHeight = pref.height;
-            int yPos = stateManager.getFrame().getHeight() - chipPanelHeight - 60;  // Margin from bottom
-            int xPos = 20; // Margin from left
-            getChipPanel().setBounds(xPos, yPos, chipPanelWidth, chipPanelHeight);
-            getChipPanel().revalidate();
-            getChipPanel().repaint();
-        }
-    }
 
     /**
      * Checks if the player has split hands.
@@ -775,7 +693,7 @@ public class BlackjackController implements BlackjackMediator {
      */
     @Override
     public void updateBalanceDisplay() {
-        topPanel.setBalance("Balance: " + stateManager.getProfile().getBalance());
+        topPanel.setBalance(stateManager.getProfile().getBalance());
     }
 
     /**
@@ -826,10 +744,20 @@ public class BlackjackController implements BlackjackMediator {
     }
 
     /**
+     * Updates the chip selection panel.
+     * @param panel new panel.
+     */
+    @Override
+    public void setChipPanel(ChipPanel panel) {
+        chipPanel = panel;
+    }
+
+    /**
      * Returns the chip selection panel.
      *
      * @return The {@link ChipPanel} UI component.
      */
+    @Override
     public ChipPanel getChipPanel() {
         return chipPanel;
     }
@@ -837,9 +765,9 @@ public class BlackjackController implements BlackjackMediator {
     /**
      * Returns the game area panel containing the dealer and player hands.
      *
-     * @return The {@link GameAreaPanel} UI component.
+     * @return The {@link BJGameAreaPanel} UI component.
      */
-    public GameAreaPanel getGameAreaPanel() {
+    public BJGameAreaPanel getGameAreaPanel() {
         return gameAreaPanel;
     }
 

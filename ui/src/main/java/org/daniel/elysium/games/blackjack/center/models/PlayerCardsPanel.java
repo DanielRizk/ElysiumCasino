@@ -1,6 +1,6 @@
 package org.daniel.elysium.games.blackjack.center.models;
 
-import org.daniel.elysium.models.UICard;
+import org.daniel.elysium.models.cards.UICard;
 import org.daniel.elysium.uiUtils.GlowBorder;
 
 import javax.swing.*;

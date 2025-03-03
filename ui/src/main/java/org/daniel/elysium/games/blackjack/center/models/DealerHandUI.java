@@ -1,7 +1,7 @@
 package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.blackjack.models.DealerHand;
-import org.daniel.elysium.models.UICard;
+import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
 import java.awt.*;

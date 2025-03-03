@@ -1,9 +1,9 @@
-package org.daniel.elysium.games.blackjack.top;
+package org.daniel.elysium.models.panels;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledTextField;
-import org.daniel.elysium.games.blackjack.BlackjackMediator;
+import org.daniel.elysium.interfaces.Mediator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,10 +18,10 @@ public class TopPanel extends JPanel {
     /**
      * Constructs the top panel for the Blackjack game.
      *
-     * @param mediator     The {@link BlackjackMediator} that handles communication between UI components.
+     * @param mediator     The {@link Mediator} that handles communication between UI components.
      * @param stateManager The {@link StateManager} that manages application states.
      */
-    public TopPanel(BlackjackMediator mediator, StateManager stateManager) {
+    public TopPanel(Mediator mediator, StateManager stateManager) {
         setLayout(new BorderLayout());
         setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -43,7 +43,7 @@ public class TopPanel extends JPanel {
      *
      * @param balanceText The new balance text to display.
      */
-    public void setBalance(String balanceText) {
-        balanceLabel.setText(balanceText);
+    public void setBalance(double balance) {
+        balanceLabel.setText("Balance: " + balance);
     }
 }

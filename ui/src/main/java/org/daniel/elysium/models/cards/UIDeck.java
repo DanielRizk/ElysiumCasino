@@ -1,6 +1,7 @@
-package org.daniel.elysium.models;
+package org.daniel.elysium.models.cards;
 
 import org.daniel.elysium.assets.CardAsset;
+import org.daniel.elysium.models.Deck;
 
 import java.util.ArrayList;
 import java.util.List;

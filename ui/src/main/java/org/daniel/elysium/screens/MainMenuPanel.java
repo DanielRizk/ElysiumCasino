@@ -7,6 +7,8 @@ import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
+import org.daniel.elysium.games.baccarat.BaccaratController;
+import org.daniel.elysium.games.blackjack.BlackjackController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -91,7 +93,7 @@ public class MainMenuPanel extends JPanel {
         // Blackjack button action -> start and go to blackjack if user has sufficient balance
         blackjackButton.addActionListener(e -> {
             if (stateManager.isUserLoggedIn() &&
-                    stateManager.getProfile().getBalance() > StateManager.MIN_BET) {
+                    stateManager.getProfile().getBalance() > BlackjackController.MIN_BET) {
                 stateManager.switchPanel("Blackjack");
             } else {
                 StyledNotificationDialog dialog = new StyledNotificationDialog(
@@ -103,16 +105,19 @@ public class MainMenuPanel extends JPanel {
             }
         });
 
-        // Baccarat button action -> display "Coming soon" notification
+        // Baccarat button action -> start and go to baccarat if user has sufficient balance
         baccaratButton.addActionListener(e -> {
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            StyledNotificationDialog dialog = new StyledNotificationDialog(frame, "Coming soon");
-            dialog.setVisible(true);
-            /*
             if (stateManager.isUserLoggedIn() &&
-                    stateManager.getProfile().getBalance() > StateManager.MIN_BET) {
+                    stateManager.getProfile().getBalance() > BaccaratController.MIN_BET) {
                 stateManager.switchPanel("Baccarat");
-            }*/
+            } else {
+                StyledNotificationDialog dialog = new StyledNotificationDialog(
+                        stateManager.getFrame(),
+                        "You don't have enough balance to start the game. "
+                );
+
+                dialog.setVisible(true);
+            }
         });
 
         // Ultimate Texas Hold'em button action -> display "Coming soon" notification

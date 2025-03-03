@@ -2,7 +2,7 @@ package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.assets.ChipAsset;
 import org.daniel.elysium.elements.fields.StyledTextField;
-import org.daniel.elysium.models.Chip;
+import org.daniel.elysium.models.chips.Chip;
 
 import javax.swing.*;
 import java.awt.*;

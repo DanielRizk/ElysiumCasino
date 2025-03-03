@@ -1,9 +1,9 @@
-package org.daniel.elysium.games.blackjack.chips;
+package org.daniel.elysium.models.panels;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.ChipAsset;
-import org.daniel.elysium.models.Chip;
-import org.daniel.elysium.games.blackjack.BlackjackMediator;
+import org.daniel.elysium.models.chips.Chip;
+import org.daniel.elysium.interfaces.Mediator;
 
 import javax.swing.*;
 
@@ -18,7 +18,7 @@ public class ChipPanel extends JPanel {
      * @param mediator      The mediator handling chip selection events.
      * @param stateManager  The state manager tracking the player's balance and game state.
      */
-    public ChipPanel(BlackjackMediator mediator, StateManager stateManager) {
+    public ChipPanel(Mediator mediator, StateManager stateManager) {
         // Set the layout to be vertical
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);

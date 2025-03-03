@@ -1,4 +1,4 @@
-package org.daniel.elysium.models;
+package org.daniel.elysium.models.chips;
 
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.ChipAsset;

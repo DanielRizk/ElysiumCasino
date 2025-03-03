@@ -1,5 +1,6 @@
 package org.daniel.elysium;
 
+import org.daniel.elysium.interfaces.Resettable;
 import org.daniel.elysium.user.profile.UserProfile;
 
 import javax.swing.*;
@@ -35,9 +36,6 @@ public class StateManager {
 
     /** The main application frame. */
     private final JFrame frame;
-
-    /** The minimum bet allowed in the game. */
-    public static final int MIN_BET = 10;
 
     /**
      * Constructs a StateManager with the specified container and frame.

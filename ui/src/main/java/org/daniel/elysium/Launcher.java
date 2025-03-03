@@ -4,6 +4,7 @@ import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.debugUtils.DebugLevel;
 import org.daniel.elysium.debugUtils.DebugPrint;
+import org.daniel.elysium.games.baccarat.BaccaratPanel;
 import org.daniel.elysium.games.blackjack.BlackjackPanel;
 import org.daniel.elysium.screens.*;
 import org.daniel.elysium.user.database.DatabaseConnection;
@@ -128,7 +129,7 @@ public class Launcher {
         StateManager stateManager = createStateManager(mainPanel, frame);
 
         // Set the entry point of the app (initial panel)
-        stateManager.switchPanel("Login");
+        stateManager.switchPanel("Baccarat");
 
         // Set initial focus to the main panel
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -164,12 +165,13 @@ public class Launcher {
         // Test user for testing
         stateManager.setProfile(new UserProfile("Test", "Test", 10000));
 
-        stateManager.registerPanel("Login", new LoginPanel(stateManager));
+        //stateManager.registerPanel("Login", new LoginPanel(stateManager));
+        //stateManager.registerPanel("Register", new RegisterPanel(stateManager));
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));
-        stateManager.registerPanel("Register", new RegisterPanel(stateManager));
-        stateManager.registerPanel("Profile", new ProfilePanel(stateManager));
-        stateManager.registerPanel("ChangePass", new UpdatePasswordPanel(stateManager));
-        stateManager.registerPanel("Blackjack", new BlackjackPanel(stateManager));
+        //stateManager.registerPanel("Profile", new ProfilePanel(stateManager));
+        //stateManager.registerPanel("ChangePass", new UpdatePasswordPanel(stateManager));
+        //stateManager.registerPanel("Blackjack", new BlackjackPanel(stateManager));
+        stateManager.registerPanel("Baccarat", new BaccaratPanel(stateManager));
 
         return stateManager;
     }

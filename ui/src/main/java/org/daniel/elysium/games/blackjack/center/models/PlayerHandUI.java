@@ -4,8 +4,8 @@ import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BJResultAsset;
 import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.blackjack.models.PlayerHand;
-import org.daniel.elysium.models.Chip;
-import org.daniel.elysium.models.UICard;
+import org.daniel.elysium.models.chips.Chip;
+import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
 import java.awt.*;

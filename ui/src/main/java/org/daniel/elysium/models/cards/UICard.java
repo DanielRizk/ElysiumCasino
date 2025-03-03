@@ -1,4 +1,4 @@
-package org.daniel.elysium.models;
+package org.daniel.elysium.models.cards;
 
 import org.daniel.elysium.assets.Asset;
 import org.daniel.elysium.assets.AssetManager;

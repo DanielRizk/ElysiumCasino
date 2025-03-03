@@ -1,13 +1,12 @@
-package org.daniel.elysium.games.blackjack;
+package org.daniel.elysium.interfaces;
 
-import org.daniel.elysium.models.Chip;
-import org.daniel.elysium.games.blackjack.constants.GameActions;
+import org.daniel.elysium.models.chips.Chip;
 
 /**
- * The {@code BlackjackMediator} interface defines a contract for coordinating interactions
- * between the Blackjack UI and the game logic.
+ * The {@code Mediator} interface defines a contract for coordinating interactions
+ * between the Game UI and the game logic.
  */
-public interface BlackjackMediator {
+public interface Mediator {
 
     /**
      * Handles the selection of a betting chip.
@@ -37,7 +36,7 @@ public interface BlackjackMediator {
     void dealInitialCards();
 
     /**
-     * Handles a player action (e.g., Hit, Stand, Double, Split).
+     * Handles a player action.
      *
      * @param action The selected {@link GameActions} to be performed.
      * @param index  The index of the player's hand (for cases like splits).
