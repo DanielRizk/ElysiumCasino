@@ -9,6 +9,12 @@ import java.util.Map;
  */
 public enum ChipAsset implements Asset {
 
+    /** Chip with a value of 10000. */
+    CHIP_10000(10000),
+
+    /** Chip with a value of 5000. */
+    CHIP_5000(5000),
+
     /** Chip with a value of 1000. */
     CHIP_1000(1000),
 

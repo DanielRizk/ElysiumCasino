@@ -106,6 +106,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.addChip(chip);
         stateManager.getProfile().decreaseBalanceBy(chip.getValue());
         hand.setBet(hand.getBet() + chip.getValue());
+        gameAreaPanel.updateBetLabel(hand.getBet());
         gameAreaPanel.showClearBetButton(true);
         gameAreaPanel.showDealButton(true);
         updateBalanceDisplay();
@@ -124,6 +125,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.showClearBetButton(false);
         stateManager.getProfile().increaseBalanceBy(hand.getBet());
         hand.setBet(0);
+        gameAreaPanel.updateBetLabel(0);
         gameAreaPanel.resetSelection();
         gameAreaPanel.clearChips();
         updateBalanceDisplay();
@@ -295,7 +297,6 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
      * Displays the results of the current Baccarat game round and schedules a game reset.
      * This method sets the game state to display results, updates the game area to show each hand's results,
      * and sets a timer to reset the game after a brief pause.
-     *
      * The reset will trigger the start of a new game round, providing a seamless flow from one round to the next.
      */
     private void displayResults(){
@@ -329,6 +330,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.clearHands();
         gameAreaPanel.resetSelection();
         gameAreaPanel.clearChips();
+        gameAreaPanel.updateBetLabel(0);
         hand = new BetHand();
         state = BaccaratGameState.BET_PHASE;
         ChipPanelUtil.regenerateChipPanel(this, stateManager);
@@ -364,6 +366,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         chipPanel.setVisible(false);
         gameAreaPanel.clearHands();
         gameAreaPanel.resetSelection();
+        gameAreaPanel.updateBetLabel(0);
         ChipPanelUtil.removeChipPanel(this, stateManager);
         cards = Shoe.createShoe(4, UIDeck::new).cards();
     }
@@ -448,7 +451,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     private List<UICard> getCustomDeck(){
         List<UICard> cards = new ArrayList<>();
         cards.add(new BacCardUI("10", "S", CardAsset.S10));
-        cards.add(new BacCardUI("6", "S", CardAsset.S6));
+        cards.add(new BacCardUI("7", "S", CardAsset.S7));
         cards.add(new BacCardUI("7", "H", CardAsset.H7));
         cards.add(new BacCardUI("Q", "S", CardAsset.SQ));
         cards.add(new BacCardUI("10", "C", CardAsset.C10));

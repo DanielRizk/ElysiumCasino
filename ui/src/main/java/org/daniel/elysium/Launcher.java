@@ -6,6 +6,7 @@ import org.daniel.elysium.debugUtils.DebugLevel;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.games.baccarat.BaccaratPanel;
 import org.daniel.elysium.games.blackjack.BlackjackPanel;
+import org.daniel.elysium.games.ultimateTH.UltimatePanel;
 import org.daniel.elysium.screens.*;
 import org.daniel.elysium.user.database.DatabaseConnection;
 import org.daniel.elysium.user.profile.UserProfile;
@@ -162,9 +163,10 @@ public class Launcher {
     private static StateManager createStateManager(JPanel mainPanel, JFrame frame) {
         StateManager stateManager = new StateManager(mainPanel, frame);
 
-        // Test user for testing
+        //TODO: Test user for testing
         stateManager.setProfile(new UserProfile("Test", "Test", 10000));
 
+        // TODO: make a unique background for each game.
         stateManager.registerPanel("Login", new LoginPanel(stateManager));
         stateManager.registerPanel("Register", new RegisterPanel(stateManager));
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));
@@ -172,6 +174,7 @@ public class Launcher {
         stateManager.registerPanel("ChangePass", new UpdatePasswordPanel(stateManager));
         stateManager.registerPanel("Blackjack", new BlackjackPanel(stateManager));
         stateManager.registerPanel("Baccarat", new BaccaratPanel(stateManager));
+        stateManager.registerPanel("UltimateTH", new UltimatePanel(stateManager));
 
         return stateManager;
     }

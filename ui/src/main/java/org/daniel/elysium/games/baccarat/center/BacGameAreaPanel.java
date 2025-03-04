@@ -4,6 +4,7 @@ import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.baccarat.constants.HandType;
 import org.daniel.elysium.elements.buttons.StyledButton;
+import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.games.baccarat.center.models.BetBox;
 import org.daniel.elysium.games.baccarat.center.models.BettingAreaPanel;
 import org.daniel.elysium.games.baccarat.center.models.CardsAreaPanel;
@@ -27,6 +28,7 @@ public class BacGameAreaPanel extends JPanel {
     private final JPanel buttonSwitcherPanel;
     private final CardLayout cardLayout;
     private final StyledButton dealButton;
+    private final StyledTextField currentBetLabel;
 
     /**
      * Constructs the main baccarat play area, initializing UI elements.
@@ -40,20 +42,27 @@ public class BacGameAreaPanel extends JPanel {
 
         // Define layout constraints
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.gridx = 0;
         gbc.weightx = 1.0;
 
-        // Cards area, player and banker
+        // Current  bet label
         gbc.gridy = 1;
+        gbc.weighty = 0.10;
+        currentBetLabel = new StyledTextField("Bet: " + 0, new Dimension(200, 50), 15, false);
+        add(currentBetLabel, gbc);
+
+        // Cards area, player and banker
+        gbc.gridy = 2;
         gbc.weighty = 0.30;
+        gbc.fill = GridBagConstraints.BOTH;
         cardsAreaPanel = new CardsAreaPanel();
         add(cardsAreaPanel, gbc);
 
         // Deal Button
-        gbc.gridy = 2;
-        gbc.weighty = 0.15;
+        gbc.gridy = 3;
+        gbc.weighty = 0.10;
         JPanel dealButtonContainer = new JPanel(new BorderLayout());
         dealButtonContainer.setOpaque(false);
         dealButton = new StyledButton("DEAL", ButtonAsset.BUTTON_DARK_BLUE_SHARP);
@@ -64,7 +73,7 @@ public class BacGameAreaPanel extends JPanel {
         add(dealButtonContainer, gbc);
 
         // Betting Area Panel (3 Rectangles: Player, Banker, Tie)
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.weighty = 0.40; // Give it a reasonable height
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -72,8 +81,8 @@ public class BacGameAreaPanel extends JPanel {
         add(bettingAreaPanel, gbc);
 
         // Action Buttons Panel
-        gbc.gridy = 4;
-        gbc.weighty = 0.15;
+        gbc.gridy = 5;
+        gbc.weighty = 0.10;
         cardLayout = new CardLayout();
         buttonSwitcherPanel = new JPanel(cardLayout);
         buttonSwitcherPanel.setOpaque(false);
@@ -238,5 +247,14 @@ public class BacGameAreaPanel extends JPanel {
      */
     public void showClearBetButton(boolean visible) {
         cardLayout.show(buttonSwitcherPanel, visible ? "clear" : "hide");
+    }
+
+    /**
+     * Updates the UI bet label with the current bet
+     *
+     * @param bet The amount of bet to display.
+     */
+    public void updateBetLabel(double bet) {
+        currentBetLabel.setText("Bet: " + bet);
     }
 }

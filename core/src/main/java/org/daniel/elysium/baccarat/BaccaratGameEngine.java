@@ -108,8 +108,13 @@ public class BaccaratGameEngine {
                 hand.setBet(0);
             }
         } else {
-            hand.setState(BacHandState.TIE);
-            hand.setBet(hand.getBet() + (hand.getBet() * hand.getHandType().getValue()));
+            if (hand.getHandType() == HandType.TIE){
+                hand.setState(BacHandState.TIE);
+                hand.setBet(hand.getBet() + (hand.getBet() * hand.getHandType().getValue()));
+            } else {
+                hand.setState(BacHandState.LOST);
+                hand.setBet(0);
+            }
         }
     }
 }
