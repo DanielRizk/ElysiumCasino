@@ -1,7 +1,6 @@
 package org.daniel.elysium.games.baccarat.center.models.banker;
 
 import org.daniel.elysium.games.baccarat.models.BacCardUI;
-import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
 import java.awt.*;

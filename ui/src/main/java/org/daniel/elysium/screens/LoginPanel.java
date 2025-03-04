@@ -1,6 +1,5 @@
 package org.daniel.elysium.screens;
 
-import org.daniel.elysium.interfaces.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
@@ -10,6 +9,7 @@ import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
+import org.daniel.elysium.interfaces.Resettable;
 import org.daniel.elysium.user.database.UserDAO;
 import org.daniel.elysium.user.profile.UserProfile;
 

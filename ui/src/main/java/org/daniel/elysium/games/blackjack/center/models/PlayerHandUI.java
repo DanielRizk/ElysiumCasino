@@ -2,7 +2,6 @@ package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.ResultAsset;
-import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.blackjack.models.PlayerHand;
 import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.models.chips.Chip;

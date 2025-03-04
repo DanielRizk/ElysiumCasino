@@ -1,9 +1,9 @@
 package org.daniel.elysium.games.blackjack;
 
-import org.daniel.elysium.interfaces.Resettable;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
+import org.daniel.elysium.interfaces.Resettable;
 
 import javax.swing.*;
 import java.awt.*;

@@ -5,7 +5,6 @@ import org.daniel.elysium.assets.ResultAsset;
 import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.blackjack.models.DealerHand;
 import org.daniel.elysium.games.blackjack.models.BJCardUI;
-import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
 import java.awt.*;

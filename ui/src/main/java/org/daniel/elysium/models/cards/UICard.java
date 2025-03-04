@@ -3,7 +3,6 @@ package org.daniel.elysium.models.cards;
 import org.daniel.elysium.assets.Asset;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.CardAsset;
-import org.daniel.elysium.blackjack.models.BJCard;
 import org.daniel.elysium.models.Card;
 
 import javax.swing.*;
