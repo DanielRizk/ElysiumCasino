@@ -246,7 +246,7 @@ public class BJGameAreaPanel extends JPanel {
     /**
      * Updates the available action buttons dynamically based on the provided actions.
      *
-     * @param availableActions A map containing available {@link GameActions} and their respective hand indices.
+     * @param availableActions A map containing available {@link BlackjackActions} and their respective hand indices.
      */
     public void updateActionButtons(Map<BlackjackActions, Integer> availableActions) {
         // Clear existing buttons
@@ -298,5 +298,4 @@ public class BJGameAreaPanel extends JPanel {
     public void clearActions() {
         cardLayout.show(buttonSwitcherPanel, "hide");
     }
-
 }

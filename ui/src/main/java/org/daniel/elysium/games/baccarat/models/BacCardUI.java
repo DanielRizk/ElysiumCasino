@@ -1,19 +1,19 @@
-package org.daniel.elysium.games.baccarat.center;
+package org.daniel.elysium.games.baccarat.models;
 
 import org.daniel.elysium.assets.Asset;
-import org.daniel.elysium.baccarat.BacCard;
+import org.daniel.elysium.baccarat.models.BacCard;
 import org.daniel.elysium.models.cards.UICard;
 
 /**
  * Represents a visual representation of a Baccarat card in the UI.
- * Each {@code UICard} is linked to a logical {@link BacCard} instance.
+ * Each {@code BacCardUI} is linked to a logical {@link BacCard} instance.
  */
 public class BacCardUI extends UICard {
-    /** The logical backend representation of the card. */
+    /** The logical backend representation of a baccarat card. */
     private final BacCard card;
 
     /**
-     * Constructs a {@code UICard} with a given rank, suit, and image asset.
+     * Constructs a {@code BacCardUI} with a given rank, suit, and image asset.
      *
      * @param rank The rank of the card (e.g., "A", "2", "K").
      * @param suit The suit of the card (e.g., "♠", "♥", "♦", "♣").

@@ -1,5 +1,8 @@
 package org.daniel.elysium.games.baccarat.constants;
 
+/**
+ * Enum representing the different states of a Baccarat game.
+ */
 public enum BaccaratGameState {
     /** The phase where players place their bets before the game starts. */
     BET_PHASE,

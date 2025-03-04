@@ -181,23 +181,28 @@ public class PlayerHandUI extends JPanel {
         updateBetDisplay(getBet());
     }
 
-    // TODO: make them like you did in baccarat in BetBOX
     /**
      * Adds an insurance bet equivalent to half of the original bet.
      */
     public void addInsuranceBet() {
-        List<Chip> chips = Chip.getChipCombination((int) (getBet() * 0.5));
+        int chipsValue = betPanel.getChipsMain().stream()
+                .mapToInt(Chip::getValue) // Extract values
+                .sum();
+        List<Chip> chips = Chip.getChipCombination((int) (chipsValue * 0.5));
         for (Chip chip : chips) {
             getBetPanel().addChipExtra(chip);
         }
-        setInsuranceBet((int) (getBet() * 0.5));
+        setInsuranceBet((int) (chipsValue * 0.5));
     }
 
     /**
      * Pays out winnings for a blackjack hand.
      */
     public void payBlackjackWin() {
-        List<Chip> chips = Chip.getChipCombination((getBet() * 3 / 5));
+        int chipsValue = betPanel.getChipsMain().stream()
+                .mapToInt(Chip::getValue) // Extract values
+                .sum();
+        List<Chip> chips = Chip.getChipCombination((chipsValue * 3/2));
         for (Chip chip : chips) {
             getBetPanel().addChipMain(chip);
         }
@@ -207,7 +212,10 @@ public class PlayerHandUI extends JPanel {
      * Pays out winnings for an insurance bet.
      */
     public void payInsurance() {
-        List<Chip> chips = Chip.getChipCombination((getInsuranceBet() * 2 / 3));
+        int chipsValue = betPanel.getChipsExtra().stream()
+                .mapToInt(Chip::getValue) // Extract values
+                .sum();
+        List<Chip> chips = Chip.getChipCombination((chipsValue * 2));
         for (Chip chip : chips) {
             getBetPanel().addChipExtra(chip);
         }
@@ -262,16 +270,12 @@ public class PlayerHandUI extends JPanel {
      * Displays the hand result image based on the game state.
      */
     public void displayHandResult(){
-        if (hand.getState() == HandState.BLACKJACK){
-            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.BLACKJACK, new Dimension(300, 200)));
-        } else if (hand.getState() == HandState.INSURED){
-            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.INSURED, new Dimension(300, 200)));
-        } else if (hand.getState() == HandState.WON) {
-            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.WON, new Dimension(300, 200)));
-        } else if (hand.getState() == HandState.PUSH) {
-            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.PUSH, new Dimension(300, 200)));
-        } else {
-            playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.LOST, new Dimension(300, 200)));
+        switch (hand.getState()){
+            case BLACKJACK -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.BLACKJACK, new Dimension(300, 200)));
+            case INSURED -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.INSURED, new Dimension(300, 200)));
+            case WON -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.WON, new Dimension(300, 200)));
+            case PUSH -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.PUSH, new Dimension(300, 200)));
+            default -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.LOST, new Dimension(300, 200)));
         }
     }
 

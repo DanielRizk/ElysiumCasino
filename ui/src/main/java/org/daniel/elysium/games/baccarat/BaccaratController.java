@@ -3,15 +3,16 @@ package org.daniel.elysium.games.baccarat;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.baccarat.*;
-import org.daniel.elysium.blackjack.BlackjackEngine;
+import org.daniel.elysium.baccarat.constants.BacHandAction;
+import org.daniel.elysium.baccarat.constants.BacHandState;
+import org.daniel.elysium.baccarat.models.BacHand;
+import org.daniel.elysium.baccarat.models.BetHand;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
-import org.daniel.elysium.games.baccarat.center.BacCardUI;
+import org.daniel.elysium.games.baccarat.models.BacCardUI;
 import org.daniel.elysium.games.baccarat.center.BacGameAreaPanel;
-import org.daniel.elysium.games.baccarat.center.PlayerHand;
 import org.daniel.elysium.games.baccarat.constants.BaccaratGameState;
-import org.daniel.elysium.games.blackjack.constants.BJGameState;
 import org.daniel.elysium.interfaces.ChipPanelConsumer;
 import org.daniel.elysium.interfaces.GameActions;
 import org.daniel.elysium.interfaces.Mediator;
@@ -25,7 +26,6 @@ import org.daniel.elysium.models.panels.TopPanel;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /** Controls the Baccarat game flow, handling state transitions, UI updates, and interactions. */
@@ -43,7 +43,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     private BetHand hand;
 
     // Define the game logic engine
-    private BaccaratGameEngine gameEngine;
+    private final BaccaratGameEngine gameEngine;
 
     /** The minimum bet allowed in the game. */
     public static final int MIN_BET = 100;
@@ -52,6 +52,11 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
     private List<UICard> cards = shoe.cards();
 
+    /**
+     * Constructs the BaccaratController and initializes game components.
+     *
+     * @param stateManager The state manager handling panel switching and user profile data.
+     */
     public BaccaratController(StateManager stateManager) {
         this.stateManager = stateManager;
         this.gameEngine = new BaccaratGameEngine();
@@ -146,13 +151,14 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         chipPanel.setVisible(false);
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.showClearBetButton(false);
-        //gameAreaPanel.resetSelection();
 
         hand.setHandType(gameAreaPanel.getSelectedBoxType());
 
         // Deal the cards to the players
         dealInitialCards();
 
+        // Evaluate the hand against each other
+        evaluateHands();
     }
 
     /**
@@ -168,106 +174,6 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.addBankerCard(getCardFromShoe());
         gameAreaPanel.addPlayerCard(getCardFromShoe());
         gameAreaPanel.addBankerCard(getCardFromShoe());
-
-        evaluateHands();
-    }
-
-    private void evaluateHands(){
-        state = BaccaratGameState.EVALUATION_PHASE;
-
-        BacHand banker = gameAreaPanel.getBankerHand().getHand();
-        BacHand player = gameAreaPanel.getPlayerHand().getHand();
-
-        gameEngine.evaluatePlayer(banker, player);
-        executePlayerAction(player);
-        gameEngine.evaluateBanker(banker, player);
-        executeBankerAction(banker);
-        gameEngine.evaluateHands(banker ,player);
-
-        proceedTopPayouts();
-    }
-
-    private void executePlayerAction(BacHand hand){
-        if (hand.getAction() == BacHandAction.DRAW){
-            gameAreaPanel.addPlayerCard(getCardFromShoe());
-        }
-    }
-
-    private void executeBankerAction(BacHand hand){
-        if (hand.getAction() == BacHandAction.DRAW){
-            gameAreaPanel.addBankerCard(getCardFromShoe());
-        }
-    }
-
-    private void displayResults(){
-        state = BaccaratGameState.DISPLAY_RESULT;
-        gameAreaPanel.getPlayerHand().showOverlay();
-        gameAreaPanel.getBankerHand().showOverlay();
-
-        // Go to reset to start a new game after 5 seconds
-        Timer timer = new Timer(5000, e -> reset());
-        timer.setRepeats(false);
-        timer.start();
-    }
-
-    private void proceedTopPayouts(){
-        gameEngine.calculateResult(gameAreaPanel.getBankerHand().getHand(), gameAreaPanel.getPlayerHand().getHand(), hand);
-        stateManager.getProfile().increaseBalanceBy(hand.getBet());
-
-        if (hand.getState() == BacHandState.WON){
-            gameAreaPanel.getSelectedBox().payWin();
-        } else if (hand.getState() == BacHandState.TIE) {
-            gameAreaPanel.getSelectedBox().payTie();
-        }
-
-        updateBalanceDisplay();
-        displayResults();
-    }
-
-    private void reset(){
-        state = BaccaratGameState.GAME_ENDED;
-        gameAreaPanel.removeCards();
-        gameAreaPanel.resetSelection();
-        gameAreaPanel.clearChips();
-        hand = new BetHand();
-        state = BaccaratGameState.BET_PHASE;
-        ChipPanelUtil.regenerateChipPanel(this, stateManager);
-
-        // If player has no enough money, Player then escorted to main menu
-        if (stateManager.getProfile().getBalance() < MIN_BET){
-            stateManager.switchPanel("MainMenu");
-
-            StyledNotificationDialog dialog = new StyledNotificationDialog(
-                    stateManager.getFrame(),
-                    "You don't have enough balance to continue playing. "
-            );
-
-            dialog.setVisible(true);
-        }
-
-        // If the shoe has less than 15 cards, start a new shoe
-        if (cards.size() < 15){
-            cards = Shoe.createShoe(4, UIDeck::new).cards();
-
-            StyledNotificationDialog dialog = new StyledNotificationDialog(
-                    stateManager.getFrame(),
-                    "Shoe ended, Starting a new Shoe. "
-            );
-
-            dialog.setVisible(true);
-        }
-    }
-
-
-    /**
-     * Updates the balance display with the current balance.
-     * <p>
-     * Retrieves the player's current balance from the profile and updates
-     * the UI's balance display accordingly.
-     */
-    @Override
-    public void updateBalanceDisplay() {
-        topPanel.setBalance(stateManager.getProfile().getBalance());
     }
 
     /**
@@ -309,14 +215,154 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     }
 
     /*======================
+     Evaluation and payouts
+    ======================*/
+
+    /**
+     * Evaluates the hands of both the player and the banker in the current state of the Baccarat game.
+     * This method orchestrates the checking of game rules, execution of player and banker actions,
+     * and ultimately determines the outcome of the current round based on the rules of Baccarat.
+     */
+    private void evaluateHands(){
+        state = BaccaratGameState.EVALUATION_PHASE;
+
+        BacHand banker = gameAreaPanel.getBankerHand().getHand();
+        BacHand player = gameAreaPanel.getPlayerHand().getHand();
+
+        gameEngine.evaluatePlayer(banker, player);
+        executePlayerAction(player);
+        gameEngine.evaluateBanker(banker, player);
+        executeBankerAction(banker);
+        gameEngine.evaluateHands(banker ,player);
+
+        proceedTopPayouts();
+    }
+
+    /**
+     * Executes the action for the player's hand based on the determined next action.
+     * If the action is to draw a card, this method retrieves a card from the shoe and adds it to the player's hand.
+     *
+     * @param hand The player's hand to evaluate and possibly modify based on the game rules.
+     */
+    private void executePlayerAction(BacHand hand){
+        if (hand.getAction() == BacHandAction.DRAW){
+            gameAreaPanel.addPlayerCard(getCardFromShoe());
+        }
+    }
+
+    /**
+     * Executes the action for the banker's hand based on the determined next action.
+     * If the action is to draw a card, this method retrieves a card from the shoe and adds it to the banker's hand.
+     *
+     * @param hand The banker's hand to evaluate and possibly modify based on the game rules.
+     */
+    private void executeBankerAction(BacHand hand){
+        if (hand.getAction() == BacHandAction.DRAW){
+            gameAreaPanel.addBankerCard(getCardFromShoe());
+        }
+    }
+
+    /**
+     * Processes the payouts based on the results of the game round.
+     * This method calculates the game result, updates the player's balance based on the bet outcome,
+     * and updates the UI components to reflect the result.
+     * <ul>
+     *     <li>Calculates the result of the game round.</li>
+     *     <li>Adjusts the player's balance based on the result of their bet.</li>
+     *     <li>Pays out wins or ties as appropriate.</li>
+     *     <li>Updates the balance display on the UI.</li>
+     *     <li>Displays the results of the game round.</li>
+     * </ul>
+     */
+    private void proceedTopPayouts(){
+        state = BaccaratGameState.PAYOUT;
+
+        gameEngine.calculateResult(gameAreaPanel.getBankerHand().getHand(), gameAreaPanel.getPlayerHand().getHand(), hand);
+        stateManager.getProfile().increaseBalanceBy(hand.getBet());
+
+        // Determine the outcome and update UI accordingly
+        if (hand.getState() == BacHandState.WON){
+            gameAreaPanel.getSelectedBox().payWin();
+        } else if (hand.getState() == BacHandState.TIE) {
+            gameAreaPanel.getSelectedBox().payTie();
+        }
+
+        updateBalanceDisplay();
+        displayResults();
+    }
+
+    /**
+     * Displays the results of the current Baccarat game round and schedules a game reset.
+     * This method sets the game state to display results, updates the game area to show each hand's results,
+     * and sets a timer to reset the game after a brief pause.
+     *
+     * The reset will trigger the start of a new game round, providing a seamless flow from one round to the next.
+     */
+    private void displayResults(){
+        state = BaccaratGameState.DISPLAY_RESULT;
+
+        // Trigger visual display of results for both hands
+        gameAreaPanel.getPlayerHand().showHandResult();
+        gameAreaPanel.getBankerHand().showHandResult();
+
+        // Go to reset to start a new game after 5 seconds
+        Timer timer = new Timer(5000, e -> reset());
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    /*======================
         Reset
     ======================*/
+
+    /**
+     * Resets the game state and prepares everything for a new round.
+     * <p>
+     * This method clears all previous game actions and hands,
+     * and transitions the state back to the betting phase. It also ensures that the player
+     * has enough balance to continue playing. If the player's balance falls below the minimum
+     * bet, they are redirected to the main menu. Additionally, if the shoe has fewer than
+     * 15 cards remaining, a new shoe is created.
+     */
+    private void reset(){
+        state = BaccaratGameState.GAME_ENDED;
+        gameAreaPanel.clearHands();
+        gameAreaPanel.resetSelection();
+        gameAreaPanel.clearChips();
+        hand = new BetHand();
+        state = BaccaratGameState.BET_PHASE;
+        ChipPanelUtil.regenerateChipPanel(this, stateManager);
+
+        // If player has no enough money, Player then escorted to main menu
+        if (stateManager.getProfile().getBalance() < MIN_BET){
+            stateManager.switchPanel("MainMenu");
+
+            StyledNotificationDialog dialog = new StyledNotificationDialog(
+                    stateManager.getFrame(),
+                    "You don't have enough balance to continue playing. "
+            );
+
+            dialog.setVisible(true);
+        }
+
+        // If the shoe has less than 15 cards, start a new shoe
+        if (cards.size() < 15){
+            cards = Shoe.createShoe(4, UIDeck::new).cards();
+
+            StyledNotificationDialog dialog = new StyledNotificationDialog(
+                    stateManager.getFrame(),
+                    "Shoe ended, Starting a new Shoe. "
+            );
+
+            dialog.setVisible(true);
+        }
+    }
 
     /** Protected API for the {@link BaccaratPanel} to revert to initial state when exiting */
     protected void resetScreen(){
         state = BaccaratGameState.BET_PHASE;
         chipPanel.setVisible(false);
-        gameAreaPanel.removeCards();
+        gameAreaPanel.clearHands();
         gameAreaPanel.resetSelection();
         ChipPanelUtil.removeChipPanel(this, stateManager);
         cards = Shoe.createShoe(4, UIDeck::new).cards();
@@ -333,17 +379,32 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     ======================*/
 
     /**
+     * Updates the balance display with the current balance.
+     * <p>
+     * Retrieves the player's current balance from the profile and updates
+     * the UI's balance display accordingly.
+     */
+    @Override
+    public void updateBalanceDisplay() {
+        topPanel.setBalance(stateManager.getProfile().getBalance());
+    }
+
+    /**
      * Draws and removes the top card from the shoe.
      * <p>
      * This method retrieves the top card from the shoe and removes it from the deck,
      * simulating the process of dealing a card in the game.
      *
-     * @return The top card from the shoe.
+     * @return The top card from the shoe as {@link BacCardUI}.
      */
     private BacCardUI getCardFromShoe() {
         UICard card = cards.remove(0);
         return new BacCardUI(card.getRank(), card.getSuit(), card.getAsset());
     }
+
+    /*======================
+        Getters
+    ======================*/
 
     /**
      * Returns the top panel containing game status and return button.

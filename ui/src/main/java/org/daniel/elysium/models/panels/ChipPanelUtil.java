@@ -9,13 +9,19 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-// TODO: JAVADOC
+/**
+ * Utility class for managing the display and behavior of chip panels in a casino game.
+ * This class handles the creation, update, and position management of chip panels on the UI.
+ */
 public class ChipPanelUtil {
 
     /**
      * Regenerates the chip panel by first removing the existing one and then revealing a new instance.
      * <p>
      * This ensures that the chip panel is always freshly created and dynamically updated.
+     *
+     * @param consumer The reference to the chip panel consumer class.
+     * @param stateManager The state manager that maintains the state across the UI.
      */
     public static void regenerateChipPanel(ChipPanelConsumer consumer, StateManager stateManager){
         removeChipPanel(consumer, stateManager);
@@ -29,6 +35,9 @@ public class ChipPanelUtil {
      * It removes any existing chip panel, creates a new one, and adds it to the JLayeredPane.
      * The chip panel is then repositioned and made visible.
      * A component listener is also added to adjust its position when the main frame is resized.
+     *
+     * @param consumer The reference to the chip panel consumer class.
+     * @param stateManager The state manager that maintains the state across the UI.
      */
     public static void revealChipPanel(ChipPanelConsumer consumer, StateManager stateManager) {
         SwingUtilities.invokeLater(() -> {
@@ -67,6 +76,9 @@ public class ChipPanelUtil {
      * <p>
      * This method ensures that the chip panel is properly removed from the UI before a new one is created.
      * It runs on the Swing Event Dispatch Thread (EDT) to prevent concurrency issues and forces a UI update.
+     *
+     * @param consumer The reference to the chip panel consumer class.
+     * @param stateManager The state manager that maintains the state across the UI.
      */
     public static void removeChipPanel(ChipPanelConsumer consumer, StateManager stateManager) {
         SwingUtilities.invokeLater(() -> {
@@ -88,6 +100,9 @@ public class ChipPanelUtil {
      * <p>
      * The panel is positioned near the bottom left of the screen with a fixed margin.
      * This method ensures the chip panel is correctly placed after being added or when the window is resized.
+     *
+     * @param consumer The reference to the chip panel consumer class.
+     * @param stateManager The state manager that maintains the state across the UI.
      */
     public static void repositionChipPanel(ChipPanelConsumer consumer, StateManager stateManager) {
         if (stateManager.getFrame() != null) {

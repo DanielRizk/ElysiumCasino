@@ -11,7 +11,7 @@ import java.awt.*;
 
 /**
  * Represents a visual representation of a card in the UI.
- * Each {@code UICard} is linked to a logical {@link BJCard} instance.
+ * Each {@code UICard} is linked to a logical {@link Card} instance.
  */
 public class UICard extends JLabel {
 

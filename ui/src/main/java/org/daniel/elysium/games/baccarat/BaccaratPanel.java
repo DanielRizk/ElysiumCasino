@@ -8,9 +8,17 @@ import org.daniel.elysium.interfaces.Resettable;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * The {@code BaccaratPanel} class represents the main panel for the Baccarat game.
+ */
 public class BaccaratPanel extends JPanel implements Resettable {
     private final BaccaratController controller;
 
+    /**
+     * Constructs the Baccarat game panel.
+     *
+     * @param stateManager The {@link StateManager} that manages application states and transitions.
+     */
     public BaccaratPanel(StateManager stateManager) {
         setLayout(new BorderLayout());
         controller = new BaccaratController(stateManager);

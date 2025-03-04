@@ -6,10 +6,11 @@ import org.daniel.elysium.models.cards.UICard;
 
 /**
  * Represents a visual representation of a Blackjack card in the UI.
- * Each {@code UICard} is linked to a logical {@link BJCard} instance.
+ * Each {@code BJCardUI} is linked to a logical {@link BJCard} instance.
  */
 public class BJCardUI extends UICard {
-    /** The logical backend representation of the card. */
+
+    /** The logical backend representation of a blackjack card. */
     private final BJCard card;
 
     /**

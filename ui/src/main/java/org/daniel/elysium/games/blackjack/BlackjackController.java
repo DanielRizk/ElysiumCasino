@@ -43,7 +43,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     private final BJGameAreaPanel gameAreaPanel;
 
     // Define the game logic engine
-    private BlackjackEngine gameEngine;
+    private final BlackjackEngine gameEngine;
 
     /** The minimum bet allowed in the game. */
     public static final int MIN_BET = 10;
@@ -425,6 +425,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
             // If there is another hand (split) and this the first hand, go to the second hand
             if (checkForSplitHands() && index + 1 <  gameAreaPanel.getPlayerHands().size()){
                 index++; // increment to second hand index
+                gameAreaPanel.addPlayerCard(index, getCardFromShoe()); // second split hand has one card after split.
                 calculatePlayerOptions(index);
             } else {
                 handleStandOption(index);
@@ -571,6 +572,10 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             playerHandUI.displayHandResult();
         }
+
+        if (gameAreaPanel.getDealerHand().getHand().getState() == HandState.BLACKJACK){
+            gameAreaPanel.getDealerHand().displayBlackjackResult();
+        }
         proceedToPayouts();
     }
 
@@ -616,17 +621,16 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     /**
      * Resets the game state and prepares everything for a new round.
      * <p>
-     * This method clears all previous game actions and hands, resets the game engine,
+     * This method clears all previous game actions and hands,
      * and transitions the state back to the betting phase. It also ensures that the player
      * has enough balance to continue playing. If the player's balance falls below the minimum
      * bet, they are redirected to the main menu. Additionally, if the shoe has fewer than
-     * 10 cards remaining, a new shoe is created.
+     * 15 cards remaining, a new shoe is created.
      */
     private void reset(){
         state = BJGameState.GAME_ENDED;
         gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
-        gameEngine = new BlackjackEngine();
         state = BJGameState.BET_PHASE;
         ChipPanelUtil.regenerateChipPanel(this, stateManager);
 
@@ -704,7 +708,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * This method retrieves the top card from the shoe and removes it from the deck,
      * simulating the process of dealing a card in the game.
      *
-     * @return The top card from the shoe.
+     * @return The top card from the shoe as {@link BJCardUI}.
      */
     private BJCardUI getCardFromShoe() {
         UICard card = cards.remove(0);
@@ -717,7 +721,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * This method allows the game logic to check the next card in the shoe
      * without altering the deck order.
      *
-     * @return The top card from the shoe.
+     * @return The top card from the shoe as {@link BJCardUI}.
      */
     private BJCardUI peekCardFromShoe(){
         UICard card = cards.get(0);
@@ -779,12 +783,12 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     @SuppressWarnings("Unused")
     private List<UICard> getCustomDeck(){
         List<UICard> cards = new ArrayList<>();
-        cards.add(new BJCardUI("10", "S", CardAsset.S10));
-        cards.add(new BJCardUI("7", "S", CardAsset.S7));
+        cards.add(new BJCardUI("8", "S", CardAsset.S8));
         cards.add(new BJCardUI("10", "H", CardAsset.H10));
-        cards.add(new BJCardUI("Q", "S", CardAsset.SQ));
+        cards.add(new BJCardUI("8", "S", CardAsset.S8));
+        cards.add(new BJCardUI("A", "S", CardAsset.SA));
         cards.add(new BJCardUI("10", "C", CardAsset.C10));
-        cards.add(new BJCardUI("2", "H", CardAsset.H2));
+        cards.add(new BJCardUI("9", "H", CardAsset.H9));
 
         cards.add(new BJCardUI("9", "C", CardAsset.C9));
         cards.add(new BJCardUI("Q", "S", CardAsset.SQ));

@@ -41,7 +41,7 @@ public class TopPanel extends JPanel {
     /**
      * Updates the balance label to reflect the current balance.
      *
-     * @param balanceText The new balance text to display.
+     * @param balance The new balance value to display.
      */
     public void setBalance(double balance) {
         balanceLabel.setText("Balance: " + balance);

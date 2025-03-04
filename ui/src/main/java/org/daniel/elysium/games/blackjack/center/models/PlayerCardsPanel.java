@@ -96,7 +96,5 @@ public class PlayerCardsPanel extends JPanel {
             g2.dispose();
         }
     }
-
-
 }
 

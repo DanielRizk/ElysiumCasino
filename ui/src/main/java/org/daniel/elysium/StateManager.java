@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 public class StateManager {
 
     /** The container where panels are displayed. */
-    private Container container;
+    private final Container container;
 
     /** CardLayout container for persistent panels. */
     private final JPanel cardPanel;

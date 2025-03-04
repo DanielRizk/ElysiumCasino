@@ -1,38 +1,53 @@
-package org.daniel.elysium.games.baccarat.center;
+package org.daniel.elysium.games.baccarat.center.models.banker;
 
-import org.daniel.elysium.assets.CardAsset;
+import org.daniel.elysium.games.baccarat.models.BacCardUI;
 import org.daniel.elysium.models.cards.UICard;
 
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A custom JPanel designed to display banker cards and overlay images in a Baccarat game.
+ * This panel supports functionalities for adding cards, removing all cards, and displaying a temporary overlay image.
+ */
 public class BankerCardsUI extends JPanel {
     private Image overlayImage;
 
+    /**
+     * Constructs a BankerCardsUI with specific layout and opacity settings.
+     * The panel uses a FlowLayout to manage card positioning and is set to be transparent.
+     */
     public BankerCardsUI() {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         setOpaque(false);
         setPreferredSize(new Dimension(200, 150));
     }
 
-    public void addCard(UICard card){
+    /**
+     * Adds a card to the panel.
+     * @param card The BacCardUI to add to the panel.
+     */
+    public void addCard(BacCardUI card){
         add(card);
     }
 
+    /**
+     * Removes all cards from the panel.
+     */
     public void removeCards(){
         removeAll();
     }
 
     /**
-     * Displays an overlay image (e.g., a trophy or result notification) for 3 seconds.
-     * The overlay appears on top of the cards and disappears automatically.
-     *
-     * @param image The image to overlay on the panel.
+     * Displays an overlay image over the cards for a limited time.
+     * The image is shown for 3 seconds and then automatically removed.
+     * @param image The image to be displayed as an overlay.
      */
     public void showOverlay(Image image) {
         this.overlayImage = image;
         repaint();
 
+        // Create a timer to remove the image after 3 seconds
         Timer timer = new Timer(3000, e -> {
             overlayImage = null;
             repaint();
