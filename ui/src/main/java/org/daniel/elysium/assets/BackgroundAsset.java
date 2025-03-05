@@ -10,19 +10,16 @@ import java.util.Map;
 public enum BackgroundAsset implements Asset {
 
     /** The main game background. */
-    BACKGROUND,
+    BACKGROUND_MAIN,
 
-    /** The main game background. */
-    APP_ICON,
+    /** The background of blackjack game. */
+    BACKGROUND_BLACKJACK,
 
-    /** The raw version of the game logo. */
-    LOGO_RAW,
+    /** The background of baccarat game. */
+    BACKGROUND_BACCARAT,
 
-    /** The shaded version of the game logo. */
-    LOGO_SHADE,
-
-    /** The Blackjack rules background. */
-    BLACKJACK_RULES,
+    /** The background of ultimate_th game. */
+    BACKGROUND_ULTIMATE,
 
     /** The background for dialog windows. */
     DIALOG_BACKGROUND,

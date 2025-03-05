@@ -4,6 +4,7 @@ import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.assets.LogoAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.games.blackjack.center.models.DealerHandUI;
 import org.daniel.elysium.games.blackjack.center.models.PlayerHandUI;
@@ -59,7 +60,7 @@ public class BJGameAreaPanel extends JPanel {
         // Logo / Rules Label
         gbc.gridy = 1;
         gbc.weighty = 0.10;
-        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(BackgroundAsset.BLACKJACK_RULES, new Dimension(600, 230)));
+        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(LogoAsset.BLACKJACK_RULES, new Dimension(600, 230)));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(logoLabel, gbc);
 

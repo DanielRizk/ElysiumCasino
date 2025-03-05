@@ -2,6 +2,7 @@ package org.daniel.elysium;
 
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
+import org.daniel.elysium.assets.LogoAsset;
 import org.daniel.elysium.debugUtils.DebugLevel;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.games.baccarat.BaccaratPanel;
@@ -120,7 +121,7 @@ public class Launcher {
         frame.pack();
 
         // Set app icon
-        ImageIcon icon = AssetManager.getIcon(BackgroundAsset.APP_ICON);
+        ImageIcon icon = AssetManager.getIcon(LogoAsset.APP_ICON);
         frame.setIconImage(icon.getImage());
 
         // Creating main panel to hold all other panels

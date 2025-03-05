@@ -4,6 +4,7 @@ import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.assets.LogoAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
@@ -36,7 +37,7 @@ public class MainMenuPanel extends JPanel {
         setLayout(new BorderLayout());
 
         // Set the background
-        BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.BACKGROUND);
+        BackgroundPanel backgroundPanel = new BackgroundPanel(BackgroundAsset.BACKGROUND_MAIN);
 
         // Panel to hold menu buttons
         JPanel buttonPanel = new JPanel(new GridBagLayout());
@@ -49,7 +50,7 @@ public class MainMenuPanel extends JPanel {
 
         // Create and add the game logo
         Dimension logoDimension = new Dimension(600, 500);
-        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(BackgroundAsset.LOGO_SHADE, logoDimension));
+        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(LogoAsset.LOGO_SHADE, logoDimension));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridy = 0;
         buttonPanel.add(logoLabel, gbc);

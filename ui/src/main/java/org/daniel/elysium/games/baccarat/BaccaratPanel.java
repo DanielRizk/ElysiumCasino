@@ -24,7 +24,7 @@ public class BaccaratPanel extends JPanel implements Resettable {
         controller = new BaccaratController(stateManager);
 
         // Create the background container.
-        BackgroundPanel background = new BackgroundPanel(BackgroundAsset.BACKGROUND);
+        BackgroundPanel background = new BackgroundPanel(BackgroundAsset.BACKGROUND_BACCARAT);
         background.setLayout(new BorderLayout());
 
         // Assemble sub-panels from the controller.

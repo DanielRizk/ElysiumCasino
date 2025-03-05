@@ -24,7 +24,7 @@ public class BlackjackPanel extends JPanel implements Resettable {
         controller = new BlackjackController(stateManager);
 
         // Create the background container.
-        BackgroundPanel background = new BackgroundPanel(BackgroundAsset.BACKGROUND);
+        BackgroundPanel background = new BackgroundPanel(BackgroundAsset.BACKGROUND_BLACKJACK);
         background.setLayout(new BorderLayout());
 
         // Assemble sub-panels from the controller.

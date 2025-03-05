@@ -21,6 +21,7 @@ public class AssetManager {
         BackgroundAsset.loadAssets(imageCache);
         CardAsset.loadAssets(imageCache);
         ResultAsset.loadAssets(imageCache);
+        LogoAsset.loadAssets(imageCache);
     }
 
     /**
