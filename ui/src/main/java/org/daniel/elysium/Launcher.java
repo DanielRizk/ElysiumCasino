@@ -131,7 +131,7 @@ public class Launcher {
         StateManager stateManager = createStateManager(mainPanel, frame);
 
         // Set the entry point of the app (initial panel)
-        stateManager.switchPanel("Login");
+        stateManager.switchPanel("UltimateTH");
 
         // Set initial focus to the main panel
         frame.addWindowListener(new java.awt.event.WindowAdapter() {

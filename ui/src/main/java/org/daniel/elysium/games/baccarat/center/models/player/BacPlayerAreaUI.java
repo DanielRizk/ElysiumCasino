@@ -12,15 +12,15 @@ import java.awt.*;
  * Represents the player area in the Baccarat game UI. This area includes both textual and card display components,
  * managing interactions and visual updates related to the player's hand.
  */
-public class PlayerAreaUI extends JPanel {
-    private final PlayerCardsUI cardsUI;
+public class BacPlayerAreaUI extends JPanel {
+    private final BacPlayerCardsUI cardsUI;
     private BacHand hand;
 
     /**
      * Constructs the PlayerAreaUI with layout and component initialization tailored for displaying player-related information.
      * This includes setting up the player text label and card UI, and ensuring proper alignment and spacing.
      */
-    public PlayerAreaUI() {
+    public BacPlayerAreaUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);
 
@@ -29,11 +29,11 @@ public class PlayerAreaUI extends JPanel {
         setPreferredSize(new Dimension(500, 400));
 
         // Player label setup
-        PlayerTextUI textUI = new PlayerTextUI();
+        BacPlayerTextUI textUI = new BacPlayerTextUI();
         textUI.setAlignmentX(CENTER_ALIGNMENT);
 
         // Player cards setup
-        cardsUI = new PlayerCardsUI();
+        cardsUI = new BacPlayerCardsUI();
         cardsUI.setAlignmentX(CENTER_ALIGNMENT);
 
         // Layout adjustments

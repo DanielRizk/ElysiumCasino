@@ -1,6 +1,7 @@
 package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.elements.fields.StyledTextField;
+import org.daniel.elysium.models.chips.BetCircle;
 import org.daniel.elysium.models.chips.Chip;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.util.List;
  * Represents the betting panel where the player can place main and extra bets.
  * It includes two betting circles and a display to show the current bet amount.
  */
-public class BetPanel extends JPanel {
+public class BJBetPanel extends JPanel {
     private final BetCircle mainBet;
     private final BetCircle extraBet;
     private final StyledTextField currentBetLabel;
@@ -19,7 +20,7 @@ public class BetPanel extends JPanel {
     /**
      * Constructs the bet panel with a main bet circle, an extra bet circle, and a bet display.
      */
-    public BetPanel() {
+    public BJBetPanel() {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         setOpaque(false);
@@ -29,11 +30,11 @@ public class BetPanel extends JPanel {
         add(currentBetLabel);
 
         // Create and add the main bet circle, set to visible
-        mainBet = new BetCircle(true);
+        mainBet = new BetCircle(true, "Bet");
         add(mainBet);
 
         // Create and add the extra bet circle, set to invisible
-        extraBet = new BetCircle(false);
+        extraBet = new BetCircle(false, null);
         add(extraBet);
     }
 

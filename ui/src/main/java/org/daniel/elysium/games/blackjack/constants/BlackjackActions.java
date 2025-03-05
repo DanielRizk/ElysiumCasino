@@ -21,7 +21,6 @@ public enum BlackjackActions implements GameActions {
             case DOUBLE -> "Double";
             case SPLIT -> "Split";
             case INSURE -> "Insure";
-
             case DO_NOT_INSURE -> "Do not insure";
         };
     }

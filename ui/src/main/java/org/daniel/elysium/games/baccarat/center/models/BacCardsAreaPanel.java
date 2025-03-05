@@ -1,8 +1,8 @@
 package org.daniel.elysium.games.baccarat.center.models;
 
 import org.daniel.elysium.elements.panels.VerticalLinePanel;
-import org.daniel.elysium.games.baccarat.center.models.banker.BankerAreaUI;
-import org.daniel.elysium.games.baccarat.center.models.player.PlayerAreaUI;
+import org.daniel.elysium.games.baccarat.center.models.banker.BacBankerAreaUI;
+import org.daniel.elysium.games.baccarat.center.models.player.BacPlayerAreaUI;
 import org.daniel.elysium.games.baccarat.models.BacCardUI;
 
 import javax.swing.*;
@@ -15,15 +15,15 @@ import java.awt.*;
  * This panel organizes the player and banker areas, separated by a vertical line, and handles the addition
  * and removal of cards within each area.
  */
-public class CardsAreaPanel extends JPanel {
-    private final PlayerAreaUI playerAreaUI;
-    private final BankerAreaUI bankerAreaUI;
+public class BacCardsAreaPanel extends JPanel {
+    private final BacPlayerAreaUI playerAreaUI;
+    private final BacBankerAreaUI bankerAreaUI;
 
     /**
      * Constructs a new CardsAreaPanel with a specific layout for Baccarat game.
      * It sets up the player and banker areas with appropriate spacing and alignment, separated by a vertical line.
      */
-    public CardsAreaPanel() {
+    public BacCardsAreaPanel() {
         setLayout(new GridBagLayout());
         setOpaque(false);
 
@@ -35,7 +35,7 @@ public class CardsAreaPanel extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.CENTER;
-        playerAreaUI = new PlayerAreaUI();
+        playerAreaUI = new BacPlayerAreaUI();
         add(playerAreaUI, gbc);
 
         // Add Vertical Line
@@ -50,7 +50,7 @@ public class CardsAreaPanel extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.CENTER;
-        bankerAreaUI = new BankerAreaUI();
+        bankerAreaUI = new BacBankerAreaUI();
         add(bankerAreaUI, gbc);
     }
 
@@ -86,7 +86,7 @@ public class CardsAreaPanel extends JPanel {
      *
      * @return The player area UI handling the player's cards.
      */
-    public PlayerAreaUI getPlayerHand(){
+    public BacPlayerAreaUI getPlayerHand(){
         return playerAreaUI;
     }
 
@@ -95,7 +95,7 @@ public class CardsAreaPanel extends JPanel {
      *
      * @return The banker area UI handling the banker's cards.
      */
-    public BankerAreaUI getBankerHand(){
+    public BacBankerAreaUI getBankerHand(){
         return bankerAreaUI;
     }
 }

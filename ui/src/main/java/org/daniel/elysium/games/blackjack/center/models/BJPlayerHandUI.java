@@ -15,9 +15,9 @@ import java.util.List;
  * Represents the player's hand in the Blackjack UI.
  * Manages both the visual representation and backend logic of the player's hand.
  */
-public class PlayerHandUI extends JPanel {
-    private final PlayerCardsPanel playerCards;
-    private final BetPanel betPanel;
+public class BJPlayerHandUI extends JPanel {
+    private final BJPlayerCardsPanel playerCards;
+    private final BJBetPanel betPanel;
     private final PlayerHand hand;
 
     public static final int FIRST_HAND = 0;
@@ -26,18 +26,18 @@ public class PlayerHandUI extends JPanel {
      * Constructs a new player hand UI.
      * Initializes the UI components and the backend player hand logic.
      */
-    public PlayerHandUI() {
+    public BJPlayerHandUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 
         // Configure the player's hand panel
-        playerCards = new PlayerCardsPanel();
+        playerCards = new BJPlayerCardsPanel();
         playerCards.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(playerCards);
 
         // Configure the bet panel
-        betPanel = new BetPanel();
+        betPanel = new BJBetPanel();
         betPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(betPanel);
 
@@ -52,18 +52,18 @@ public class PlayerHandUI extends JPanel {
     /**
      * Gets the player cards panel (UI representation).
      *
-     * @return The {@link PlayerCardsPanel} instance.
+     * @return The {@link BJPlayerCardsPanel} instance.
      */
-    public PlayerCardsPanel getPlayerCards() {
+    public BJPlayerCardsPanel getPlayerCards() {
         return playerCards;
     }
 
     /**
      * Gets the player bet panel (UI representation).
      *
-     * @return The {@link BetPanel} instance.
+     * @return The {@link BJBetPanel} instance.
      */
-    public BetPanel getBetPanel() {
+    public BJBetPanel getBetPanel() {
         return betPanel;
     }
 

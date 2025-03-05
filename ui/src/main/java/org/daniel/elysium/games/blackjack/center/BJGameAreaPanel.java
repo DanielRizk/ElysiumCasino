@@ -2,12 +2,11 @@ package org.daniel.elysium.games.blackjack.center;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.AssetManager;
-import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.assets.LogoAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
-import org.daniel.elysium.games.blackjack.center.models.DealerHandUI;
-import org.daniel.elysium.games.blackjack.center.models.PlayerHandUI;
+import org.daniel.elysium.games.blackjack.center.models.BJDealerHandUI;
+import org.daniel.elysium.games.blackjack.center.models.BJPlayerHandUI;
 import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
 import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.interfaces.Mediator;
@@ -54,7 +53,7 @@ public class BJGameAreaPanel extends JPanel {
         gbc.weighty = 0.10;
         dealerHandPanel = new JPanel(new BorderLayout());
         dealerHandPanel.setOpaque(false);
-        dealerHandPanel.add(new DealerHandUI());
+        dealerHandPanel.add(new BJDealerHandUI());
         add(dealerHandPanel, gbc);
 
         // Logo / Rules Label
@@ -89,7 +88,7 @@ public class BJGameAreaPanel extends JPanel {
         playerHandPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         playerHandPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         playerHandPanel.setOpaque(false);
-        playerHandPanel.add(new PlayerHandUI());
+        playerHandPanel.add(new BJPlayerHandUI());
         add(playerHandPanel, gbc);
 
         // Action Buttons Panel
@@ -129,31 +128,31 @@ public class BJGameAreaPanel extends JPanel {
      * Retrieves the player hand at a specific index.
      *
      * @param index The index of the player hand.
-     * @return The {@link PlayerHandUI} at the given index.
+     * @return The {@link BJPlayerHandUI} at the given index.
      */
-    public PlayerHandUI getPlayerHand(int index) {
-        return (PlayerHandUI) playerHandPanel.getComponent(index);
+    public BJPlayerHandUI getPlayerHand(int index) {
+        return (BJPlayerHandUI) playerHandPanel.getComponent(index);
     }
 
     /**
      * Retrieves the dealer's hand.
      *
-     * @return The {@link DealerHandUI} instance.
+     * @return The {@link BJDealerHandUI} instance.
      */
-    public DealerHandUI getDealerHand() {
-        return (DealerHandUI) dealerHandPanel.getComponent(0);
+    public BJDealerHandUI getDealerHand() {
+        return (BJDealerHandUI) dealerHandPanel.getComponent(0);
     }
 
     /**
      * Returns a list of all player hands.
      *
-     * @return List of {@link PlayerHandUI}.
+     * @return List of {@link BJPlayerHandUI}.
      */
-    public List<PlayerHandUI> getPlayerHands() {
-        List<PlayerHandUI> result = new ArrayList<>();
+    public List<BJPlayerHandUI> getPlayerHands() {
+        List<BJPlayerHandUI> result = new ArrayList<>();
         for (Component comp : playerHandPanel.getComponents()) {
-            if (comp instanceof PlayerHandUI) {
-                result.add((PlayerHandUI) comp);
+            if (comp instanceof BJPlayerHandUI) {
+                result.add((BJPlayerHandUI) comp);
             }
         }
         return result;
@@ -164,10 +163,10 @@ public class BJGameAreaPanel extends JPanel {
      */
     public void clearHands() {
         playerHandPanel.removeAll();
-        playerHandPanel.add(new PlayerHandUI());
+        playerHandPanel.add(new BJPlayerHandUI());
 
         dealerHandPanel.removeAll();
-        dealerHandPanel.add(new DealerHandUI());
+        dealerHandPanel.add(new BJDealerHandUI());
 
         revalidate();
         repaint();
@@ -184,7 +183,7 @@ public class BJGameAreaPanel extends JPanel {
      * @return {@code true} if successfully added, otherwise {@code false}.
      */
     public boolean addDealerCard(BJCardUI card) {
-        DealerHandUI dealerHandUI = getDealerHand();
+        BJDealerHandUI dealerHandUI = getDealerHand();
         if (dealerHandUI.addCard(card)) {
             dealerHandUI.revalidate();
             dealerHandUI.repaint();
@@ -201,7 +200,7 @@ public class BJGameAreaPanel extends JPanel {
      * @return {@code true} if successfully added, otherwise {@code false}.
      */
     public boolean addPlayerCard(int index, BJCardUI card) {
-        PlayerHandUI playerHandUI = getPlayerHand(index);
+        BJPlayerHandUI playerHandUI = getPlayerHand(index);
         if (playerHandUI.addCard(card)) {
             playerHandUI.revalidate();
             playerHandUI.repaint();
@@ -215,8 +214,8 @@ public class BJGameAreaPanel extends JPanel {
      * @param index The index of the player hand.
      */
     public void splitHand(int index) {
-        PlayerHandUI original = getPlayerHand(index);
-        PlayerHandUI split = new PlayerHandUI();
+        BJPlayerHandUI original = getPlayerHand(index);
+        BJPlayerHandUI split = new BJPlayerHandUI();
 
         boolean isSplitAces = original.getHand().isSplitAces();
 
@@ -272,6 +271,7 @@ public class BJGameAreaPanel extends JPanel {
             clearActions();
         }
     }
+
 
     /**
      * Toggles the visibility of the deal button.

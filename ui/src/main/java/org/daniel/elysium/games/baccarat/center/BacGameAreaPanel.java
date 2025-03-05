@@ -5,11 +5,11 @@ import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.baccarat.constants.HandType;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledTextField;
-import org.daniel.elysium.games.baccarat.center.models.BetBox;
-import org.daniel.elysium.games.baccarat.center.models.BettingAreaPanel;
-import org.daniel.elysium.games.baccarat.center.models.CardsAreaPanel;
-import org.daniel.elysium.games.baccarat.center.models.banker.BankerAreaUI;
-import org.daniel.elysium.games.baccarat.center.models.player.PlayerAreaUI;
+import org.daniel.elysium.models.chips.BetBox;
+import org.daniel.elysium.games.baccarat.center.models.BacBettingAreaPanel;
+import org.daniel.elysium.games.baccarat.center.models.BacCardsAreaPanel;
+import org.daniel.elysium.games.baccarat.center.models.banker.BacBankerAreaUI;
+import org.daniel.elysium.games.baccarat.center.models.player.BacPlayerAreaUI;
 import org.daniel.elysium.games.baccarat.models.BacCardUI;
 import org.daniel.elysium.interfaces.Mediator;
 import org.daniel.elysium.models.chips.Chip;
@@ -23,8 +23,8 @@ import java.awt.*;
  */
 public class BacGameAreaPanel extends JPanel {
 
-    private final CardsAreaPanel cardsAreaPanel;
-    private final BettingAreaPanel bettingAreaPanel;
+    private final BacCardsAreaPanel cardsAreaPanel;
+    private final BacBettingAreaPanel bettingAreaPanel;
     private final JPanel buttonSwitcherPanel;
     private final CardLayout cardLayout;
     private final StyledButton dealButton;
@@ -57,7 +57,7 @@ public class BacGameAreaPanel extends JPanel {
         gbc.gridy = 2;
         gbc.weighty = 0.30;
         gbc.fill = GridBagConstraints.BOTH;
-        cardsAreaPanel = new CardsAreaPanel();
+        cardsAreaPanel = new BacCardsAreaPanel();
         add(cardsAreaPanel, gbc);
 
         // Deal Button
@@ -77,7 +77,7 @@ public class BacGameAreaPanel extends JPanel {
         gbc.weighty = 0.40; // Give it a reasonable height
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
-        bettingAreaPanel = new BettingAreaPanel();
+        bettingAreaPanel = new BacBettingAreaPanel();
         add(bettingAreaPanel, gbc);
 
         // Action Buttons Panel
@@ -113,9 +113,9 @@ public class BacGameAreaPanel extends JPanel {
      * This method provides access to the player area of the game interface,
      * allowing other parts of the application to interact with the player's hand.
      *
-     * @return The {@link PlayerAreaUI} object representing the player's hand in the UI.
+     * @return The {@link BacPlayerAreaUI} object representing the player's hand in the UI.
      */
-    public PlayerAreaUI getPlayerHand(){
+    public BacPlayerAreaUI getPlayerHand(){
         return cardsAreaPanel.getPlayerHand();
     }
 
@@ -124,9 +124,9 @@ public class BacGameAreaPanel extends JPanel {
      * This method provides access to the banker area of the game interface,
      * allowing other parts of the application to interact with the banker's hand.
      *
-     * @return The {@link BankerAreaUI} object representing the banker's hand in the UI.
+     * @return The {@link BacBankerAreaUI} object representing the banker's hand in the UI.
      */
-    public BankerAreaUI getBankerHand(){
+    public BacBankerAreaUI getBankerHand(){
         return cardsAreaPanel.getBankerHand();
     }
 

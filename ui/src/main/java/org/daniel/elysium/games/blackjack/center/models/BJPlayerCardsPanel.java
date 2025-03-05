@@ -10,13 +10,13 @@ import java.awt.*;
  * A panel that holds and displays the player's cards.
  * Provides additional functionalities such as highlighting and overlay effects.
  */
-public class PlayerCardsPanel extends JPanel {
+public class BJPlayerCardsPanel extends JPanel {
     private Image overlayImage;
 
     /**
      * Constructs a new player card panel with a centered layout.
      */
-    public PlayerCardsPanel() {
+    public BJPlayerCardsPanel() {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         setOpaque(false);
         setMinimumSize(new Dimension(getWidth(), 150));

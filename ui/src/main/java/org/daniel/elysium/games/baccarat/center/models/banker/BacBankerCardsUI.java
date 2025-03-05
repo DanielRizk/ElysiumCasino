@@ -9,14 +9,14 @@ import java.awt.*;
  * A custom JPanel designed to display banker cards and overlay images in a Baccarat game.
  * This panel supports functionalities for adding cards, removing all cards, and displaying a temporary overlay image.
  */
-public class BankerCardsUI extends JPanel {
+public class BacBankerCardsUI extends JPanel {
     private Image overlayImage;
 
     /**
      * Constructs a BankerCardsUI with specific layout and opacity settings.
      * The panel uses a FlowLayout to manage card positioning and is set to be transparent.
      */
-    public BankerCardsUI() {
+    public BacBankerCardsUI() {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         setOpaque(false);
         setPreferredSize(new Dimension(200, 150));

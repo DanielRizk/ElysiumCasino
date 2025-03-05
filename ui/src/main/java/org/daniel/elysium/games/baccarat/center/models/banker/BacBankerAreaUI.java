@@ -12,15 +12,15 @@ import java.awt.*;
  * Represents the banker area in the Baccarat game UI. This area includes both textual and card display components,
  * managing interactions and visual updates related to the banker's hand.
  */
-public class BankerAreaUI extends JPanel {
-    private final BankerCardsUI cardsUI;
+public class BacBankerAreaUI extends JPanel {
+    private final BacBankerCardsUI cardsUI;
     public BacHand hand;
 
     /**
      * Constructs the BankerAreaUI with layout and component initialization tailored for displaying banker-related information.
      * This includes setting up the banker text label and card UI, and ensuring proper alignment and spacing.
      */
-    public BankerAreaUI() {
+    public BacBankerAreaUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);
 
@@ -29,11 +29,11 @@ public class BankerAreaUI extends JPanel {
         setPreferredSize(new Dimension(500, 400));
 
         // Banker label setup
-        BankerTextUI textUI = new BankerTextUI();
+        BacBankerTextUI textUI = new BacBankerTextUI();
         textUI.setAlignmentX(CENTER_ALIGNMENT);
 
         // Banker cards setup
-        cardsUI = new BankerCardsUI();
+        cardsUI = new BacBankerCardsUI();
         cardsUI.setAlignmentX(CENTER_ALIGNMENT);
 
         // Layout adjustments

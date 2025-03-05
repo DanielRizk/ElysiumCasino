@@ -28,19 +28,19 @@ public class UltimatePanel extends JPanel implements Resettable {
         background.setLayout(new BorderLayout());
 
         // Assemble sub-panels from the controller.
-        //background.add(controller.getTopPanel(), BorderLayout.NORTH);
-        //background.add(controller.getGameAreaPanel(), BorderLayout.CENTER);
+        background.add(controller.getTopPanel(), BorderLayout.NORTH);
+        background.add(controller.getGameAreaPanel(), BorderLayout.CENTER);
 
         add(background, BorderLayout.CENTER);
     }
 
     @Override
     public void reset() {
-        //controller.resetScreen();
+        controller.resetScreen();
     }
 
     @Override
     public void onRestart() {
-        //controller.restartScreen();
+        controller.restartScreen();
     }
 }

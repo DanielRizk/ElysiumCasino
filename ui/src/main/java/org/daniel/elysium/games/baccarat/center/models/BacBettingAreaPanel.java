@@ -1,6 +1,7 @@
 package org.daniel.elysium.games.baccarat.center.models;
 
 import org.daniel.elysium.baccarat.constants.HandType;
+import org.daniel.elysium.models.chips.BetBox;
 import org.daniel.elysium.models.chips.Chip;
 
 import javax.swing.*;
@@ -10,7 +11,7 @@ import java.awt.*;
  * This class represents the betting area panel in a Baccarat game interface.
  * It manages three main bet boxes for player, banker, and tie bets, handling bet selection and chip management.
  */
-public class BettingAreaPanel extends JPanel implements BetBox.SelectionListener {
+public class BacBettingAreaPanel extends JPanel implements BetBox.SelectionListener {
     private final BetBox playerBetBox;
     private final BetBox bankerBetBox;
     private final BetBox tieBetBox;
@@ -19,7 +20,7 @@ public class BettingAreaPanel extends JPanel implements BetBox.SelectionListener
     /**
      * Constructs a new BettingAreaPanel with specific layout and initialization for bet boxes.
      */
-    public BettingAreaPanel() {
+    public BacBettingAreaPanel() {
         setLayout(new GridLayout(3, 1, 0, 5));
         setOpaque(false);
 

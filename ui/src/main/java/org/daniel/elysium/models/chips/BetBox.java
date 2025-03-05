@@ -1,6 +1,4 @@
-package org.daniel.elysium.games.baccarat.center.models;
-
-import org.daniel.elysium.models.chips.Chip;
+package org.daniel.elysium.models.chips;
 
 import javax.swing.*;
 import java.awt.*;

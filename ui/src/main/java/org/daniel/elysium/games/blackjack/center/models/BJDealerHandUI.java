@@ -14,7 +14,7 @@ import java.awt.*;
  * This class manages both the visual representation of the dealer's cards
  * and the backend logic through {@link DealerHand}.
  */
-public class DealerHandUI extends JPanel {
+public class BJDealerHandUI extends JPanel {
     private final DealerHand hand;
     private Image overlayImage;
 
@@ -22,7 +22,7 @@ public class DealerHandUI extends JPanel {
      * Constructs a new dealer hand UI panel.
      * Sets up the layout and initializes the backend dealer hand logic.
      */
-    public DealerHandUI() {
+    public BJDealerHandUI() {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         setPreferredSize(new Dimension(getWidth(), 150));
         setOpaque(false);

@@ -8,14 +8,14 @@ import java.awt.*;
  * This label is styled specifically to suit the game's aesthetic and functional requirements,
  * including custom font settings and adjusted component height to remove unnecessary padding.
  */
-public class PlayerTextUI extends JLabel {
+public class BacPlayerTextUI extends JLabel {
 
     /**
      * Constructs a new PlayerTextUI component with predefined text and style.
      * The label is set to display "PLAYER", with a specific font, color, and alignment.
      * It also adjusts its size to fit the text exactly without any extra padding.
      */
-    public PlayerTextUI() {
+    public BacPlayerTextUI() {
         setText("PLAYER");
         setFont(new Font("Roboto", Font.BOLD, 100));
         setForeground(Color.WHITE);

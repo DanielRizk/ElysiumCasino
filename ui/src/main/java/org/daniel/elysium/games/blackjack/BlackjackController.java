@@ -8,7 +8,7 @@ import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.games.blackjack.center.BJGameAreaPanel;
-import org.daniel.elysium.games.blackjack.center.models.PlayerHandUI;
+import org.daniel.elysium.games.blackjack.center.models.BJPlayerHandUI;
 import org.daniel.elysium.games.blackjack.constants.BJGameState;
 import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
 import org.daniel.elysium.games.blackjack.models.BJCardUI;
@@ -90,7 +90,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         }
 
         // Check if the betPanel can have more chips on it
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(BJPlayerHandUI.FIRST_HAND);
         if (!playerHandUI.canAddChip()) {
             new Toast(stateManager.getFrame(), "Max number of chips reached.", 3000).setVisible(true);
             return;
@@ -113,7 +113,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     @Override
     public void onClearBet() {
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(BJPlayerHandUI.FIRST_HAND);
         stateManager.getProfile().increaseBalanceBy(playerHandUI.getHand().getBet());
         playerHandUI.clearChips(); // Clear chips after refunding the balance
         gameAreaPanel.showDealButton(false);
@@ -134,7 +134,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     @Override
     public void onDealRequested() {
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(BJPlayerHandUI.FIRST_HAND);
 
         // Handle invalid bet
         if (playerHandUI.getHand().getBet() == 0) {
@@ -175,7 +175,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         }
 
         // Otherwise start the game normally
-        calculatePlayerOptions(PlayerHandUI.FIRST_HAND);
+        calculatePlayerOptions(BJPlayerHandUI.FIRST_HAND);
     }
 
     /**
@@ -187,9 +187,9 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     @Override
     public void dealInitialCards() {
         state = BJGameState.DEALING_CARDS;
-        gameAreaPanel.addPlayerCard(PlayerHandUI.FIRST_HAND, getCardFromShoe());
+        gameAreaPanel.addPlayerCard(BJPlayerHandUI.FIRST_HAND, getCardFromShoe());
         gameAreaPanel.addDealerCard(getCardFromShoe());
-        gameAreaPanel.addPlayerCard(PlayerHandUI.FIRST_HAND, getCardFromShoe());
+        gameAreaPanel.addPlayerCard(BJPlayerHandUI.FIRST_HAND, getCardFromShoe());
         gameAreaPanel.addDealerCard(getCardFromShoe());
         gameAreaPanel.getDealerHand().flipCardDown(); // Hide dealer's second card
     }
@@ -230,7 +230,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * @return true if the player's hand is a blackjack, false otherwise.
      */
     private boolean isPlayerBlackjack(){
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(BJPlayerHandUI.FIRST_HAND);
         return playerHandUI.getHand().isBlackJack();
     }
 
@@ -272,8 +272,8 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     private void displayInsuranceOptions(){
         state = BJGameState.PLAYER_TURN;
         Map<BlackjackActions, Integer> actions = new LinkedHashMap<>();
-        actions.put(BlackjackActions.INSURE, PlayerHandUI.FIRST_HAND);
-        actions.put(BlackjackActions.DO_NOT_INSURE, PlayerHandUI.FIRST_HAND);
+        actions.put(BlackjackActions.INSURE, BJPlayerHandUI.FIRST_HAND);
+        actions.put(BlackjackActions.DO_NOT_INSURE, BJPlayerHandUI.FIRST_HAND);
         gameAreaPanel.updateActionButtons(actions);
     }
 
@@ -286,7 +286,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * Otherwise, the insurance bet is lost, and the game continues.
      */
     private void handleInsureOption() {
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(PlayerHandUI.FIRST_HAND);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(BJPlayerHandUI.FIRST_HAND);
         playerHandUI.addInsuranceBet();
         stateManager.getProfile().decreaseBalanceBy(playerHandUI.getInsuranceBet());
         updateBalanceDisplay();
@@ -315,7 +315,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         if (isDealerBlackjack()){ // If dealer has blackjack, dealer wins
             dealerTurn();
         } else { // Otherwise, continue the game
-            calculatePlayerOptions(PlayerHandUI.FIRST_HAND);
+            calculatePlayerOptions(BJPlayerHandUI.FIRST_HAND);
         }
     }
 
@@ -420,7 +420,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         }
 
         // If the player bust, move to next hand if any, or stand by default
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
         if (playerHandUI.getHand().getHandValue() >= 21){
             // If there is another hand (split) and this the first hand, go to the second hand
             if (checkForSplitHands() && index + 1 <  gameAreaPanel.getPlayerHands().size()){
@@ -442,14 +442,14 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * @param index The index of the player's hand.
      */
     private void handleStandOption(int index){
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
         playerHandUI.setHighlight(false); // turns the highlight off at all cases
         gameAreaPanel.clearActions();
 
         // If there is another hand (split) and this the first hand, go to the second hand
         if (checkForSplitHands() && index + 1 <  gameAreaPanel.getPlayerHands().size()){
             index++; // increment to second hand index
-            PlayerHandUI playerHandUI2 = gameAreaPanel.getPlayerHand(index);
+            BJPlayerHandUI playerHandUI2 = gameAreaPanel.getPlayerHand(index);
             playerHandUI2.getHand().setHandSplit(true); // to prevent blackjack for split hands
             gameAreaPanel.addPlayerCard(index, getCardFromShoe()); // second split hand has one card after split.
             calculatePlayerOptions(index);
@@ -468,7 +468,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * @param index The index of the player's hand.
      */
     private void handleDoubleOption(int index){
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(index);
         stateManager.getProfile().decreaseBalanceBy(playerHandUI.getBet());
         // Add the double bet after decreasing the balance, otherwise you will decrease the double
         playerHandUI.addDoubleChip();
@@ -490,7 +490,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     private void handleSplitOption(int index){
         gameAreaPanel.splitHand(index); // The game area panel is responsible for the UI splitting of the hands
-        PlayerHandUI playerHandUI = gameAreaPanel.getPlayerHands().get(index);
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHands().get(index);
         stateManager.getProfile().decreaseBalanceBy(playerHandUI.getBet()); // decrease the same bet amount
         updateBalanceDisplay();
 
@@ -522,7 +522,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         boolean isPlayerStillInTheGame = false;
 
         // check if any of the player hand is in the game
-        for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
+        for (BJPlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             if (!(playerHandUI.getHand().isBlackJack() || playerHandUI.getHand().getHandValue() > 21)){
                 isPlayerStillInTheGame = true;
             }
@@ -553,7 +553,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     private void evaluateGameResults(){
         state = BJGameState.EVALUATION_PHASE;
-        for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
+        for (BJPlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             gameEngine.resolvePlayerResult(playerHandUI.getHand(),
                     gameAreaPanel.getDealerHand().getHand());
         }
@@ -569,7 +569,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     private void displayResults(){
         state = BJGameState.DISPLAY_RESULT;
-        for (PlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
+        for (BJPlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             playerHandUI.displayHandResult();
         }
 
@@ -589,8 +589,8 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     private void proceedToPayouts(){
         state = BJGameState.PAYOUT;
-        List<PlayerHandUI> allHands = gameAreaPanel.getPlayerHands();
-        for (PlayerHandUI playerHandUI : allHands) {
+        List<BJPlayerHandUI> allHands = gameAreaPanel.getPlayerHands();
+        for (BJPlayerHandUI playerHandUI : allHands) {
             if (playerHandUI.getHand().getState() == HandState.BLACKJACK){
                 stateManager.getProfile().increaseBalanceBy(playerHandUI.getBet());
                 playerHandUI.payBlackjackWin();

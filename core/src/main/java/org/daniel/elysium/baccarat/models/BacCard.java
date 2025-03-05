@@ -45,12 +45,13 @@ public class BacCard extends Card implements CardValue {
      */
     @Override
     public int getValue(Card card) {
-        if (getRank().equals("A")) {
+        String rank = card.getRank();
+        if (rank.equals("A")) {
             return 1;
-        } else if (getRank().equals("K") || getRank().equals("Q") || getRank().equals("J")) {
+        } else if (rank.equals("K") || rank.equals("Q") || rank.equals("J")) {
             return 0;
         } else {
-            return Integer.parseInt(getRank());
+            return Integer.parseInt(rank);
         }
     }
 }
