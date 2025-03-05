@@ -78,13 +78,13 @@ public class BacBankerAreaUI extends JPanel {
     public void showHandResult(){
         switch (hand.getState()) {
             case WON:
-                cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.WON, new Dimension(300, 200)));
+                cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.WIN, new Dimension(300, 200)));
                 break;
             case LOST:
                 cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.LOST, new Dimension(300, 200)));
                 break;
             case TIE:
-                cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.TIE, new Dimension(300, 200)));
+                cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.TIE, new Dimension(200, 200)));
                 break;
             default:
                 // No action needed for other states

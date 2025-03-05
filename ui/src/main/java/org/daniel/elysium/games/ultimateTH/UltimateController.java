@@ -1,10 +1,13 @@
 package org.daniel.elysium.games.ultimateTH;
 
 import org.daniel.elysium.StateManager;
+import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
+import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
 import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
+import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.games.ultimateTH.center.UthGameAreaPanel;
 import org.daniel.elysium.games.ultimateTH.constants.UthActions;
 import org.daniel.elysium.games.ultimateTH.constants.UthGameState;
@@ -21,8 +24,11 @@ import org.daniel.elysium.models.panels.ChipPanelUtil;
 import org.daniel.elysium.models.panels.TopPanel;
 import org.daniel.elysium.ultimateTH.UthGameEngine;
 import org.daniel.elysium.ultimateTH.constants.UthGameStage;
+import org.daniel.elysium.ultimateTH.constants.UthHandState;
+import org.daniel.elysium.ultimateTH.model.UthPlayerHand;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +54,8 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     public static final int MIN_BET = 10;
 
     // Game cards creation
-    Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
-    private List<UICard> cards = shoe.cards();
+    Shoe<UICard> shoe = Shoe.createShoe(1, UIDeck::new);
+    private List<UICard> cards = getCustomDeck();//shoe.cards();
 
     /**
      * Constructs the UltimateController and initializes game components.
@@ -328,11 +334,18 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     }
 
     private void handleFoldOption(){
+        gameAreaPanel.getPlayerHand().getHand().setState(UthHandState.FOLD);
+        gameAreaPanel.getPlayerHand().getHand().setAnte(0);
+        gameAreaPanel.getPlayerHand().getHand().setBlind(0);
+        gameAreaPanel.getPlayerHand().getHand().setPlay(0);
+        gameAreaPanel.getPlayerHand().getHand().setTrips(0);
+
         exposeCommunityCards();
     }
 
     private void exposeCommunityCards(){
         gameAreaPanel.getCommunityCards().exposeAll();
+        gameAreaPanel.clearActions();
 
         exposeDealer();
     }
@@ -343,8 +356,13 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
 
         gameAreaPanel.getDealerHand().exposeCards();
 
-        javax.swing.Timer timer = new Timer(2000, e -> {
-            evaluateHands();
+        Timer timer = new Timer(2000, e -> {
+            if (gameAreaPanel.getPlayerHand().getHand().getState() != UthHandState.FOLD){
+                evaluateHands();
+            } else {
+                reset();
+            }
+
         });
         timer.setRepeats(false);
         timer.start();
@@ -362,6 +380,59 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         gameEngine.evaluateTrips(gameAreaPanel.getPlayerHand().getHand());
 
         gameEngine.processResults(gameAreaPanel.getPlayerHand().getHand(), gameAreaPanel.getDealerHand().getHand());
+
+        displayResults();
+    }
+
+    private void displayResults(){
+        state = UthGameState.DISPLAY_RESULT;
+
+        // TODO: Change TWO_PAIRS, ROYAL_F, STRAIGHT_F to TWO_PAIR, ROYAL_FLUSH, STRAIGHT_FLUSH
+        gameAreaPanel.getDealerHand().displayHandCombination();
+
+        gameAreaPanel.getPlayerHand().displayHandCombination();
+        gameAreaPanel.displayResults(gameAreaPanel.getPlayerHand().getHand().getState());
+        gameAreaPanel.displayBlindMultiplier(gameAreaPanel.getPlayerHand().getHand().getEvaluatedHand().handCombination());
+        gameAreaPanel.displayTripsMultiplier(gameAreaPanel.getPlayerHand().getHand().getTripsState());
+
+        proceedToPayouts();
+
+    }
+
+    private void proceedToPayouts(){
+        state = UthGameState.PAYOUT;
+
+        boolean dealerQualifies = gameAreaPanel.getDealerHand().getHand().getEvaluatedHand().handCombination().getValue() > -2;
+        if (gameAreaPanel.getPlayerHand().getHand().getState() == UthHandState.WON){
+            gameAreaPanel.getBetPanel().payWin(gameAreaPanel.getPlayerHand().getHand(), dealerQualifies);
+            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte());
+            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getBlind());
+            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getPlay());
+        } else if (gameAreaPanel.getPlayerHand().getHand().getState() == UthHandState.TIE){
+            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte());
+            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getBlind());
+            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getPlay());
+        } else {
+            gameAreaPanel.getBetPanel().clearAnteChips();
+            gameAreaPanel.getBetPanel().clearBlindChips();
+            gameAreaPanel.getBetPanel().clearPlayChips();
+        }
+
+        if (gameAreaPanel.getPlayerHand().getHand().getTripsState().getValue() > 0){
+            gameAreaPanel.getBetPanel().payTripsWin(gameAreaPanel.getPlayerHand().getHand());
+            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getTrips());
+        } else {
+            gameAreaPanel.getBetPanel().clearTripsChips();
+        }
+
+        updateBalanceDisplay();
+
+        Timer timer = new Timer(10000, e -> {
+            reset();
+        });
+        timer.setRepeats(false);
+        timer.start();
+
     }
 
     @Override
@@ -384,14 +455,41 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         Reset
     ======================*/
 
+    private void reset(){
+        state = UthGameState.GAME_ENDED;
+        gameAreaPanel.clearActions();
+        gameAreaPanel.clearCards();
+        gameAreaPanel.clearAllChips();
+        state = UthGameState.BET_PHASE;
+        stage = UthGameStage.START;
+        ChipPanelUtil.regenerateChipPanel(this, stateManager);
+
+        // If player has no enough money, Player then escorted to main menu
+        if (stateManager.getProfile().getBalance() < MIN_BET){
+            stateManager.switchPanel("MainMenu");
+
+            StyledNotificationDialog dialog = new StyledNotificationDialog(
+                    stateManager.getFrame(),
+                    "You don't have enough balance to continue playing. "
+            );
+
+            dialog.setVisible(true);
+        }
+
+
+        cards = Shoe.createShoe(1, UIDeck::new).cards();
+    }
+
     /** Protected API for the {@link UltimatePanel} to revert to initial state when exiting */
     protected void resetScreen(){
         state = UthGameState.BET_PHASE;
+        stage = UthGameStage.START;
         chipPanel.setVisible(false);
         gameAreaPanel.clearActions();
-        //gameAreaPanel.clearHands();
+        gameAreaPanel.clearCards();
+        gameAreaPanel.clearAllChips();
         ChipPanelUtil.removeChipPanel(this, stateManager);
-        cards = Shoe.createShoe(4, UIDeck::new).cards();
+        cards = Shoe.createShoe(1, UIDeck::new).cards();
     }
 
     /** Protected API for the {@link UltimatePanel} to restart fresh and updated screen */
@@ -456,5 +554,27 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
      */
     public UthGameAreaPanel getGameAreaPanel() {
         return gameAreaPanel;
+    }
+
+    //TODO: remove before production
+    @SuppressWarnings("Unused")
+    private List<UICard> getCustomDeck(){
+        List<UICard> cards = new ArrayList<>();
+        cards.add(new UthCardUI("A", "H", CardAsset.HA));
+        cards.add(new UthCardUI("K", "H", CardAsset.HK));
+        cards.add(new UthCardUI("Q", "H", CardAsset.HQ));
+        cards.add(new UthCardUI("J", "H", CardAsset.HJ));
+        cards.add(new UthCardUI("10", "S", CardAsset.S10));
+        cards.add(new UthCardUI("10", "H", CardAsset.H10));
+        cards.add(new UthCardUI("2", "H", CardAsset.H2));
+        cards.add(new UthCardUI("J", "D", CardAsset.DJ));
+        cards.add(new UthCardUI("J", "S", CardAsset.SJ));
+        cards.add(new UthCardUI("5", "H", CardAsset.H5));
+        cards.add(new UthCardUI("4", "C", CardAsset.C4));
+        cards.add(new UthCardUI("A", "H", CardAsset.HA));
+        cards.add(new UthCardUI("8", "S", CardAsset.S8));
+        cards.add(new UthCardUI("K", "S", CardAsset.SK));
+        cards.add(new UthCardUI("A", "S", CardAsset.SA));
+        return cards;
     }
 }

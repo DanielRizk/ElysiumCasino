@@ -22,8 +22,9 @@ public class PokerHandComparator {
         switch (hand1.handCombination()) {
             case TWO_PAIR:
                 return compareTwoPairHands(hand1.cardCombination(), hand2.cardCombination());
-            case HIGH_CARD:
             case PAIR:
+                return comparePairHands(hand1.cardCombination(), hand2.cardCombination());
+            case HIGH_CARD:
             case TRIPS:
                 return compareKickers(hand1.cardCombination(), hand2.cardCombination());
             default:
@@ -93,6 +94,24 @@ public class PokerHandComparator {
         int secondPairComparison = hand1PairRanks.get(1).compareTo(hand2PairRanks.get(1));
         if (secondPairComparison != 0) {
             return secondPairComparison;
+        }
+
+        // Compare the kicker
+        int hand1Kicker = getKicker(hand1, hand1PairRanks);
+        int hand2Kicker = getKicker(hand2, hand2PairRanks);
+        return Integer.compare(hand1Kicker, hand2Kicker);
+    }
+
+    // Helper method to compare two hands with TWO_PAIR
+    private static int comparePairHands(List<UthCard> hand1, List<UthCard> hand2) {
+        // Get the ranks of the pairs and the kicker for each hand
+        List<Integer> hand1PairRanks = getPairRanks(hand1);
+        List<Integer> hand2PairRanks = getPairRanks(hand2);
+
+        // Compare the highest pair
+        int highestPairComparison = hand1PairRanks.get(0).compareTo(hand2PairRanks.get(0));
+        if (highestPairComparison != 0) {
+            return highestPairComparison;
         }
 
         // Compare the kicker

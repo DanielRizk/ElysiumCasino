@@ -40,8 +40,10 @@ public class UthGameEngine {
     }
 
     public void evaluateHand(List<UthCard> communityCards, UthHand hand){
-        PokerEvaluatedHandModel model = PokerHandEvaluator.evaluateHand(communityCards, hand);
-        hand.setEvaluatedHand(model);
+        if (hand.getState() != UthHandState.FOLD){
+            PokerEvaluatedHandModel model = PokerHandEvaluator.evaluateHand(communityCards, hand);
+            hand.setEvaluatedHand(model);
+        }
     }
 
     public void evaluateTrips(UthPlayerHand hand){

@@ -80,7 +80,7 @@ public class BJDealerHandUI extends JPanel {
      */
     public void displayBlackjackResult(){
         if (hand.getState() == HandState.BLACKJACK){
-            showOverlay(AssetManager.getScaledImage(ResultAsset.BLACKJACK, new Dimension(300, 200)));
+            showOverlay(AssetManager.getScaledImage(ResultAsset.BLACKJACK, new Dimension(500, 200)));
         }
     }
 

@@ -1,13 +1,19 @@
 package org.daniel.elysium.games.ultimateTH.center;
 
 import org.daniel.elysium.StateManager;
+import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.ButtonAsset;
+import org.daniel.elysium.assets.ResultAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
 import org.daniel.elysium.games.ultimateTH.constants.UthActions;
+import org.daniel.elysium.games.ultimateTH.constants.UthGameState;
 import org.daniel.elysium.interfaces.Mediator;
 import org.daniel.elysium.models.chips.BetCircle;
 import org.daniel.elysium.models.chips.Chip;
+import org.daniel.elysium.ultimateTH.constants.UthHandCombination;
+import org.daniel.elysium.ultimateTH.constants.UthHandState;
+import org.daniel.elysium.ultimateTH.constants.UthTripsState;
 
 import javax.swing.*;
 import java.awt.*;
@@ -189,7 +195,10 @@ public class UthGameAreaPanel extends JPanel {
     }
 
     public void clearAllChips(){
-        betPanel.clearAllChips();
+        betPanel.clearTripsChips();
+        betPanel.clearAnteChips();
+        betPanel.clearBlindChips();
+        betPanel.clearPlayChips();
     }
 
     public UthCommunityCardsPanel getCommunityCards(){
@@ -256,4 +265,27 @@ public class UthGameAreaPanel extends JPanel {
     public void clearActions() {
         cardLayout.show(buttonSwitcherPanel, "hide");
     }
+
+    public void displayResults(UthHandState state){
+        betPanel.displayHandResult(state);
+    }
+
+    public void displayBlindMultiplier(UthHandCombination combination){
+        betPanel.displayBlindMultiplier(combination);
+    }
+
+    public void displayTripsMultiplier(UthTripsState state){
+        betPanel.displayTripsMultiplier(state);
+    }
+
+    public UthBetPanel getBetPanel(){
+        return betPanel;
+    }
+
+    public void clearCards(){
+        dealerHandPanel.removeCards();
+        communityCardsPanel.removeCards();
+        playerHandPanel.removeCards();
+    }
+
 }

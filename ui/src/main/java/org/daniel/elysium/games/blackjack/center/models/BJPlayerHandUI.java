@@ -270,9 +270,9 @@ public class BJPlayerHandUI extends JPanel {
      */
     public void displayHandResult(){
         switch (hand.getState()){
-            case BLACKJACK -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.BLACKJACK, new Dimension(300, 200)));
-            case INSURED -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.INSURED, new Dimension(300, 200)));
-            case WON -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.WON, new Dimension(300, 200)));
+            case BLACKJACK -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.BLACKJACK, new Dimension(500, 200)));
+            case INSURED -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.INSURED, new Dimension(400, 200)));
+            case WON -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.WIN, new Dimension(300, 200)));
             case PUSH -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.PUSH, new Dimension(300, 200)));
             default -> playerCards.showOverlay(AssetManager.getScaledImage(ResultAsset.LOST, new Dimension(300, 200)));
         }

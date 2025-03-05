@@ -5,9 +5,7 @@ import org.daniel.elysium.assets.ChipAsset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -67,7 +65,8 @@ public class Chip extends JButton {
 
     /**
      * Generates a possible combination of chips from the available denominations to match the given bet amount.
-     *
+     *  <p>
+     *  Max is 30 chips to enhance performance.
      * @param bet The total bet amount to be represented in chips.
      * @return A list of chips representing the given bet amount.
      */
@@ -76,14 +75,26 @@ public class Chip extends JButton {
                 .sorted(Comparator.comparingInt(ChipAsset::getValue).reversed())
                 .toList();
 
-        List<Chip> combination = new ArrayList<>();
+        List<Chip> combination = new ArrayList<>(30);
 
         for (ChipAsset chipAsset : assetsSorted) {
-            while (bet >= chipAsset.getValue()) {
-                combination.add(new Chip(chipAsset));
-                bet -= chipAsset.getValue();
+            if (combination.size() >= 30) break;  // Stop if we already have 30 chips
+
+            int chipValue = chipAsset.getValue();
+            int count = bet / chipValue;
+
+            if (count > 0) {
+                // Determine how many chips can be added without exceeding the limit
+                int availableSlots = 30 - combination.size();
+                int chipsToAdd = Math.min(count, availableSlots);
+
+                // Add the chips in bulk; note that if Chip is immutable, sharing instances is acceptable.
+                combination.addAll(Collections.nCopies(chipsToAdd, new Chip(chipAsset)));
+
+                bet -= chipsToAdd * chipValue;
             }
         }
+
         return combination;
     }
 }

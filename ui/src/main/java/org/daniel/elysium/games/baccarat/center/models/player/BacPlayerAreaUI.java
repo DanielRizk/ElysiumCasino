@@ -77,8 +77,8 @@ public class BacPlayerAreaUI extends JPanel {
      */
     public void showHandResult() {
         switch (hand.getState()) {
-            case WON -> cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.WON, new Dimension(300, 200)));
-            case TIE -> cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.TIE, new Dimension(300, 200)));
+            case WON -> cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.WIN, new Dimension(300, 200)));
+            case TIE -> cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.TIE, new Dimension(200, 200)));
             default -> cardsUI.showOverlay(AssetManager.getScaledImage(ResultAsset.LOST, new Dimension(300, 200)));
         }
     }
