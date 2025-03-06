@@ -73,7 +73,7 @@ public class BlackjackEngine {
             hand.setState(HandState.WON);
 
             // Push (tie) condition
-        } else if (hand.getHandValue() == dealerHand.getHandValue()) {
+        } else if (hand.getHandValue() <= 21 && hand.getHandValue() == dealerHand.getHandValue()) {
             hand.setBet((int) bet);
             hand.setState(HandState.PUSH);
 

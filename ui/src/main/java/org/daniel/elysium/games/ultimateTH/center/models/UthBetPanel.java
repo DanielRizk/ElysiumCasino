@@ -1,4 +1,4 @@
-package org.daniel.elysium.games.ultimateTH.center;
+package org.daniel.elysium.games.ultimateTH.center.models;
 
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.ResultAsset;
@@ -15,6 +15,14 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the betting panel for Ultimate Texas Hold'em, handling bet placements,
+ * chip management, and result displays.
+ * <p>
+ * This panel includes Ante, Blind, Play, and Trips bet areas and supports interactions
+ * such as chip placement, payout processing, and overlay displays for results.
+ * </p>
+ */
 public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
     private final UthBetUnit ante;
     private final UthBetUnit blind;
@@ -23,6 +31,9 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
     private BetCircle selectedCircle;
     private Image overlayImage;
 
+    /**
+     * Constructs the betting panel, initializing betting areas and UI components.
+     */
     public UthBetPanel() {
         setLayout(new GridLayout(2, 3, 0 , 0));
         setOpaque(false);
@@ -49,6 +60,12 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
         add(trips);
     }
 
+    /**
+     * Creates a spacing label for visual separation.
+     *
+     * @param text the text to display in the label
+     * @return the created JLabel instance
+     */
     private JLabel createSpacing(String text){
         JLabel label = new JLabel(text, SwingConstants.CENTER);
         label.setFont(new Font("Roboto", Font.BOLD, 100));
@@ -60,18 +77,41 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
         return label;
     }
 
+    /* ======================
+       Bet Display Updates
+       ====================== */
+
+    /**
+     * Updates the displayed bet amount for both the Ante and Blind bets.
+     *
+     * @param bet the updated bet amount to display
+     */
     public void updateBetDisplay(int bet){
         ante.updateBetDisplay(bet);
         blind.updateBetDisplay(bet);
     }
 
+    /**
+     * Updates the displayed Trips bet amount.
+     *
+     * @param bet the updated Trips bet amount to display
+     */
     public void updateTripsDisplay(int bet){
         trips.updateBetDisplay(bet);
     }
 
+    /**
+     * Updates the displayed Play bet amount.
+     *
+     * @param bet the updated Play bet amount to display
+     */
     public void updatePlayDisplay(int bet){
         play.updateBetDisplay(bet);
     }
+
+    /* ======================
+       Chip Management
+       ====================== */
 
     /**
      * Adds a chip to the currently selected BetBox.
@@ -89,6 +129,11 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
         }
     }
 
+    /**
+     * Adds play chips based on the specified action.
+     *
+     * @param actions the action determining the multiplier for play chips
+     */
     public void addPlayChip(UthActions actions){
         List<Chip> chipList = new ArrayList<>(ante.getChips());
         switch (actions){
@@ -113,31 +158,50 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
         }
     }
 
+    /* ======================
+       Clearing Chips
+       ====================== */
+
+    /**
+     * Clears all Ante bet chips and updates the bet display.
+     */
     public void clearAnteChips(){
         ante.clearChips();
         updateBetDisplay(0);
     }
 
+    /**
+     * Clears all Blind bet chips and updates the bet display.
+     */
     public void clearBlindChips(){
         blind.clearChips();
         updateBetDisplay(0);
     }
 
+    /**
+     * Clears all Trips bet chips and updates the Trips bet display.
+     */
     public void clearTripsChips(){
         trips.clearChips();
         updateTripsDisplay(0);
     }
 
+    /**
+     * Clears all Play bet chips and updates the Play bet display.
+     */
     public void clearPlayChips(){
         play.clearChips();
         updatePlayDisplay(0);
     }
 
+    /* ======================
+       Selection Handling
+       ====================== */
 
     /**
-     * Handles the event when a BetBox is selected. Ensures only one BetBox is selected at a time if no chips have been placed yet.
+     * Handles selection of a bet circle, ensuring only one is selected at a time.
      *
-     * @param selectedCircle The BetBox that was just selected.
+     * @param selectedCircle the newly selected bet circle
      */
     @Override
     public void onSelected(BetCircle selectedCircle) {
@@ -170,6 +234,16 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
         }
     }
 
+    /* ======================
+       Selection Handling
+       ====================== */
+
+    /**
+     * Processes the player's winnings and distributes chips accordingly.
+     *
+     * @param hand the player's hand containing the bet details
+     * @param dealerQualifies {@code true} if the dealer qualifies for the ante payout, otherwise {@code false}
+     */
     public void payWin(UthPlayerHand hand, boolean dealerQualifies) {
         List<Chip> playChips = new ArrayList<>(play.getChips());
         for (Chip chip : playChips) {
@@ -194,8 +268,14 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
         }
     }
 
+    /**
+     * Processes and distributes winnings for the Trips side bet.
+     *
+     * @param hand the player's hand containing the Trips bet details
+     */
     public void payTripsWin(UthPlayerHand hand){
         if (hand.getTripsState().getValue() > 0){
+            // TODO: double check the trips payout, ie should have been 4 chips, got 2, example on phone
             List<Chip> tripsChips = new ArrayList<>(Chip.getChipCombination((hand.getTrips())));
             trips.clearChips();
             for (Chip chip : tripsChips) {
@@ -204,44 +284,78 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
         }
     }
 
+    /* ======================
+       Results display
+       ====================== */
+
+    /**
+     * Displays the blind bet multiplier based on the player's hand combination.
+     *
+     * @param combination the {@code UthHandCombination} determining the blind multiplier
+     */
     public void displayBlindMultiplier(UthHandCombination combination){
-        switch (combination){
-            case ROYAL_FLUSH -> blind.showOverlay(AssetManager.getScaledImage(ResultAsset.X500, new Dimension(50, 50)));
-            case STRAIGHT_FLUSH -> blind.showOverlay(AssetManager.getScaledImage(ResultAsset.X50, new Dimension(50, 50)));
-            case QUADS -> blind.showOverlay(AssetManager.getScaledImage(ResultAsset.X10, new Dimension(50, 50)));
-            case FULL_HOUSE -> blind.showOverlay(AssetManager.getScaledImage(ResultAsset.X3, new Dimension(50, 50)));
-            case FLUSH -> blind.showOverlay(AssetManager.getScaledImage(ResultAsset.X1_5, new Dimension(50, 50)));
-            case STRAIGHT -> blind.showOverlay(AssetManager.getScaledImage(ResultAsset.X1, new Dimension(50, 50)));
-        }
+        Dimension imageSize = new Dimension(50, 50);
+        ResultAsset asset = switch (combination) {
+            case ROYAL_FLUSH -> ResultAsset.X500;
+            case STRAIGHT_FLUSH -> ResultAsset.X50;
+            case QUADS -> ResultAsset.X10;
+            case FULL_HOUSE -> ResultAsset.X3;
+            case FLUSH -> ResultAsset.X1_5;
+            case STRAIGHT -> ResultAsset.X1;
+            default -> null;
+        };
+        blind.showOverlay(AssetManager.getScaledImage(asset, imageSize));
     }
 
+    /**
+     * Displays the Trips bet multiplier based on the player's Trips hand state.
+     *
+     * @param state the {@code UthTripsState} representing the Trips bet result
+     */
     public void displayTripsMultiplier(UthTripsState state){
-        switch (state){
-            case ROYAL_FLUSH -> trips.showOverlay(AssetManager.getScaledImage(ResultAsset.X50, new Dimension(50, 50)));
-            case STRAIGHT_FLUSH -> trips.showOverlay(AssetManager.getScaledImage(ResultAsset.X40, new Dimension(50, 50)));
-            case QUADS -> trips.showOverlay(AssetManager.getScaledImage(ResultAsset.X30, new Dimension(50, 50)));
-            case FULL_HOUSE -> trips.showOverlay(AssetManager.getScaledImage(ResultAsset.X8, new Dimension(50, 50)));
-            case FLUSH -> trips.showOverlay(AssetManager.getScaledImage(ResultAsset.X7, new Dimension(50, 50)));
-            case STRAIGHT -> trips.showOverlay(AssetManager.getScaledImage(ResultAsset.X4, new Dimension(500, 50)));
-            case Trips -> trips.showOverlay(AssetManager.getScaledImage(ResultAsset.X3, new Dimension(50, 50)));
-        }
+        Dimension imageSize = new Dimension(50, 50);
+        ResultAsset asset = switch (state) {
+            case ROYAL_FLUSH -> ResultAsset.X50;
+            case STRAIGHT_FLUSH -> ResultAsset.X40;
+            case QUADS -> ResultAsset.X30;
+            case FULL_HOUSE -> ResultAsset.X8;
+            case FLUSH -> ResultAsset.X7;
+            case STRAIGHT -> ResultAsset.X4;
+            case Trips -> ResultAsset.X3;
+            default -> null;
+        };
+        trips.showOverlay(AssetManager.getScaledImage(asset, imageSize));
     }
 
+    /**
+     * Displays the Trips bet ante state based on the dealer's hand combination.
+     *
+     * @param combination the {@code UthHandCombination} representing the Trips bet result
+     */
+    public void displayAnteState(UthHandCombination combination){
+        Dimension imageSize = new Dimension(100, 70);
+        if (combination == UthHandCombination.HIGH_CARD){
+            ante.showOverlay(AssetManager.getScaledImage(ResultAsset.PUSH, imageSize));
+        }
+    }
 
     /**
      * Displays the hand result image based on the hand combination.
      */
     public void displayHandResult(UthHandState state){
-        switch (state){
-            case WON -> showOverlay(AssetManager.getScaledImage(ResultAsset.WIN, new Dimension(300, 200)));
-            case TIE -> showOverlay(AssetManager.getScaledImage(ResultAsset.TIE, new Dimension(300, 200)));
-            case LOST -> showOverlay(AssetManager.getScaledImage(ResultAsset.LOST, new Dimension(300, 200)));
-            case FOLD -> showOverlay(AssetManager.getScaledImage(ResultAsset.FOLD, new Dimension(300, 200)));
-        }
+        Dimension imageSize = new Dimension(300, 200);
+        ResultAsset asset = switch (state){
+            case WON ->  ResultAsset.WIN;
+            case TIE -> ResultAsset.TIE;
+            case LOST -> ResultAsset.LOST;
+            case FOLD -> ResultAsset.FOLD;
+            case UNDEFINED -> null;
+        };
+        showOverlay(AssetManager.getScaledImage(asset, imageSize));
     }
 
     /**
-     * Displays an overlay image (e.g., a trophy or result notification) for 3 seconds.
+     * Displays an overlay image for 3 seconds.
      * The overlay appears on top of the cards and disappears automatically.
      *
      * @param image The image to overlay on the panel.
@@ -259,6 +373,10 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
         timer.setRepeats(false);
         timer.start();
     }
+
+    /* ======================
+           Rendering Methods
+       ====================== */
 
     @Override
     protected void paintComponent(Graphics g) {

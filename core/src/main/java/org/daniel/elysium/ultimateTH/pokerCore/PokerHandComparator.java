@@ -6,8 +6,6 @@ import org.daniel.elysium.ultimateTH.pokerCore.models.PokerEvaluatedHandModel;
 
 import java.util.*;
 
-import static org.daniel.elysium.ultimateTH.pokerCore.PokerHandEvaluator.evaluateHand;
-
 public class PokerHandComparator {
 
     // Compare two PokerEvaluatedHandModel objects
@@ -60,10 +58,10 @@ public class PokerHandComparator {
     }
 
     // Determine the winner among a list of hands
-    public static Boolean determineWinner(List<UthCard> communityCards, UthHand playerHand, UthHand dealerHand) {
+    public static Boolean determineWinner(/*List<UthCard> communityCards, */UthHand playerHand, UthHand dealerHand) {
         // Evaluate the player's and dealer's hands using the community cards
-        PokerEvaluatedHandModel playerEvaluatedHand = evaluateHand(communityCards, playerHand);
-        PokerEvaluatedHandModel dealerEvaluatedHand = evaluateHand(communityCards, dealerHand);
+        PokerEvaluatedHandModel playerEvaluatedHand = playerHand.getEvaluatedHand(); //evaluateHand(communityCards, playerHand);
+        PokerEvaluatedHandModel dealerEvaluatedHand = dealerHand.getEvaluatedHand(); //evaluateHand(communityCards, dealerHand);
 
         // Compare the two hands
         int comparison = compareHands(playerEvaluatedHand, dealerEvaluatedHand);
@@ -114,10 +112,7 @@ public class PokerHandComparator {
             return highestPairComparison;
         }
 
-        // Compare the kicker
-        int hand1Kicker = getKicker(hand1, hand1PairRanks);
-        int hand2Kicker = getKicker(hand2, hand2PairRanks);
-        return Integer.compare(hand1Kicker, hand2Kicker);
+        return compareHands(hand1, hand2);
     }
 
     // Helper method to get the ranks of the pairs in a hand
@@ -142,11 +137,14 @@ public class PokerHandComparator {
 
     // Helper method to get the kicker in a TWO_PAIR hand
     private static int getKicker(List<UthCard> hand, List<Integer> pairRanks) {
+        int kicker = 0;
         for (UthCard card : hand) {
             if (!pairRanks.contains(card.getValue())) {
-                return card.getValue();
+                if (card.getValue() > kicker){
+                    kicker = card.getValue();
+                }
             }
         }
-        throw new IllegalStateException("No kicker found in TWO_PAIR hand");
+        return kicker;
     }
 }

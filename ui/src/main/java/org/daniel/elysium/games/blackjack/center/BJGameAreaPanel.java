@@ -106,6 +106,14 @@ public class BJGameAreaPanel extends JPanel {
         clearButtonPanel.add(clearBetButton, BorderLayout.CENTER);
         buttonSwitcherPanel.add(clearButtonPanel, "clear");
 
+        // New game Button Panel
+        JPanel newGameButtonPanel = new JPanel(new BorderLayout());
+        newGameButtonPanel.setOpaque(false);
+        StyledButton newGameButton = new StyledButton("Continue");
+        newGameButton.addActionListener(e -> mediator.startNewGame());
+        newGameButtonPanel.add(newGameButton, BorderLayout.CENTER);
+        buttonSwitcherPanel.add(newGameButtonPanel, "continue");
+
         // Action Buttons Panel
         actionButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         actionButtonsPanel.setOpaque(false);
@@ -289,6 +297,15 @@ public class BJGameAreaPanel extends JPanel {
      */
     public void showClearBetButton(boolean visible) {
         cardLayout.show(buttonSwitcherPanel, visible ? "clear" : "hide");
+    }
+
+    /**
+     * Toggles the visibility of the new game button.
+     *
+     * @param visible {@code true} to show the new game button, {@code false} to hide it.
+     */
+    public void showNewGameButton(boolean visible) {
+        cardLayout.show(buttonSwitcherPanel, visible ? "continue" : "hide");
     }
 
     /**

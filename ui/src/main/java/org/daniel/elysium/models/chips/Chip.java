@@ -5,8 +5,8 @@ import org.daniel.elysium.assets.ChipAsset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * Represents a casino chip as a styled button.

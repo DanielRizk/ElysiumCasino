@@ -5,13 +5,13 @@ import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.baccarat.constants.HandType;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledTextField;
-import org.daniel.elysium.models.chips.BetBox;
 import org.daniel.elysium.games.baccarat.center.models.BacBettingAreaPanel;
 import org.daniel.elysium.games.baccarat.center.models.BacCardsAreaPanel;
 import org.daniel.elysium.games.baccarat.center.models.banker.BacBankerAreaUI;
 import org.daniel.elysium.games.baccarat.center.models.player.BacPlayerAreaUI;
 import org.daniel.elysium.games.baccarat.models.BacCardUI;
 import org.daniel.elysium.interfaces.Mediator;
+import org.daniel.elysium.models.chips.BetBox;
 import org.daniel.elysium.models.chips.Chip;
 
 import javax.swing.*;
@@ -94,6 +94,14 @@ public class BacGameAreaPanel extends JPanel {
         clearBetButton.addActionListener(e -> mediator.onClearBet());
         clearButtonPanel.add(clearBetButton, BorderLayout.CENTER);
         buttonSwitcherPanel.add(clearButtonPanel, "clear");
+
+        // New game Button Panel
+        JPanel newGameButtonPanel = new JPanel(new BorderLayout());
+        newGameButtonPanel.setOpaque(false);
+        StyledButton newGameButton = new StyledButton("Continue");
+        newGameButton.addActionListener(e -> mediator.startNewGame());
+        newGameButtonPanel.add(newGameButton, BorderLayout.CENTER);
+        buttonSwitcherPanel.add(newGameButtonPanel, "continue");
 
         // Empty Panel (Hidden State)
         JPanel emptyPanel = new JPanel();
@@ -247,6 +255,22 @@ public class BacGameAreaPanel extends JPanel {
      */
     public void showClearBetButton(boolean visible) {
         cardLayout.show(buttonSwitcherPanel, visible ? "clear" : "hide");
+    }
+
+    /**
+     * Toggles the visibility of the new game button.
+     *
+     * @param visible {@code true} to show the new game button, {@code false} to hide it.
+     */
+    public void showNewGameButton(boolean visible) {
+        cardLayout.show(buttonSwitcherPanel, visible ? "continue" : "hide");
+    }
+
+    /**
+     * Hides all action buttons by switching to an empty panel.
+     */
+    public void clearActions() {
+        cardLayout.show(buttonSwitcherPanel, "hide");
     }
 
     /**

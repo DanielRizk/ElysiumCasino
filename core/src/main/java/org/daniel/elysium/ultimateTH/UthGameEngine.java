@@ -1,6 +1,5 @@
 package org.daniel.elysium.ultimateTH;
 
-import org.daniel.elysium.blackjack.models.PlayerHand;
 import org.daniel.elysium.ultimateTH.constants.UthGameStage;
 import org.daniel.elysium.ultimateTH.constants.UthHandState;
 import org.daniel.elysium.ultimateTH.constants.UthTripsState;
@@ -81,9 +80,9 @@ public class UthGameEngine {
         }
     }
 
-    public void determineGameResults(List<UthCard> communityCards, UthPlayerHand playerHand, UthHand dealerHand){
+    public void determineGameResults(/*List<UthCard> communityCards, */UthPlayerHand playerHand, UthHand dealerHand){
         if (playerHand.getState() != UthHandState.FOLD){
-            Boolean result = determineWinner(communityCards, playerHand, dealerHand);
+            Boolean result = determineWinner(/*communityCards, */playerHand, dealerHand);
             if(Boolean.TRUE.equals(result)){
                 playerHand.setState(UthHandState.WON);
                 dealerHand.setState(UthHandState.LOST);

@@ -1,4 +1,4 @@
-package org.daniel.elysium.games.ultimateTH.center;
+package org.daniel.elysium.games.ultimateTH.center.models;
 
 import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.models.chips.BetCircle;
@@ -8,11 +8,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Represents a single betting unit in Ultimate Texas Hold'em.
+ * <p>
+ * This class manages a betting area, displaying the current bet amount
+ * and allowing players to place and remove chips.
+ * </p>
+ */
 public class UthBetUnit extends JPanel {
     private final BetCircle circle;
     private final StyledTextField currentBetLabel;
     private Image overlayImage;
 
+    /**
+     * Constructs a betting unit with a specified orientation and label.
+     *
+     * @param orientation The component orientation (left-to-right or right-to-left).
+     * @param text        The label text for the betting unit.
+     */
     public UthBetUnit(ComponentOrientation orientation, String text) {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         setComponentOrientation(orientation);
@@ -27,10 +40,14 @@ public class UthBetUnit extends JPanel {
         add(circle);
     }
 
+    /* ======================
+       Chip Management
+       ====================== */
+
     /**
      * Checks if a chip can be added to the main bet circle.
      *
-     * @return True if the number of chips in the main bet is below the maximum limit, false otherwise.
+     * @return {@code true} if the number of chips in the bet circle is below the maximum limit, otherwise {@code false}.
      */
     public boolean canAddChip() {
         return circle.getChipsCount() < circle.getMaxChips();
@@ -48,10 +65,10 @@ public class UthBetUnit extends JPanel {
     /**
      * Adds a list of chips to the bet circle.
      *
-     * @param chips The chip to be added.
+     * @param chips The list of chips to be added.
      */
     public void addChips(List<Chip> chips) {
-        for (Chip chip : chips){
+        for (Chip chip : chips) {
             circle.addChip(chip);
         }
     }
@@ -59,22 +76,22 @@ public class UthBetUnit extends JPanel {
     /**
      * Retrieves the list of chips placed in the main bet circle.
      *
-     * @return A list of chips in the main bet.
+     * @return A list of chips in the bet circle.
      */
     public List<Chip> getChips() {
         return circle.getChips();
     }
 
     /**
-     * Removes all chips from the main bet circle.
+     * Removes all chips from the bet circle.
      */
     public void clearChips() {
         circle.clearChips();
     }
 
-    public BetCircle getCircle(){
-        return circle;
-    }
+    /* ======================
+       Display & Updates
+       ====================== */
 
     /**
      * Updates the displayed bet amount.
@@ -86,8 +103,8 @@ public class UthBetUnit extends JPanel {
     }
 
     /**
-     * Displays an overlay image (e.g., a trophy or result notification) for 3 seconds.
-     * The overlay appears on top of the cards and disappears automatically.
+     * Displays an overlay image (e.g., a winning multiplier or result notification) for 3 seconds.
+     * The overlay appears on top of the bet unit and disappears automatically.
      *
      * @param image The image to overlay on the panel.
      */
@@ -105,6 +122,23 @@ public class UthBetUnit extends JPanel {
         timer.start();
     }
 
+    /* ======================
+       Getters
+       ====================== */
+
+    /**
+     * Returns the {@code BetCircle} associated with this betting unit.
+     *
+     * @return The {@code BetCircle} instance.
+     */
+    public BetCircle getCircle() {
+        return circle;
+    }
+
+    /* ======================
+       Rendering Methods
+       ====================== */
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -114,7 +148,7 @@ public class UthBetUnit extends JPanel {
     protected void paintChildren(Graphics g) {
         super.paintChildren(g);
 
-        // Draw overlay image on top of the cards
+        // Draw overlay image on top of the bet unit
         if (overlayImage != null) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -123,13 +157,10 @@ public class UthBetUnit extends JPanel {
             int iw = overlayImage.getWidth(this);
             int ih = overlayImage.getHeight(this);
             int x = (getWidth() - iw) / 2;
-
-            // Use a more precise way to center vertically
-            int y = (panelHeight - ih) / 2;
+            int y = (panelHeight - ih) / 2; // Center vertically
 
             g2.drawImage(overlayImage, x, y, this);
             g2.dispose();
         }
     }
-
 }

@@ -1,18 +1,28 @@
-package org.daniel.elysium.games.ultimateTH.center;
+package org.daniel.elysium.games.ultimateTH.center.models;
 
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.ResultAsset;
 import org.daniel.elysium.games.ultimateTH.models.UthCardUI;
-import org.daniel.elysium.ultimateTH.model.UthPlayerHand;
+import org.daniel.elysium.ultimateTH.model.UthHand;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class UthPlayerHandPanel extends JPanel {
-    private UthPlayerHand hand;
+/**
+ * Represents the dealer's hand panel in Ultimate Texas Hold'em.
+ * <p>
+ * This panel manages the dealer's cards, including dealing, exposing, and
+ * removing cards. It also displays the dealer's hand combination as an overlay.
+ * </p>
+ */
+public class UthDealerHandPanel extends JPanel {
+    private UthHand hand;
     private Image overlayImage;
 
-    public UthPlayerHandPanel() {
+    /**
+     * Constructs the dealer's hand panel with a fixed size.
+     */
+    public UthDealerHandPanel() {
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setOpaque(false);
 
@@ -21,32 +31,63 @@ public class UthPlayerHandPanel extends JPanel {
         setMaximumSize(size);
         setPreferredSize(size);
 
-        this.hand = new UthPlayerHand();
+        this.hand = new UthHand();
     }
 
-    public UthPlayerHand getHand() {
-        return hand;
+    /* ======================
+       Hand Management
+       ====================== */
+
+    /**
+     * Retrieves the dealer's hand.
+     *
+     * @return the {@code UthHand} representing the dealer's hand
+     */
+    public UthHand getHand() {
+        return this.hand;
     }
 
-    public void addCard(UthCardUI uthCardUI){
+    /**
+     * Adds a card to the dealer's hand in a face-down position.
+     *
+     * @param uthCardUI the card to be added
+     */
+    public void addCard(UthCardUI uthCardUI) {
+        uthCardUI.setFaceDown();
         add(uthCardUI);
         hand.dealCard(uthCardUI.getCard());
     }
 
-    public void removeCards(){
-        removeAll();
-        hand = new UthPlayerHand();
+    /**
+     * Reveals all cards in the dealer's hand by turning them face-up.
+     */
+    public void exposeCards() {
+        for (Component component : getComponents()) {
+            if (component instanceof UthCardUI cardUI) {
+                cardUI.setFaceUp();
+            }
+        }
     }
 
+    /**
+     * Removes all cards from the dealer's hand and resets it.
+     */
+    public void removeCards() {
+        removeAll();
+        hand = new UthHand();
+    }
 
+    /* ======================
+       Displaying Hand Results
+       ====================== */
 
     /**
-     * Displays the hand result image based on the hand combination.
+     * Displays the dealer's hand combination using an overlay image.
      */
-    public void displayHandCombination(){
-        switch (hand.getEvaluatedHand().handCombination()){
-            case ROYAL_FLUSH -> showOverlay(AssetManager.getScaledImage(ResultAsset.ROYAL_F, new Dimension(500, 200)));
-            case STRAIGHT_FLUSH -> showOverlay(AssetManager.getScaledImage(ResultAsset.STRAIGHT_F, new Dimension(500, 200)));
+    public void displayHandCombination() {
+        switch (hand.getEvaluatedHand().handCombination()) {
+            case ROYAL_FLUSH -> showOverlay(AssetManager.getScaledImage(ResultAsset.ROYAL_FLUSH, new Dimension(600, 200)));
+            case STRAIGHT_FLUSH -> showOverlay(AssetManager.getScaledImage(ResultAsset.STRAIGHT_FLUSH, new Dimension(600, 200)));
             case QUADS -> showOverlay(AssetManager.getScaledImage(ResultAsset.QUADS, new Dimension(350, 200)));
             case FULL_HOUSE -> showOverlay(AssetManager.getScaledImage(ResultAsset.FULL_HOUSE, new Dimension(500, 200)));
             case FLUSH -> showOverlay(AssetManager.getScaledImage(ResultAsset.FLUSH, new Dimension(350, 200)));
@@ -60,10 +101,10 @@ public class UthPlayerHandPanel extends JPanel {
     }
 
     /**
-     * Displays an overlay image (e.g., a trophy or result notification) for 3 seconds.
-     * The overlay appears on top of the cards and disappears automatically.
+     * Displays an overlay image (e.g., a result notification) for 3 seconds.
+     * The overlay appears on top of the dealer's hand and disappears automatically.
      *
-     * @param image The image to overlay on the panel.
+     * @param image the image to overlay on the panel
      */
     private void showOverlay(Image image) {
         this.overlayImage = image;
@@ -79,6 +120,10 @@ public class UthPlayerHandPanel extends JPanel {
         timer.start();
     }
 
+    /* ======================
+       Rendering Methods
+       ====================== */
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -88,7 +133,7 @@ public class UthPlayerHandPanel extends JPanel {
     protected void paintChildren(Graphics g) {
         super.paintChildren(g);
 
-        // Draw overlay image on top of the cards
+        // Draw overlay image on top of the dealer's hand
         if (overlayImage != null) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -97,9 +142,7 @@ public class UthPlayerHandPanel extends JPanel {
             int iw = overlayImage.getWidth(this);
             int ih = overlayImage.getHeight(this);
             int x = (getWidth() - iw) / 2;
-
-            // Use a more precise way to center vertically
-            int y = (panelHeight - ih) / 2;
+            int y = (panelHeight - ih) / 2; // Center vertically
 
             g2.drawImage(overlayImage, x, y, this);
             g2.dispose();

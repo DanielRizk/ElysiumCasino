@@ -131,7 +131,7 @@ public class Launcher {
         StateManager stateManager = createStateManager(mainPanel, frame);
 
         // Set the entry point of the app (initial panel)
-        stateManager.switchPanel("UltimateTH");
+        stateManager.switchPanel("Login");
 
         // Set initial focus to the main panel
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -166,8 +166,11 @@ public class Launcher {
 
         //TODO: Test user for testing
         stateManager.setProfile(new UserProfile("Test", "Test", 10000));
+        stateManager.setAutoStartNewGame(false);
 
-        // TODO: make a unique background for each game.
+        // TODO: Comment UTH core, Create Settings panel for game mode and speed, Integrate CLI version
+        // TODO: update the betLabel with the total chips value after payouts
+        // TODO: BJ left hand got push, i will fix now, validate later photo in phone
         stateManager.registerPanel("Login", new LoginPanel(stateManager));
         stateManager.registerPanel("Register", new RegisterPanel(stateManager));
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));

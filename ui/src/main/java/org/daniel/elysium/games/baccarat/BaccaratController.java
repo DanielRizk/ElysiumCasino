@@ -75,8 +75,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
      * <p>
      * This method checks if the selected chip's value does not exceed the player's current balance.
      * If the player has selected a betting area and if it allows for more chips, the chip is added to the bet.
-     * The player's balance is then updated accordingly. If the player has sufficient balance
-     * and the bet is valid, the "Deal" and "Clear Bet" buttons are displayed.
+     * If the player has sufficient balance and the bet is valid, the "Deal" and "Clear Bet" buttons are displayed.
      * If the bet exceeds the allowed chip limit, a warning message is displayed.
      * If the balance is insufficient, an error message is shown.
      *
@@ -104,18 +103,16 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
 
         // Continue the login normally
         gameAreaPanel.addChip(chip);
-        stateManager.getProfile().decreaseBalanceBy(chip.getValue());
         hand.setBet(hand.getBet() + chip.getValue());
         gameAreaPanel.updateBetLabel(hand.getBet());
         gameAreaPanel.showClearBetButton(true);
         gameAreaPanel.showDealButton(true);
-        updateBalanceDisplay();
     }
 
     /**
      * Handles the event when the "Clear Bet" button is clicked.
      * <p>
-     * This method clears all chips from the betting area and refunds the amount back to the player's balance.
+     * This method clears all chips from the betting area.
      * It also hides the "Clear Bet" and "Deal" buttons, ensuring that the game does not start without a valid bet.
      * Finally, the player's balance display is updated.
      */
@@ -123,12 +120,10 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     public void onClearBet() {
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.showClearBetButton(false);
-        stateManager.getProfile().increaseBalanceBy(hand.getBet());
         hand.setBet(0);
         gameAreaPanel.updateBetLabel(0);
         gameAreaPanel.resetSelection();
         gameAreaPanel.clearChips();
-        updateBalanceDisplay();
     }
 
     /**
@@ -150,6 +145,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
 
         // Set tha game area to proper setup
         state = BaccaratGameState.GAME_STARTED;
+        stateManager.getProfile().decreaseBalanceBy(hand.getBet());
         chipPanel.setVisible(false);
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.showClearBetButton(false);
@@ -202,7 +198,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
      */
     @Override
     public void returnToMainMenu() {
-        if (state.ordinal() > BaccaratGameState.GAME_STARTED.ordinal()) {
+        if (state.ordinal() > BaccaratGameState.GAME_STARTED.ordinal() && state.ordinal() < BaccaratGameState.PAYOUT.ordinal()) {
             StyledConfirmDialog dialog = new StyledConfirmDialog(stateManager.getFrame(),
                     "If you exit now you will lose your bet, Continue?");
             dialog.setVisible(true);
@@ -287,6 +283,9 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
             gameAreaPanel.getSelectedBox().payWin();
         } else if (hand.getState() == BacHandState.TIE) {
             gameAreaPanel.getSelectedBox().payTie();
+        } else {
+            gameAreaPanel.clearChips();
+            gameAreaPanel.updateBetLabel(0);
         }
 
         updateBalanceDisplay();
@@ -306,15 +305,26 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.getPlayerHand().showHandResult();
         gameAreaPanel.getBankerHand().showHandResult();
 
-        // Go to reset to start a new game after 5 seconds
-        Timer timer = new Timer(5000, e -> reset());
-        timer.setRepeats(false);
-        timer.start();
+        if (stateManager.isAutoStartNewGame()){
+            Timer timer = new Timer(5000, e -> reset());
+            timer.setRepeats(false);
+            timer.start();
+        } else {
+            gameAreaPanel.showNewGameButton(true);
+        }
     }
 
     /*======================
         Reset
     ======================*/
+
+    /**
+     * Resets and starts a new game.
+     */
+    @Override
+    public void startNewGame() {
+        reset();
+    }
 
     /**
      * Resets the game state and prepares everything for a new round.
@@ -329,6 +339,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         state = BaccaratGameState.GAME_ENDED;
         gameAreaPanel.clearHands();
         gameAreaPanel.resetSelection();
+        gameAreaPanel.clearActions();
         gameAreaPanel.clearChips();
         gameAreaPanel.updateBetLabel(0);
         hand = new BetHand();

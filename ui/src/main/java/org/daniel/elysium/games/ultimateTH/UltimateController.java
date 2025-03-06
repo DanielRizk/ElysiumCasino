@@ -2,12 +2,9 @@ package org.daniel.elysium.games.ultimateTH;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.CardAsset;
-import org.daniel.elysium.blackjack.constants.HandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
-import org.daniel.elysium.games.blackjack.constants.BlackjackActions;
-import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.games.ultimateTH.center.UthGameAreaPanel;
 import org.daniel.elysium.games.ultimateTH.constants.UthActions;
 import org.daniel.elysium.games.ultimateTH.constants.UthGameState;
@@ -25,6 +22,7 @@ import org.daniel.elysium.models.panels.TopPanel;
 import org.daniel.elysium.ultimateTH.UthGameEngine;
 import org.daniel.elysium.ultimateTH.constants.UthGameStage;
 import org.daniel.elysium.ultimateTH.constants.UthHandState;
+import org.daniel.elysium.ultimateTH.model.UthHand;
 import org.daniel.elysium.ultimateTH.model.UthPlayerHand;
 
 import javax.swing.*;
@@ -55,7 +53,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
 
     // Game cards creation
     Shoe<UICard> shoe = Shoe.createShoe(1, UIDeck::new);
-    private List<UICard> cards = getCustomDeck();//shoe.cards();
+    private List<UICard> cards = shoe.cards();
 
     /**
      * Constructs the UltimateController and initializes game components.
@@ -70,14 +68,16 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         this.gameAreaPanel = new UthGameAreaPanel(this, stateManager);
     }
 
+    /*======================
+        Initial actions
+    ======================*/
 
     /**
      * Handles the event when a chip is selected from the chip panel.
      * <p>
      * This method checks if the selected chip's value does not exceed the player's current balance.
      * If the player has selected a betting area and if it allows for more chips, the chip is added to the bet.
-     * The player's balance is then updated accordingly. If the player has sufficient balance
-     * and the bet is valid, the "Deal" and "Clear Bet" buttons are displayed.
+     * If the player has sufficient balance and the bet is valid, the "Deal" and "Clear Bet" buttons are displayed.
      * If the bet exceeds the allowed chip limit, a warning message is displayed.
      * If the balance is insufficient, an error message is shown.
      *
@@ -91,6 +91,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             return;
         }
 
+        // Handles the balance check in case of trips bet or ante/blind bet
         if (gameAreaPanel.getSelectedCircle().getLabel().equals("TRIPS")){
             // Check if user have enough balance for the bet
             if (!(chip.getValue() <= stateManager.getProfile().getBalance())){
@@ -111,24 +112,24 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         }
 
         gameAreaPanel.addChip(chip);
+        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
+
+        // Sets the corresponding bet [trips - ante/blind]
         if (gameAreaPanel.getSelectedCircle().getLabel().equals("ANTE") || gameAreaPanel.getSelectedCircle().getLabel().equals("BLIND")){
-            stateManager.getProfile().decreaseBalanceBy(chip.getValue() * 2);
-            gameAreaPanel.getPlayerHand().getHand().setBet(gameAreaPanel.getPlayerHand().getHand().getAnte() + chip.getValue());
-            gameAreaPanel.updateBetDisplay(gameAreaPanel.getPlayerHand().getHand().getAnte());
+            hand.setBet(hand.getAnte() + chip.getValue());
+            gameAreaPanel.updateBetDisplay(hand.getAnte());
         } else {
-            stateManager.getProfile().decreaseBalanceBy(chip.getValue());
-            gameAreaPanel.getPlayerHand().getHand().setTrips(gameAreaPanel.getPlayerHand().getHand().getTrips() + chip.getValue());
-            gameAreaPanel.updateTripsDisplay(gameAreaPanel.getPlayerHand().getHand().getTrips());
+            hand.setTrips(hand.getTrips() + chip.getValue());
+            gameAreaPanel.updateTripsDisplay(hand.getTrips());
         }
         gameAreaPanel.showClearBetButton(true);
         gameAreaPanel.showDealButton(true);
-        updateBalanceDisplay();
     }
 
     /**
      * Handles the event when the "Clear Bet" button is clicked.
      * <p>
-     * This method clears all chips from the betting area and refunds the amount back to the player's balance.
+     * This method clears all chips from the betting area.
      * It also hides the "Clear Bet" and "Deal" buttons, ensuring that the game does not start without a valid bet.
      * Finally, the player's balance display is updated.
      */
@@ -136,32 +137,47 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     public void onClearBet() {
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.showClearBetButton(false);
-        stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte() * 2);
-        stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getTrips());
-        gameAreaPanel.getPlayerHand().getHand().setBet(0);
-        gameAreaPanel.getPlayerHand().getHand().setTrips(0);
+        gameAreaPanel.getPlayerHand().setBet(0);
+        gameAreaPanel.getPlayerHand().setTrips(0);
         gameAreaPanel.updateBetDisplay(0);
         gameAreaPanel.updateTripsDisplay(0);
         gameAreaPanel.resetSelection();
         gameAreaPanel.clearAllChips();
-        updateBalanceDisplay();
     }
 
+    /**
+     * Handles player deal request by validating bets/balance and progressing game state.
+     * <p>
+     * Key actions:
+     * - Validates ante meets min bet and balance sufficiency for future stages
+     * - Deducts ante and Trips bets from player balance
+     * - Hides betting UI and shows game interface
+     * - Deals initial cards and calculates available player actions
+     */
     @Override
     public void onDealRequested() {
+        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
+
         // Handle invalid bet
-        if (gameAreaPanel.getPlayerHand().getHand().getAnte() < MIN_BET) {
+        if (hand.getAnte() < MIN_BET) {
             new Toast(stateManager.getFrame(), "Min bet is 10$", 3000).setVisible(true);
             return;
         }
 
-        if (gameAreaPanel.getPlayerHand().getHand().getAnte() * 3 > stateManager.getProfile().getBalance()){
+        if (hand.getAnte() * 3 > stateManager.getProfile().getBalance()){
             new Toast(stateManager.getFrame(), "Not enough balance for later stages in the game", 3000).setVisible(true);
             return;
         }
 
-        // Set tha game area to proper setup
+        // Update game state
         state = UthGameState.GAME_STARTED;
+
+        // Update user balance
+        stateManager.getProfile().decreaseBalanceBy(hand.getAnte() * 2);
+        stateManager.getProfile().decreaseBalanceBy(hand.getTrips());
+        updateBalanceDisplay();
+
+        // Set tha game area to proper setup
         chipPanel.setVisible(false);
         gameAreaPanel.showDealButton(false);
         gameAreaPanel.showClearBetButton(false);
@@ -170,15 +186,59 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         // Deal the cards to the players
         dealInitialCards();
 
+        // Display user actions
         calculatePlayerOptions();
     }
 
+    /**
+     * Deals the initial set of cards for the game round.
+     * <p>
+     * Adds community cards, two player cards, and two dealer cards
+     * from the shoe to the game area.
+     * </p>
+     */
+    @Override
+    public void dealInitialCards() {
+        state = UthGameState.DEALING_CARDS;
+
+        gameAreaPanel.addCommunityCard(getCommunityCardsFromShoe());
+
+        gameAreaPanel.addPlayerCard(getCardFromShoe());
+        gameAreaPanel.addPlayerCard(getCardFromShoe());
+
+        gameAreaPanel.addDealerCard(getCardFromShoe());
+        gameAreaPanel.addDealerCard(getCardFromShoe());
+    }
+
+    /**
+     * Handles the event when the player chooses to return to the main menu.
+     * <p>
+     * If the player exits in the middle of a game, they will lose their bet.
+     * A confirmation dialog is displayed to inform the player of this consequence.
+     * If the player confirms the exit, the game switches to the main menu.
+     * If the game has not started, the bet is cleared before exiting.
+     */
+    @Override
+    public void returnToMainMenu() {
+        if (state.ordinal() > UthGameState.GAME_STARTED.ordinal() && state.ordinal() < UthGameState.PAYOUT.ordinal()) {
+            StyledConfirmDialog dialog = new StyledConfirmDialog(stateManager.getFrame(),
+                    "If you exit now you will lose your bet, Continue?");
+            dialog.setVisible(true);
+            if (dialog.isConfirmed()) {
+                stateManager.switchPanel("MainMenu");
+            }
+        } else {
+            onClearBet();
+            stateManager.switchPanel("MainMenu");
+        }
+    }
+
+    /*======================
+        Player actions
+    ======================*/
 
     /**
      * Updates game state and retrieves available options for the player's hand.
-     * <p>
-     * This method highlights the current hand if necessary and determines the available actions
-     * based on backend logic.
      */
     private void calculatePlayerOptions() {
         state = UthGameState.PLAYER_TURN;
@@ -201,7 +261,8 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         for (String option: gameEngine.getPlayerOptions(stage)){
             switch (option){
                 case "X4" -> {
-                    if (gameAreaPanel.getPlayerHand().getHand().getAnte() * 4 <= stateManager.getProfile().getBalance()){
+                    // Validate if the use has 4x the bet amount and not just the 3x
+                    if (gameAreaPanel.getPlayerHand().getAnte() * 4 <= stateManager.getProfile().getBalance()){
                         actions.put(UthActions.X4, 0);
                     }
                 }
@@ -213,32 +274,6 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             }
         }
         return actions;
-    }
-
-    /**
-     * Updates the balance display with the current balance.
-     * <p>
-     * Retrieves the player's current balance from the profile and updates
-     * the UI's balance display accordingly.
-     */
-    @Override
-    public void updateBalanceDisplay() {
-        topPanel.setBalance(stateManager.getProfile().getBalance());
-    }
-
-    @Override
-    public void dealInitialCards() {
-        gameAreaPanel.getCommunityCards().addFlop1(getCardFromShoe());
-        gameAreaPanel.getCommunityCards().addFlop2(getCardFromShoe());
-        gameAreaPanel.getCommunityCards().addFlop3(getCardFromShoe());
-        gameAreaPanel.getCommunityCards().addTurn(getCardFromShoe());
-        gameAreaPanel.getCommunityCards().addRiver(getCardFromShoe());
-
-        gameAreaPanel.getPlayerHand().addCard(getCardFromShoe());
-        gameAreaPanel.getPlayerHand().addCard(getCardFromShoe());
-
-        gameAreaPanel.getDealerHand().addCard(getCardFromShoe());
-        gameAreaPanel.getDealerHand().addCard(getCardFromShoe());
     }
 
     /**
@@ -264,100 +299,163 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         }
     }
 
-
-
+    /**
+     * Handles the "X4" betting option in Ultimate Texas Hold'em.
+     * <p>
+     * Updates the game state, deducts 4 times the ante from the player's balance,
+     * updates the play bet and UI, and reveals the community cards.
+     * </p>
+     */
     private void handleX4Option(){
         state = UthGameState.DEALER_TURN;
         stage = UthGameStage.FINAL;
 
-        stateManager.getProfile().decreaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte() * 4);
-        gameAreaPanel.getPlayerHand().getHand().setPlay(gameAreaPanel.getPlayerHand().getHand().getAnte() * 4);
+        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
+
+        stateManager.getProfile().decreaseBalanceBy(hand.getAnte() * 4);
+        hand.setPlay(hand.getAnte() * 4);
         gameAreaPanel.addPlayChips(UthActions.X4);
-        gameAreaPanel.updatePlayDisplay(gameAreaPanel.getPlayerHand().getHand().getPlay());
+        gameAreaPanel.updatePlayDisplay(hand.getPlay());
 
         updateBalanceDisplay();
         exposeCommunityCards();
     }
 
+    /**
+     * Handles the "X3" betting option in Ultimate Texas Hold'em.
+     * <p>
+     * Updates the game state, deducts 3 times the ante from the player's balance,
+     * updates the play bet and UI, and reveals the community cards.
+     * </p>
+     */
     private void handleX3Option(){
         state = UthGameState.DEALER_TURN;
         stage = UthGameStage.FINAL;
 
-        stateManager.getProfile().decreaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte() * 3);
-        gameAreaPanel.getPlayerHand().getHand().setPlay(gameAreaPanel.getPlayerHand().getHand().getAnte() * 3);
+        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
+
+        stateManager.getProfile().decreaseBalanceBy(hand.getAnte() * 3);
+        hand.setPlay(hand.getAnte() * 3);
         gameAreaPanel.addPlayChips(UthActions.X3);
-        gameAreaPanel.updatePlayDisplay(gameAreaPanel.getPlayerHand().getHand().getPlay());
+        gameAreaPanel.updatePlayDisplay(hand.getPlay());
 
         updateBalanceDisplay();
         exposeCommunityCards();
     }
 
+    /**
+     * Handles the "X2" betting option in Ultimate Texas Hold'em.
+     * <p>
+     * Updates the game state, deducts 2 times the ante from the player's balance,
+     * updates the play bet and UI, and reveals the community cards.
+     * </p>
+     */
     private void handleX2Option(){
         state = UthGameState.DEALER_TURN;
         stage = UthGameStage.FINAL;
 
-        stateManager.getProfile().decreaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte() * 2);
-        gameAreaPanel.getPlayerHand().getHand().setPlay(gameAreaPanel.getPlayerHand().getHand().getAnte() * 2);
+        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
+
+        stateManager.getProfile().decreaseBalanceBy(hand.getAnte() * 2);
+        hand.setPlay(hand.getAnte() * 2);
         gameAreaPanel.addPlayChips(UthActions.X2);
-        gameAreaPanel.updatePlayDisplay(gameAreaPanel.getPlayerHand().getHand().getPlay());
+        gameAreaPanel.updatePlayDisplay(hand.getPlay());
 
         updateBalanceDisplay();
         exposeCommunityCards();
     }
 
+    /**
+     * Handles the "X1" betting option in Ultimate Texas Hold'em.
+     * <p>
+     * Updates the game state, deducts the ante amount from the player's balance,
+     * updates the play bet and UI, and reveals the community cards.
+     * </p>
+     */
     private void handleX1Option(){
         state = UthGameState.DEALER_TURN;
         stage = UthGameStage.FINAL;
 
-        stateManager.getProfile().decreaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte());
-        gameAreaPanel.getPlayerHand().getHand().setPlay(gameAreaPanel.getPlayerHand().getHand().getAnte());
+        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
+
+        stateManager.getProfile().decreaseBalanceBy(hand.getAnte());
+        hand.setPlay(hand.getAnte());
         gameAreaPanel.addPlayChips(UthActions.X1);
-        gameAreaPanel.updatePlayDisplay(gameAreaPanel.getPlayerHand().getHand().getPlay());
+        gameAreaPanel.updatePlayDisplay(hand.getPlay());
 
         updateBalanceDisplay();
         exposeCommunityCards();
     }
 
+    /**
+     * Handles the "Check" option in Ultimate Texas Hold'em.
+     * <p>
+     * Advances the game stage when the player checks. If at the start, it moves to the flop;
+     * if at the flop, it moves to the river. Then, updates the available player options.
+     * </p>
+     */
     private void handleCheckOption(){
         switch (stage){
             case START -> {
                 stage = UthGameStage.FLOP;
-                gameAreaPanel.getCommunityCards().exposeFlop();
+                gameAreaPanel.getCommunityCardsPanel().exposeFlop();
             }
             case FLOP -> {
                 stage = UthGameStage.RIVER;
-                gameAreaPanel.getCommunityCards().exposeTurnAndRiver();
+                gameAreaPanel.getCommunityCardsPanel().exposeTurnAndRiver();
             }
         }
-
         calculatePlayerOptions();
     }
 
+    /**
+     * Handles the "Fold" option in Ultimate Texas Hold'em.
+     * <p>
+     * Marks the player's hand as folded, resets all bets to zero,
+     * and reveals the community cards.
+     * </p>
+     */
     private void handleFoldOption(){
-        gameAreaPanel.getPlayerHand().getHand().setState(UthHandState.FOLD);
-        gameAreaPanel.getPlayerHand().getHand().setAnte(0);
-        gameAreaPanel.getPlayerHand().getHand().setBlind(0);
-        gameAreaPanel.getPlayerHand().getHand().setPlay(0);
-        gameAreaPanel.getPlayerHand().getHand().setTrips(0);
+        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
+
+        hand.setState(UthHandState.FOLD);
+        hand.setAnte(0);
+        hand.setBlind(0);
+        hand.setPlay(0);
+        hand.setTrips(0);
 
         exposeCommunityCards();
     }
 
+    /*======================
+     Dealer and Comm actions
+    ======================*/
+
+    /**
+     * Reveals all community cards, clears player actions, and proceeds to expose the dealer's hand.
+     */
     private void exposeCommunityCards(){
-        gameAreaPanel.getCommunityCards().exposeAll();
+        gameAreaPanel.getCommunityCardsPanel().exposeAll();
         gameAreaPanel.clearActions();
 
         exposeDealer();
     }
 
+    /**
+     * Exposes the dealer's hand and updates the game state to the dealer's turn.
+     * <p>
+     * If the player has not folded, it evaluates the hands after a delay;
+     * otherwise, it resets the game.
+     * </p>
+     */
     private void exposeDealer(){
         state = UthGameState.DEALER_TURN;
         stage = UthGameStage.FINAL;
 
-        gameAreaPanel.getDealerHand().exposeCards();
+        gameAreaPanel.getDealerHandPanel().exposeCards();
 
         Timer timer = new Timer(2000, e -> {
-            if (gameAreaPanel.getPlayerHand().getHand().getState() != UthHandState.FOLD){
+            if (gameAreaPanel.getPlayerHand().getState() != UthHandState.FOLD){
                 evaluateHands();
             } else {
                 reset();
@@ -366,95 +464,137 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         });
         timer.setRepeats(false);
         timer.start();
-
     }
 
+    /*======================
+     Evaluation and payouts
+    ======================*/
+
+    /**
+     * Evaluates the player's and dealer's hands and determines the game results.
+     * <p>
+     * Sets the game state to the evaluation phase, evaluates both hands using the
+     * community cards, determines the winner, evaluates Trips bets, processes results,
+     * and displays the final outcome.
+     * </p>
+     */
     private void evaluateHands(){
         state = UthGameState.EVALUATION_PHASE;
 
-        gameEngine.evaluateHand(gameAreaPanel.getCommunityCards().getCards(), gameAreaPanel.getPlayerHand().getHand());
-        gameEngine.evaluateHand(gameAreaPanel.getCommunityCards().getCards(), gameAreaPanel.getDealerHand().getHand());
+        UthPlayerHand playerHand = gameAreaPanel.getPlayerHand();
+        UthHand dealerHand = gameAreaPanel.getDealerHand();
 
-        gameEngine.determineGameResults(gameAreaPanel.getCommunityCards().getCards(), gameAreaPanel.getPlayerHand().getHand(), gameAreaPanel.getDealerHand().getHand());
+        gameEngine.evaluateHand(gameAreaPanel.getCommunityCards(), playerHand);
+        gameEngine.evaluateHand(gameAreaPanel.getCommunityCards(), dealerHand);
 
-        gameEngine.evaluateTrips(gameAreaPanel.getPlayerHand().getHand());
+        gameEngine.determineGameResults(playerHand, dealerHand);
 
-        gameEngine.processResults(gameAreaPanel.getPlayerHand().getHand(), gameAreaPanel.getDealerHand().getHand());
+        gameEngine.evaluateTrips(playerHand);
+
+        gameEngine.processResults(playerHand, dealerHand);
 
         displayResults();
     }
 
+    /**
+     * Displays the results of the game round.
+     * <p>
+     * Updates the game state, shows the player's and dealer's hand combinations,
+     * displays the results, and updates the Trips and Blind multipliers before
+     * proceeding to the payout phase.
+     * </p>
+     */
     private void displayResults(){
         state = UthGameState.DISPLAY_RESULT;
 
-        // TODO: Change TWO_PAIRS, ROYAL_F, STRAIGHT_F to TWO_PAIR, ROYAL_FLUSH, STRAIGHT_FLUSH
-        gameAreaPanel.getDealerHand().displayHandCombination();
+        gameAreaPanel.getPlayerHandPanel().displayHandCombination();
+        gameAreaPanel.getDealerHandPanel().displayHandCombination();
 
-        gameAreaPanel.getPlayerHand().displayHandCombination();
-        gameAreaPanel.displayResults(gameAreaPanel.getPlayerHand().getHand().getState());
-        gameAreaPanel.displayBlindMultiplier(gameAreaPanel.getPlayerHand().getHand().getEvaluatedHand().handCombination());
-        gameAreaPanel.displayTripsMultiplier(gameAreaPanel.getPlayerHand().getHand().getTripsState());
+        UthPlayerHand playerHand = gameAreaPanel.getPlayerHand();
+        UthHand dealerHand = gameAreaPanel.getDealerHand();
+
+        gameAreaPanel.displayResults(playerHand.getState());
+        gameAreaPanel.displayTripsMultiplier(playerHand.getTripsState());
+        gameAreaPanel.displayBlindMultiplier(playerHand.getEvaluatedHand().handCombination());
+        gameAreaPanel.displayAnteState(dealerHand.getEvaluatedHand().handCombination());
 
         proceedToPayouts();
-
     }
 
+    /**
+     * Processes payouts at the end of the game round.
+     * <p>
+     * Determines if the dealer qualifies for ante payouts, handles payouts for
+     * main bets (ante, blind, and play), processes Trips side bet payouts, updates
+     * the player's balance, and clears losing bets.
+     * </p>
+     */
     private void proceedToPayouts(){
         state = UthGameState.PAYOUT;
 
-        boolean dealerQualifies = gameAreaPanel.getDealerHand().getHand().getEvaluatedHand().handCombination().getValue() > -2;
-        if (gameAreaPanel.getPlayerHand().getHand().getState() == UthHandState.WON){
-            gameAreaPanel.getBetPanel().payWin(gameAreaPanel.getPlayerHand().getHand(), dealerQualifies);
-            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte());
-            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getBlind());
-            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getPlay());
-        } else if (gameAreaPanel.getPlayerHand().getHand().getState() == UthHandState.TIE){
-            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getAnte());
-            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getBlind());
-            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getPlay());
+        UthPlayerHand playerHand = gameAreaPanel.getPlayerHand();
+        UthHand dealerHand = gameAreaPanel.getDealerHand();
+
+        // Check if the dealer qualifies to pay ante bet
+        boolean dealerQualifies = dealerHand.getEvaluatedHand().handCombination().getValue() > -2;
+
+        // Handle main bet ante/blind/play payouts
+        if (playerHand.getState() == UthHandState.WON){
+            gameAreaPanel.getBetPanel().payWin(playerHand, dealerQualifies);
+            stateManager.getProfile().increaseBalanceBy(playerHand.getAnte());
+            stateManager.getProfile().increaseBalanceBy(playerHand.getBlind());
+            stateManager.getProfile().increaseBalanceBy(playerHand.getPlay());
+        } else if (playerHand.getState() == UthHandState.TIE){
+            stateManager.getProfile().increaseBalanceBy(playerHand.getAnte());
+            stateManager.getProfile().increaseBalanceBy(playerHand.getBlind());
+            stateManager.getProfile().increaseBalanceBy(playerHand.getPlay());
         } else {
+            // In case dealer wins unqualified, ante pushes
+            stateManager.getProfile().increaseBalanceBy(playerHand.getAnte());
             gameAreaPanel.getBetPanel().clearAnteChips();
             gameAreaPanel.getBetPanel().clearBlindChips();
             gameAreaPanel.getBetPanel().clearPlayChips();
         }
 
-        if (gameAreaPanel.getPlayerHand().getHand().getTripsState().getValue() > 0){
-            gameAreaPanel.getBetPanel().payTripsWin(gameAreaPanel.getPlayerHand().getHand());
-            stateManager.getProfile().increaseBalanceBy(gameAreaPanel.getPlayerHand().getHand().getTrips());
+        // Handles side bet trips payouts
+        if (playerHand.getTripsState().getValue() > 0){
+            gameAreaPanel.getBetPanel().payTripsWin(playerHand);
+            stateManager.getProfile().increaseBalanceBy(playerHand.getTrips());
         } else {
             gameAreaPanel.getBetPanel().clearTripsChips();
         }
 
-        updateBalanceDisplay();
-
-        Timer timer = new Timer(10000, e -> {
-            reset();
-        });
-        timer.setRepeats(false);
-        timer.start();
-
-    }
-
-    @Override
-    public void returnToMainMenu() {
-        if (state.ordinal() > UthGameState.GAME_STARTED.ordinal()) {
-            StyledConfirmDialog dialog = new StyledConfirmDialog(stateManager.getFrame(),
-                    "If you exit now you will lose your bet, Continue?");
-            dialog.setVisible(true);
-            if (dialog.isConfirmed()) {
-                stateManager.switchPanel("MainMenu");
-            }
+        if (stateManager.isAutoStartNewGame()){
+            Timer timer = new Timer(5000, e -> reset());
+            timer.setRepeats(false);
+            timer.start();
         } else {
-            onClearBet();
-            stateManager.switchPanel("MainMenu");
+            gameAreaPanel.showNewGameButton(true);
         }
 
+        updateBalanceDisplay();
     }
 
     /*======================
         Reset
     ======================*/
 
+    /**
+     * Resets and starts a new game.
+     */
+    @Override
+    public void startNewGame() {
+        reset();
+    }
+
+    /**
+     * Resets the game state and prepares everything for a new round.
+     * <p>
+     * This method clears all previous game actions and hands,
+     * and transitions the state back to the betting phase. It also ensures that the player
+     * has enough balance to continue playing. If the player's balance falls below the minimum
+     * bet, they are redirected to the main menu.
+     */
     private void reset(){
         state = UthGameState.GAME_ENDED;
         gameAreaPanel.clearActions();
@@ -475,7 +615,6 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
 
             dialog.setVisible(true);
         }
-
 
         cards = Shoe.createShoe(1, UIDeck::new).cards();
     }
@@ -503,16 +642,44 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     ======================*/
 
     /**
+     * Updates the balance display with the current balance.
+     * <p>
+     * Retrieves the player's current balance from the profile and updates
+     * the UI's balance display accordingly.
+     */
+    @Override
+    public void updateBalanceDisplay() {
+        topPanel.setBalance(stateManager.getProfile().getBalance());
+    }
+
+    /**
      * Draws and removes the top card from the shoe.
      * <p>
      * This method retrieves the top card from the shoe and removes it from the deck,
      * simulating the process of dealing a card in the game.
      *
-     * @return The top card from the shoe as {@link }.
+     * @return The top card from the shoe as {@code UthCardUI}.
      */
     private UthCardUI getCardFromShoe() {
         UICard card = cards.remove(0);
         return new UthCardUI(card.getRank(), card.getSuit(), card.getAsset());
+    }
+
+    /**
+     * Draws and removes the top 5 cards from the shoe for the community cards.
+     * <p>
+     * This method retrieves the top 5 cards from the shoe and removes them from the deck,
+     * simulating the process of dealing the community cards in the game.
+     *
+     * @return The top 5 cards from the shoe as {@code List<UthCardUI>}.
+     */
+    private List<UthCardUI> getCommunityCardsFromShoe() {
+        List<UthCardUI> commCards = new ArrayList<>();
+        for (int i = 0; i < 5; i++){
+            UICard card = cards.remove(0);
+            commCards.add(new UthCardUI(card.getRank(), card.getSuit(), card.getAsset()));
+        }
+        return commCards;
     }
 
     /*======================
@@ -560,21 +727,27 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     @SuppressWarnings("Unused")
     private List<UICard> getCustomDeck(){
         List<UICard> cards = new ArrayList<>();
-        cards.add(new UthCardUI("A", "H", CardAsset.HA));
         cards.add(new UthCardUI("K", "H", CardAsset.HK));
-        cards.add(new UthCardUI("Q", "H", CardAsset.HQ));
-        cards.add(new UthCardUI("J", "H", CardAsset.HJ));
+        cards.add(new UthCardUI("3", "H", CardAsset.H3));
+        cards.add(new UthCardUI("4", "D", CardAsset.D4));
+        cards.add(new UthCardUI("J", "S", CardAsset.SJ));
+        cards.add(new UthCardUI("7", "S", CardAsset.S7));
+        cards.add(new UthCardUI("7", "D", CardAsset.D7));
+        cards.add(new UthCardUI("5", "D", CardAsset.D5));
+        cards.add(new UthCardUI("7", "C", CardAsset.C7));
+        cards.add(new UthCardUI("9", "H", CardAsset.H9));
+        cards.add(new UthCardUI("A", "D", CardAsset.CA));
+        cards.add(new UthCardUI("J", "C", CardAsset.HJ));
+        cards.add(new UthCardUI("K", "H", CardAsset.HK));
         cards.add(new UthCardUI("10", "S", CardAsset.S10));
+        cards.add(new UthCardUI("Q", "H", CardAsset.HQ));
         cards.add(new UthCardUI("10", "H", CardAsset.H10));
+        cards.add(new UthCardUI("K", "S", CardAsset.SK));
+        cards.add(new UthCardUI("K", "D", CardAsset.DK));
+        cards.add(new UthCardUI("K", "C", CardAsset.CK));
         cards.add(new UthCardUI("2", "H", CardAsset.H2));
         cards.add(new UthCardUI("J", "D", CardAsset.DJ));
         cards.add(new UthCardUI("J", "S", CardAsset.SJ));
-        cards.add(new UthCardUI("5", "H", CardAsset.H5));
-        cards.add(new UthCardUI("4", "C", CardAsset.C4));
-        cards.add(new UthCardUI("A", "H", CardAsset.HA));
-        cards.add(new UthCardUI("8", "S", CardAsset.S8));
-        cards.add(new UthCardUI("K", "S", CardAsset.SK));
-        cards.add(new UthCardUI("A", "S", CardAsset.SA));
         return cards;
     }
 }

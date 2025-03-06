@@ -37,6 +37,9 @@ public class StateManager {
     /** The main application frame. */
     private final JFrame frame;
 
+    /** Defines the new game start mode. [Auto, Manual] */
+    private boolean autoStartNewGame = true;
+
     /**
      * Constructs a StateManager with the specified container and frame.
      *
@@ -184,4 +187,23 @@ public class StateManager {
     public boolean isUserLoggedIn() {
         return profile != null;
     }
+
+    /**
+     * Checks whether the game is set to automatically start a new round after the current game ends.
+     *
+     * @return {@code true} if auto-start is enabled, otherwise {@code false}
+     */
+    public boolean isAutoStartNewGame() {
+        return autoStartNewGame;
+    }
+
+    /**
+     * Sets whether the game should automatically start a new round after the current game ends.
+     *
+     * @param autoStartNewGame {@code true} to enable auto-start, {@code false} to disable it
+     */
+    public void setAutoStartNewGame(boolean autoStartNewGame) {
+        this.autoStartNewGame = autoStartNewGame;
+    }
+
 }

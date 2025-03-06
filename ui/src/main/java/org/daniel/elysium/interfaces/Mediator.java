@@ -44,6 +44,11 @@ public interface Mediator {
     void onActionSelected(GameActions action, int index);
 
     /**
+     * Resets and starts a new game.
+     */
+    void startNewGame();
+
+    /**
      * Returns the player to the main menu.
      */
     void returnToMainMenu();
