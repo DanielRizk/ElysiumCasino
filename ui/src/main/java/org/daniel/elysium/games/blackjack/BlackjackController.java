@@ -78,14 +78,15 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     @Override
     public void onChipSelected(Chip chip) {
+        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(BJPlayerHandUI.FIRST_HAND);
+
         // Check if user have enough balance for the bet
-        if (!(chip.getValue() <= stateManager.getProfile().getBalance())) {
+        if (!(playerHandUI.getHand().getBet() + chip.getValue() <= stateManager.getProfile().getBalance())) {
             new Toast(stateManager.getFrame(), "Not enough balance.", 3000).setVisible(true);
             return;
         }
 
         // Check if the betPanel can have more chips on it
-        BJPlayerHandUI playerHandUI = gameAreaPanel.getPlayerHand(BJPlayerHandUI.FIRST_HAND);
         if (!playerHandUI.canAddChip()) {
             new Toast(stateManager.getFrame(), "Max number of chips reached.", 3000).setVisible(true);
             return;

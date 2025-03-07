@@ -172,6 +172,7 @@ public class UILauncher {
         // TODO: update the betLabel with the total chips value after payouts
         // TODO: clean assets
         // TODO: create JUnit Test
+        // TODO: In baccarat make the boxes rounded.
         stateManager.registerPanel("Login", new LoginPanel(stateManager));
         stateManager.registerPanel("Register", new RegisterPanel(stateManager));
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));

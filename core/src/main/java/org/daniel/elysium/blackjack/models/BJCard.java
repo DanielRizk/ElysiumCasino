@@ -1,13 +1,12 @@
 package org.daniel.elysium.blackjack.models;
 
 import org.daniel.elysium.models.Card;
-import org.daniel.elysium.models.CardValue;
 
 /**
  * Represents a Blackjack-specific playing card.
- * This class extends {@link Card} and implements {@link CardValue} to determine card values for Blackjack.
+ * This class extends {@link Card} for the basic card implementation.
  */
-public class BJCard extends Card implements CardValue {
+public class BJCard extends Card {
 
     /**
      * Constructs a Blackjack card with the specified rank and suit.
@@ -28,25 +27,6 @@ public class BJCard extends Card implements CardValue {
     @Override
     public int getValue() {
         String rank = getRank();
-        if (rank.equals("A")) {
-            return 11;
-        } else if (rank.equals("K") || rank.equals("Q") || rank.equals("J")) {
-            return 10;
-        } else {
-            return Integer.parseInt(rank);
-        }
-    }
-
-    /**
-     * Gets the value of a given card according to Blackjack rules.
-     * This method is required by {@link CardValue}.
-     *
-     * @param card The card whose value is to be determined.
-     * @return The Blackjack value of the card.
-     */
-    @Override
-    public int getValue(Card card) {
-        String rank = card.getRank();
         if (rank.equals("A")) {
             return 11;
         } else if (rank.equals("K") || rank.equals("Q") || rank.equals("J")) {

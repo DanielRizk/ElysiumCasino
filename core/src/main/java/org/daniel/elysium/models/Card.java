@@ -47,16 +47,6 @@ public class Card {
     }
 
     /**
-     * Returns the card's value based on a specific game rule set.
-     *
-     * @param cardType The value calculation strategy for this card.
-     * @return The card's value according to the given {@link CardValue} strategy.
-     */
-    public int getValue(CardValue cardType) {
-        return cardType.getValue(this);
-    }
-
-    /**
      * Returns a string representation of the card in the format "RankSuit".
      *
      * @return The formatted string representing the card.

@@ -80,7 +80,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     @Override
     public void onChipSelected(Chip chip) {
         // Check if user have enough balance for the bet
-        if (!(chip.getValue() <= stateManager.getProfile().getBalance())){
+        if (!(hand.getBet() + chip.getValue() <= stateManager.getProfile().getBalance())){
             new Toast(stateManager.getFrame(), "Not enough balance.", 3000).setVisible(true);
             return;
         }

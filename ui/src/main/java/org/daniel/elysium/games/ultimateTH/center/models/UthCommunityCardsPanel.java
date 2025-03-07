@@ -1,6 +1,7 @@
 package org.daniel.elysium.games.ultimateTH.center.models;
 
 import org.daniel.elysium.games.ultimateTH.models.UthCardUI;
+import org.daniel.elysium.models.cards.CardHolderPanel;
 import org.daniel.elysium.ultimateTH.model.UthCard;
 
 import javax.swing.*;
@@ -16,11 +17,11 @@ import java.util.List;
  * </p>
  */
 public class UthCommunityCardsPanel extends JPanel {
-    private final UthCardHolderPanel flop1;
-    private final UthCardHolderPanel flop2;
-    private final UthCardHolderPanel flop3;
-    private final UthCardHolderPanel turn;
-    private final UthCardHolderPanel river;
+    private final CardHolderPanel flop1;
+    private final CardHolderPanel flop2;
+    private final CardHolderPanel flop3;
+    private final CardHolderPanel turn;
+    private final CardHolderPanel river;
 
     /**
      * Constructs a community card panel with five card slots.
@@ -29,11 +30,11 @@ public class UthCommunityCardsPanel extends JPanel {
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         setOpaque(false);
 
-        flop1 = new UthCardHolderPanel();
-        flop2 = new UthCardHolderPanel();
-        flop3 = new UthCardHolderPanel();
-        turn = new UthCardHolderPanel();
-        river = new UthCardHolderPanel();
+        flop1 = new CardHolderPanel();
+        flop2 = new CardHolderPanel();
+        flop3 = new CardHolderPanel();
+        turn = new CardHolderPanel();
+        river = new CardHolderPanel();
 
         add(flop1);
         add(flop2);
@@ -103,8 +104,8 @@ public class UthCommunityCardsPanel extends JPanel {
     public List<UthCard> getCards() {
         List<UthCard> cards = new ArrayList<>();
         for (Component component : getComponents()) {
-            if (component instanceof UthCardHolderPanel holderPanel) {
-                cards.add(holderPanel.getCard().getCard());
+            if (component instanceof CardHolderPanel holderPanel) {
+                cards.add((UthCard) holderPanel.getCard().getCard());
             }
         }
         return cards;
@@ -115,7 +116,7 @@ public class UthCommunityCardsPanel extends JPanel {
      */
     public void removeCards() {
         for (Component component : getComponents()) {
-            if (component instanceof UthCardHolderPanel holderPanel) {
+            if (component instanceof CardHolderPanel holderPanel) {
                 holderPanel.removeCard();
             }
         }
@@ -134,7 +135,7 @@ public class UthCommunityCardsPanel extends JPanel {
         }
 
         for (int i = 0; i < 3; i++) {
-            if (getComponent(i) instanceof UthCardHolderPanel holderPanel) {
+            if (getComponent(i) instanceof CardHolderPanel holderPanel) {
                 holderPanel.getCard().setFaceUp();
             }
         }
@@ -148,11 +149,11 @@ public class UthCommunityCardsPanel extends JPanel {
             return;
         }
 
-        if (getComponent(3) instanceof UthCardHolderPanel holderPanel) {
+        if (getComponent(3) instanceof CardHolderPanel holderPanel) {
             holderPanel.getCard().setFaceUp();
         }
 
-        if (getComponent(4) instanceof UthCardHolderPanel holderPanel) {
+        if (getComponent(4) instanceof CardHolderPanel holderPanel) {
             holderPanel.getCard().setFaceUp();
         }
     }

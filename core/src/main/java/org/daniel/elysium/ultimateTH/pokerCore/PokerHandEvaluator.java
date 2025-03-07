@@ -8,9 +8,6 @@ import org.daniel.elysium.ultimateTH.pokerCore.models.PokerEvaluatedHandModel;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 /**
  * Evaluates poker hands in Ultimate Texas Hold'em.
  * <p>
@@ -218,7 +215,7 @@ public class PokerHandEvaluator {
      */
     private static UthCard getKicker(List<UthCard> hand, UthHandCombination handCombination) {
         List<UthCard> sortedHand = hand.stream()
-                .sorted(Comparator.comparingInt((UthCard card) -> card.getValue()).reversed())
+                .sorted(Comparator.comparingInt(UthCard::getValue).reversed())
                 .toList();
         return switch (handCombination) {
             case HIGH_CARD, PAIR, TWO_PAIR, TRIPS -> sortedHand.get(0);

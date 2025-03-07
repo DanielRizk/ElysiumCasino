@@ -1,6 +1,7 @@
 package org.daniel.elysium.models.chips;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,6 +15,7 @@ import java.util.List;
 public class BetBox extends JPanel {
     private final String label;
     private final Color color;
+    private boolean selected = false;
     private SelectionListener selectionListener;
 
     private final List<Chip> chips;
@@ -38,7 +40,6 @@ public class BetBox extends JPanel {
     private void initializeUI() {
         setLayout(new BorderLayout());
         setOpaque(false);
-        setBorder(BorderFactory.createLineBorder(Color.WHITE, 7));
         setMinimumSize(new Dimension(800, 150));
         setPreferredSize(new Dimension(1000, 150));
         addLabel();
@@ -74,7 +75,7 @@ public class BetBox extends JPanel {
      * @param selected true to mark this bet box as selected; false otherwise.
      */
     public void setSelected(boolean selected) {
-        setBorder(selected ? BorderFactory.createLineBorder(Color.YELLOW, 7) : BorderFactory.createLineBorder(Color.WHITE, 7));
+        this.selected = selected;
         repaint();
     }
 
@@ -160,6 +161,26 @@ public class BetBox extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        Graphics2D g2 = (Graphics2D) g.create();
+
+        // Enable antialiasing for smooth edges
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Set the stroke color and thickness
+        if (selected){
+            g2.setColor(Color.YELLOW);
+        } else {
+            g2.setColor(Color.WHITE);
+        }
+
+
+        g2.setStroke(new BasicStroke(7)); // 7-pixel thick stroke
+
+        // Draw a rounded rectangle with a border
+        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 50, 50);
+
+        g2.dispose();
     }
 
     /**

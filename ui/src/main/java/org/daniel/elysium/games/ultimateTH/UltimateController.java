@@ -87,15 +87,17 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             return;
         }
 
+        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
+
         // Handles the balance check in case of trips bet or ante/blind bet
         if (gameAreaPanel.getSelectedCircle().getLabel().equals("TRIPS")){
             // Check if user have enough balance for the bet
-            if (!(chip.getValue() <= stateManager.getProfile().getBalance())){
+            if (!(hand.getTrips() + chip.getValue() <= stateManager.getProfile().getBalance())){
                 new Toast(stateManager.getFrame(), "Not enough balance.", 3000).setVisible(true);
                 return;
             }
         } else {
-            if (!(chip.getValue() <= stateManager.getProfile().getBalance() / 2)){
+            if (!(hand.getAnte() + chip.getValue() <= stateManager.getProfile().getBalance() / 2)){
                 new Toast(stateManager.getFrame(), "Not enough balance.", 3000).setVisible(true);
                 return;
             }
@@ -108,7 +110,6 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         }
 
         gameAreaPanel.addChip(chip);
-        UthPlayerHand hand = gameAreaPanel.getPlayerHand();
 
         // Sets the corresponding bet [trips - ante/blind]
         if (gameAreaPanel.getSelectedCircle().getLabel().equals("ANTE") || gameAreaPanel.getSelectedCircle().getLabel().equals("BLIND")){
@@ -160,7 +161,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             return;
         }
 
-        if (hand.getAnte() * 3 > stateManager.getProfile().getBalance()){
+        if (hand.getAnte() * 3 > stateManager.getProfile().getBalance() - (hand.getAnte() + hand.getBlind() + hand.getTrips())){
             new Toast(stateManager.getFrame(), "Not enough balance for later stages in the game", 3000).setVisible(true);
             return;
         }

@@ -84,10 +84,10 @@ public class PokerHandComparator {
      */
     private static int compareHands(List<UthCard> hand1, List<UthCard> hand2) {
         List<UthCard> sortedHand1 = hand1.stream()
-                .sorted(Comparator.comparingInt((UthCard card) -> card.getValue()).reversed())
+                .sorted(Comparator.comparingInt(UthCard::getValue).reversed())
                 .toList();
         List<UthCard> sortedHand2 = hand2.stream()
-                .sorted(Comparator.comparingInt((UthCard card) -> card.getValue()).reversed())
+                .sorted(Comparator.comparingInt(UthCard::getValue).reversed())
                 .toList();
 
         for (int i = 0; i < sortedHand1.size(); i++) {

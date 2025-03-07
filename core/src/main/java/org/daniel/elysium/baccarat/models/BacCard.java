@@ -1,13 +1,12 @@
 package org.daniel.elysium.baccarat.models;
 
 import org.daniel.elysium.models.Card;
-import org.daniel.elysium.models.CardValue;
 
 /**
  * Represents a Baccarat-specific playing card.
- * This class extends {@link Card} and implements {@link CardValue} to determine card values for Baccarat.
+ * This class extends {@link Card} for the basic card implementation.
  */
-public class BacCard extends Card implements CardValue {
+public class BacCard extends Card {
 
     /**
      * Constructs a Baccarat card with the specified rank and suit.
@@ -33,25 +32,6 @@ public class BacCard extends Card implements CardValue {
             return 0;
         } else {
             return Integer.parseInt(getRank());
-        }
-    }
-
-    /**
-     * Gets the value of a given card according to Baccarat rules.
-     * This method is required by {@link CardValue}.
-     *
-     * @param card The card whose value is to be determined.
-     * @return The Baccarat value of the card.
-     */
-    @Override
-    public int getValue(Card card) {
-        String rank = card.getRank();
-        if (rank.equals("A")) {
-            return 1;
-        } else if (rank.equals("K") || rank.equals("Q") || rank.equals("J")) {
-            return 0;
-        } else {
-            return Integer.parseInt(rank);
         }
     }
 }

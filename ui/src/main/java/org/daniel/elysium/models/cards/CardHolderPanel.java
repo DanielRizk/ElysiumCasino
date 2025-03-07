@@ -1,4 +1,4 @@
-package org.daniel.elysium.games.ultimateTH.center.models;
+package org.daniel.elysium.models.cards;
 
 import org.daniel.elysium.games.ultimateTH.models.UthCardUI;
 
@@ -12,12 +12,12 @@ import java.awt.*;
  * a visually distinct rounded rectangle border.
  * </p>
  */
-public class UthCardHolderPanel extends JPanel {
+public class CardHolderPanel extends JPanel {
 
     /**
      * Constructs a cardholder panel with a fixed size and transparent background.
      */
-    public UthCardHolderPanel() {
+    public CardHolderPanel() {
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setOpaque(false);
         Dimension size = new Dimension(120, 160);
@@ -29,18 +29,18 @@ public class UthCardHolderPanel extends JPanel {
     /**
      * Adds a card to the panel.
      *
-     * @param card the {@code UthCardUI} to be added
+     * @param card the {@code UICard} to be added
      */
-    public void addCard(UthCardUI card) {
+    public void addCard(UICard card) {
         add(card);
     }
 
     /**
      * Retrieves the first card from the panel.
      *
-     * @return the first {@code UthCardUI} in the panel, or {@code null} if empty
+     * @return the first {@code UICard} in the panel, or {@code null} if empty
      */
-    public UthCardUI getCard() {
+    public UICard getCard() {
         if (getComponents().length > 0) {
             return (UthCardUI) getComponent(0);
         }
@@ -59,7 +59,7 @@ public class UthCardHolderPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
 
-        // Enable anti-aliasing for smooth edges
+        // Enable antialiasing for smooth edges
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Set the stroke color and thickness

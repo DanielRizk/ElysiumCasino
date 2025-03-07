@@ -1,13 +1,12 @@
 package org.daniel.elysium.ultimateTH.model;
 
 import org.daniel.elysium.models.Card;
-import org.daniel.elysium.models.CardValue;
 
 /**
  * Represents an Ultimate_TH-specific playing card.
- * This class extends {@link Card} and implements {@link CardValue} to determine card values for Ultimate_TH.
+ * This class extends {@link Card} for the basic card implementation.
  */
-public class UthCard extends Card implements CardValue {
+public class UthCard extends Card {
 
     /**
      * Constructs an Ultimate_TH card with the specified rank and suit.
@@ -28,33 +27,6 @@ public class UthCard extends Card implements CardValue {
     @Override
     public int getValue() {
         return switch (getRank()) {
-            case "A" -> 14;
-            case "K" -> 13;
-            case "Q" -> 12;
-            case "J" -> 11;
-            case "10" -> 10;
-            case "9" -> 9;
-            case "8" -> 8;
-            case "7" -> 7;
-            case "6" -> 6;
-            case "5" -> 5;
-            case "4" -> 4;
-            case "3" -> 3;
-            case "2" -> 2;
-            default -> throw new IllegalArgumentException("Invalid rank: " + getRank());
-        };
-    }
-
-    /**
-     * Gets the value of a given card according to Ultimate_TH rules.
-     * This method is required by {@link CardValue}.
-     *
-     * @param card The card whose value is to be determined.
-     * @return The Ultimate_TH value of the card.
-     */
-    @Override
-    public int getValue(Card card) {
-        return switch (card.getRank()) {
             case "A" -> 14;
             case "K" -> 13;
             case "Q" -> 12;
