@@ -14,11 +14,27 @@ import java.util.List;
 
 import static org.daniel.elysium.ultimateTH.pokerCore.PokerHandComparator.determineWinner;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Manages the game logic for Ultimate Texas Hold'em.
+ * <p>
+ * This class handles evaluating hands, determining game results,
+ * processing payouts, and retrieving available player options at different game stages.
+ * </p>
+ */
 public class UthGameEngine {
 
-    public List<String> getPlayerOptions(UthGameStage stage){
+    /**
+     * Retrieves the available betting options for the player based on the game stage.
+     *
+     * @param stage the current stage of the game
+     * @return a list of available actions as strings
+     */
+    public List<String> getPlayerOptions(UthGameStage stage) {
         List<String> handOptions = new ArrayList<>();
-        switch (stage){
+        switch (stage) {
             case START -> {
                 handOptions.add("X4");
                 handOptions.add("X3");
@@ -38,19 +54,31 @@ public class UthGameEngine {
         return handOptions;
     }
 
-    public void evaluateHand(List<UthCard> communityCards, UthHand hand){
-        if (hand.getState() != UthHandState.FOLD){
+    /**
+     * Evaluates the player's or dealer's hand by determining the best poker combination
+     * using the given community cards.
+     *
+     * @param communityCards the shared community cards
+     * @param hand the player's or dealer's hand to evaluate
+     */
+    public void evaluateHand(List<UthCard> communityCards, UthHand hand) {
+        if (hand.getState() != UthHandState.FOLD) {
             PokerEvaluatedHandModel model = PokerHandEvaluator.evaluateHand(communityCards, hand);
             hand.setEvaluatedHand(model);
         }
     }
 
-    public void evaluateTrips(UthPlayerHand hand){
-        if (hand.getState() != UthHandState.FOLD && hand.getTrips() != 0){
-            switch (hand.getEvaluatedHand().handCombination()){
+    /**
+     * Evaluates the player's Trips side bet based on their final hand combination.
+     *
+     * @param hand the player's hand containing the Trips bet
+     */
+    public void evaluateTrips(UthPlayerHand hand) {
+        if (hand.getState() != UthHandState.FOLD && hand.getTrips() != 0) {
+            switch (hand.getEvaluatedHand().handCombination()) {
                 case TRIPS -> {
-                    hand.setTrips((int) (hand.getTrips() + (hand.getTrips() * UthTripsState.Trips.getValue())));
-                    hand.setTripsState(UthTripsState.Trips);
+                    hand.setTrips((int) (hand.getTrips() + (hand.getTrips() * UthTripsState.TRIPS.getValue())));
+                    hand.setTripsState(UthTripsState.TRIPS);
                 }
                 case STRAIGHT -> {
                     hand.setTrips((int) (hand.getTrips() + (hand.getTrips() * UthTripsState.STRAIGHT.getValue())));
@@ -80,10 +108,16 @@ public class UthGameEngine {
         }
     }
 
-    public void determineGameResults(/*List<UthCard> communityCards, */UthPlayerHand playerHand, UthHand dealerHand){
-        if (playerHand.getState() != UthHandState.FOLD){
-            Boolean result = determineWinner(/*communityCards, */playerHand, dealerHand);
-            if(Boolean.TRUE.equals(result)){
+    /**
+     * Determines the game result by comparing the player's hand with the dealer's hand.
+     *
+     * @param playerHand the player's hand
+     * @param dealerHand the dealer's hand
+     */
+    public void determineGameResults(UthPlayerHand playerHand, UthHand dealerHand) {
+        if (playerHand.getState() != UthHandState.FOLD) {
+            Boolean result = determineWinner(playerHand, dealerHand);
+            if (Boolean.TRUE.equals(result)) {
                 playerHand.setState(UthHandState.WON);
                 dealerHand.setState(UthHandState.LOST);
             } else if (Boolean.FALSE.equals(result)) {
@@ -96,27 +130,32 @@ public class UthGameEngine {
         }
     }
 
-    public void processResults(UthPlayerHand playerHand, UthHand dealerHand){
-        if (playerHand.getState() != UthHandState.FOLD){
-            if (playerHand.getState() == UthHandState.WON){
-                // Check and Handle Ante
-                if (dealerHand.getEvaluatedHand().handCombination().getValue() > -2){
+    /**
+     * Processes the payout results for the player based on the game outcome.
+     * Updates the player's bets based on whether they won, lost, or tied.
+     *
+     * @param playerHand the player's hand
+     * @param dealerHand the dealer's hand
+     */
+    public void processResults(UthPlayerHand playerHand, UthHand dealerHand) {
+        if (playerHand.getState() != UthHandState.FOLD) {
+            if (playerHand.getState() == UthHandState.WON) {
+                // Handle Ante bet payout if the dealer qualifies
+                if (dealerHand.getEvaluatedHand().handCombination().getValue() > -2) {
                     playerHand.setAnte(playerHand.getAnte() * 2);
                 }
-                // Check and Handle Blind
-                if (playerHand.getEvaluatedHand().handCombination().getValue() > 0){
+                // Handle Blind bet payout if the player qualifies
+                if (playerHand.getEvaluatedHand().handCombination().getValue() > 0) {
                     playerHand.setBlind((int) (playerHand.getBlind() + (playerHand.getBlind() * playerHand.getEvaluatedHand().handCombination().getValue())));
                 }
-                // Handle Play bet
+                // Double the Play bet payout
                 playerHand.setPlay(playerHand.getPlay() * 2);
             } else if (playerHand.getState() == UthHandState.LOST) {
-                // Handle Ante
-                if (dealerHand.getEvaluatedHand().handCombination().getValue() > -2){
+                // Handle lost bets
+                if (dealerHand.getEvaluatedHand().handCombination().getValue() > -2) {
                     playerHand.setAnte(0);
                 }
-                // Handle Blind
                 playerHand.setBlind(0);
-                // Handle Play bet
                 playerHand.setPlay(0);
             }
         }

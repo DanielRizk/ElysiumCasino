@@ -1,5 +1,8 @@
 package org.daniel.elysium.ultimateTH.constants;
 
+/**
+ * Represents the different stages of ultimate_th game.
+ */
 public enum UthGameStage {
     /** The initial stage of the game. */
     START,

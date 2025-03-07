@@ -152,9 +152,7 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
                     play.addChips(chipList);
                 }
             }
-            case X1 -> {
-                play.addChips(chipList);
-            }
+            case X1 -> play.addChips(chipList);
         }
     }
 

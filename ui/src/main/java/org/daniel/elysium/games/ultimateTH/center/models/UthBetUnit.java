@@ -45,15 +45,6 @@ public class UthBetUnit extends JPanel {
        ====================== */
 
     /**
-     * Checks if a chip can be added to the main bet circle.
-     *
-     * @return {@code true} if the number of chips in the bet circle is below the maximum limit, otherwise {@code false}.
-     */
-    public boolean canAddChip() {
-        return circle.getChipsCount() < circle.getMaxChips();
-    }
-
-    /**
      * Adds a chip to the main bet circle.
      *
      * @param chip The chip to be added.

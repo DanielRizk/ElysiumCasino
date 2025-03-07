@@ -8,9 +8,29 @@ import org.daniel.elysium.ultimateTH.pokerCore.models.PokerEvaluatedHandModel;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Evaluates poker hands in Ultimate Texas Hold'em.
+ * <p>
+ * This class determines the best possible 5-card hand from the available cards,
+ * evaluates its ranking, and selects a kicker if necessary.
+ * </p>
+ */
 public class PokerHandEvaluator {
 
-    // Evaluate the strength of a 5-card hand and return a PokerEvaluatedHandModel
+    /* ======================
+       Hand Evaluation
+       ====================== */
+
+    /**
+     * Evaluates the best poker hand possible using the player's and community cards.
+     *
+     * @param communityCards the shared community cards
+     * @param hand the player's or dealer's hand
+     * @return a {@code PokerEvaluatedHandModel} containing the best hand combination, kicker, and ranking
+     */
     public static PokerEvaluatedHandModel evaluateHand(List<UthCard> communityCards, UthHand hand) {
         List<UthCard> allCards = new ArrayList<>(communityCards);
         allCards.addAll(hand.getHand());
@@ -35,13 +55,32 @@ public class PokerHandEvaluator {
         return bestHand;
     }
 
-    // Helper method to generate all combinations of size k from a list of cards
+    /* ======================
+       Combination Generation
+       ====================== */
+
+    /**
+     * Generates all possible 5-card combinations from the available cards.
+     *
+     * @param cards the full list of available cards
+     * @param k the number of cards per combination
+     * @return a list of all possible 5-card combinations
+     */
     private static List<List<UthCard>> generateCombinations(List<UthCard> cards, int k) {
         List<List<UthCard>> combinations = new ArrayList<>();
         generateCombinationsHelper(cards, k, 0, new ArrayList<>(), combinations);
         return combinations;
     }
 
+    /**
+     * Helper method to generate card combinations recursively.
+     *
+     * @param cards the full list of available cards
+     * @param k the number of cards per combination
+     * @param start the index to start from
+     * @param current the current combination being formed
+     * @param combinations the list of generated combinations
+     */
     private static void generateCombinationsHelper(List<UthCard> cards, int k, int start, List<UthCard> current, List<List<UthCard>> combinations) {
         if (k == 0) {
             combinations.add(new ArrayList<>(current));
@@ -54,7 +93,16 @@ public class PokerHandEvaluator {
         }
     }
 
-    // Determine the hand combination for a 5-card hand
+    /* ======================
+       Hand Ranking
+       ====================== */
+
+    /**
+     * Determines the hand ranking for a given 5-card hand.
+     *
+     * @param hand the hand to evaluate
+     * @return the corresponding {@code UthHandCombination}
+     */
     private static UthHandCombination determineHandCombination(List<UthCard> hand) {
         if (isRoyalFlush(hand)) return UthHandCombination.ROYAL_FLUSH;
         if (isStraightFlush(hand)) return UthHandCombination.STRAIGHT_FLUSH;
@@ -68,80 +116,95 @@ public class PokerHandEvaluator {
         return UthHandCombination.HIGH_CARD;
     }
 
-    // Helper methods to check for specific hand types
+    /* ======================
+       Hand Type Verification
+       ====================== */
+
+    /**
+     * Checks if the hand is a Royal Flush.
+     *
+     * @param hand the hand to evaluate
+     * @return {@code true} if the hand is a Royal Flush, otherwise {@code false}
+     */
     private static boolean isRoyalFlush(List<UthCard> hand) {
         if (!isFlush(hand)) return false;
-
         Set<String> requiredRanks = new HashSet<>(Arrays.asList("A", "K", "Q", "J", "10"));
         Set<String> handRanks = hand.stream().map(UthCard::getRank).collect(Collectors.toSet());
-
         return handRanks.containsAll(requiredRanks);
     }
 
+    /**
+     * Checks if the hand is a Straight Flush.
+     */
     private static boolean isStraightFlush(List<UthCard> hand) {
         return isFlush(hand) && isStraight(hand);
     }
 
+    /**
+     * Checks if the hand is Four of a Kind.
+     */
     private static boolean isFourOfAKind(List<UthCard> hand) {
-        Map<String, Integer> rankCounts = getRankCounts(hand);
-        return rankCounts.containsValue(4);
+        return getRankCounts(hand).containsValue(4);
     }
 
+    /**
+     * Checks if the hand is a Full House.
+     */
     private static boolean isFullHouse(List<UthCard> hand) {
         Map<String, Integer> rankCounts = getRankCounts(hand);
         return rankCounts.containsValue(3) && rankCounts.containsValue(2);
     }
 
+    /**
+     * Checks if the hand is a Flush.
+     */
     private static boolean isFlush(List<UthCard> hand) {
-        Set<String> suits = hand.stream().map(UthCard::getSuit).collect(Collectors.toSet());
-        return suits.size() == 1;
+        return hand.stream().map(UthCard::getSuit).collect(Collectors.toSet()).size() == 1;
     }
 
+    /**
+     * Checks if the hand is a Straight.
+     */
     private static boolean isStraight(List<UthCard> hand) {
-        // Extract and sort the card ranks
         List<Integer> values = hand.stream()
-                .map(UthCard::getValue) // Map ranks to values
+                .map(UthCard::getValue)
                 .sorted()
                 .toList();
-
-        // Handle low straight (A, 2, 3, 4, 5)
-        if (values.equals(Arrays.asList(2, 3, 4, 5, 14))) {
-            return true;
-        }
-
-        // Check for consecutive values
+        if (values.equals(Arrays.asList(2, 3, 4, 5, 14))) return true;
         for (int i = 1; i < values.size(); i++) {
-            if (values.get(i) != values.get(i - 1) + 1) {
-                return false;
-            }
+            if (values.get(i) != values.get(i - 1) + 1) return false;
         }
-
-        // If all cards are consecutive, it's a straight
         return true;
     }
 
+    /**
+     * Checks if the hand is Three of a Kind.
+     */
     private static boolean isThreeOfAKind(List<UthCard> hand) {
-        Map<String, Integer> rankCounts = getRankCounts(hand);
-        return rankCounts.containsValue(3);
+        return getRankCounts(hand).containsValue(3);
     }
 
+    /**
+     * Checks if the hand is Two Pair.
+     */
     private static boolean isTwoPair(List<UthCard> hand) {
-        Map<String, Integer> rankCounts = getRankCounts(hand);
-        int pairCount = 0;
-        for (int count : rankCounts.values()) {
-            if (count == 2) {
-                pairCount++;
-            }
-        }
-        return pairCount == 2;
+        return getRankCounts(hand).values().stream().filter(count -> count == 2).count() == 2;
     }
 
+    /**
+     * Checks if the hand is One Pair.
+     */
     private static boolean isOnePair(List<UthCard> hand) {
-        Map<String, Integer> rankCounts = getRankCounts(hand);
-        return rankCounts.containsValue(2);
+        return getRankCounts(hand).containsValue(2);
     }
 
-    // Helper method to count occurrences of each card rank
+    /* ======================
+       Helper Methods
+       ====================== */
+
+    /**
+     * Counts the occurrences of each card rank in a hand.
+     */
     private static Map<String, Integer> getRankCounts(List<UthCard> hand) {
         Map<String, Integer> rankCounts = new HashMap<>();
         for (UthCard card : hand) {
@@ -150,13 +213,13 @@ public class PokerHandEvaluator {
         return rankCounts;
     }
 
-    // Helper method to determine the kicker card
+    /**
+     * Determines the kicker card based on the hand ranking.
+     */
     private static UthCard getKicker(List<UthCard> hand, UthHandCombination handCombination) {
-        // Sort the hand based on the mapped integer value of the rank
         List<UthCard> sortedHand = hand.stream()
                 .sorted(Comparator.comparingInt((UthCard card) -> card.getValue()).reversed())
                 .toList();
-
         return switch (handCombination) {
             case HIGH_CARD, PAIR, TWO_PAIR, TRIPS -> sortedHand.get(0);
             default -> null;
