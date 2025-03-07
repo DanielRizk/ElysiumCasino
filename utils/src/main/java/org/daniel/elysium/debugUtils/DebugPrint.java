@@ -41,6 +41,15 @@ public class DebugPrint {
     }
 
     /**
+     * Flushes the output stream buffer if the debug level is set to {@code ALL} or higher.
+     */
+    public static void flush() {
+        if (level.getValue() >= DebugLevel.ALL.getValue()) {
+            System.out.flush();
+        }
+    }
+
+    /**
      * Prints the given object to the console if the debug level is set to {@code ALL} or higher.
      *
      * @param x The object to print.

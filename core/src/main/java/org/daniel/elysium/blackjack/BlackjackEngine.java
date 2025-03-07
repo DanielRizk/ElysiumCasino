@@ -20,7 +20,7 @@ public class BlackjackEngine {
      * @param hand The dealer's {@link DealerHand}.
      * @return {@code true} if insurance is available, otherwise {@code false}.
      */
-    public boolean isInsurance(DealerHand hand) {
+    public static boolean isInsurance(DealerHand hand) {
         return hand.getHand().get(0).getValue() == 11;
     }
 
@@ -30,7 +30,7 @@ public class BlackjackEngine {
      * @param hand The player's {@link PlayerHand}.
      * @return A list of available actions as strings (e.g., "HIT", "STAND", "DOUBLE", "SPLIT").
      */
-    public List<String> getAvailableHandOptions(PlayerHand hand) {
+    public static List<String> getAvailableHandOptions(PlayerHand hand) {
         List<String> handOptions = new ArrayList<>();
         if (!hand.didComeFromSplitAces()){
             if (hand.getHandValue() < 21) {
@@ -54,7 +54,7 @@ public class BlackjackEngine {
      * @param hand        The player's {@link PlayerHand}.
      * @param dealerHand  The dealer's {@link DealerHand}.
      */
-    public void resolvePlayerResult(PlayerHand hand, DealerHand dealerHand) {
+    public static void resolvePlayerResult(PlayerHand hand, DealerHand dealerHand) {
         float bet = hand.getBet();
 
         // Handle insurance payout

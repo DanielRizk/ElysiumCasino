@@ -20,7 +20,7 @@ import java.awt.*;
  * Initializes the database, creates the main frame, and sets up the StateManager
  * to handle panel navigation.
  */
-public class Launcher {
+public class UILauncher {
 
     // Instance reference to the splash screen
     private JWindow splashScreen;
@@ -33,7 +33,7 @@ public class Launcher {
      * The actual initialization is performed in the background using a {@link SwingWorker}.
      * Once initialization is complete, the splash screen is hidden, and the main application is displayed.
      */
-    public Launcher() {
+    public UILauncher() {
 
         // Show splash screen while initializing the application
         showSplashScreen();

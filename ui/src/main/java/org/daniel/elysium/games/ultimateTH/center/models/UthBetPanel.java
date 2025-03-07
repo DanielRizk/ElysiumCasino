@@ -319,7 +319,7 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
             case FULL_HOUSE -> ResultAsset.X8;
             case FLUSH -> ResultAsset.X7;
             case STRAIGHT -> ResultAsset.X4;
-            case Trips -> ResultAsset.X3;
+            case TRIPS -> ResultAsset.X3;
             default -> null;
         };
         trips.showOverlay(AssetManager.getScaledImage(asset, imageSize));

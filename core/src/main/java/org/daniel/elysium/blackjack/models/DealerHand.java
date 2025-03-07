@@ -82,7 +82,7 @@ public class DealerHand extends BJHand {
         }
 
         // Adjust for Soft 17 (if the dealer has a 17 with an Ace counted as 11)
-        if (handValue == 17 && aces > 0) {
+        if (handValue == 17 && aces > 0 && getHand().size() == 2) {
             handValue -= 10; // Convert the soft 17 to a hard 7
         }
 

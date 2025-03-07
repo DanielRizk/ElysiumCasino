@@ -19,18 +19,3 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
-/*jar {
-    manifest {
-        attributes(
-                'Main-Class': 'org.daniel.myCasino.Main'
-        )
-    }
-}*/
-
-/*tasks.register("Run", JavaExec){
-    group = 'application'
-    mainClass = 'org.daniel.myCasino.Main'
-    classpath = sourceSets.main.runtimeClasspath
-    standardInput = System.in
-}*/

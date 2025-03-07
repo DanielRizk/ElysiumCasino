@@ -42,9 +42,6 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     private ChipPanel chipPanel;
     private final BJGameAreaPanel gameAreaPanel;
 
-    // Define the game logic engine
-    private final BlackjackEngine gameEngine;
-
     /** The minimum bet allowed in the game. */
     public static final int MIN_BET = 10;
 
@@ -59,7 +56,6 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     public BlackjackController(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.gameEngine = new BlackjackEngine();
         this.topPanel = new TopPanel(this, stateManager);
         this.chipPanel = new ChipPanel(this, stateManager);
         this.gameAreaPanel = new BJGameAreaPanel(this, stateManager);
@@ -255,7 +251,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * @return true if the player qualifies for insurance, false otherwise.
      */
     private boolean checkInsurance(){
-        return gameEngine.isInsurance(gameAreaPanel.getDealerHand().getHand())
+        return BlackjackEngine.isInsurance(gameAreaPanel.getDealerHand().getHand())
                 && (int)(gameAreaPanel.getPlayerHand(0).getBet() * 0.5) <=
                 stateManager.getProfile().getBalance();
     }
@@ -358,7 +354,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     private Map<BlackjackActions, Integer> getOptions(int index){
         Map<BlackjackActions, Integer> actions = new LinkedHashMap<>(); // LinkedHashMap is used to preserve the order
-        for (String option: gameEngine.getAvailableHandOptions(gameAreaPanel.getPlayerHand(index).getHand())){
+        for (String option: BlackjackEngine.getAvailableHandOptions(gameAreaPanel.getPlayerHand(index).getHand())){
             switch (option){
                 case "HIT" -> actions.put(BlackjackActions.HIT, index);
                 case "STAND" -> actions.put(BlackjackActions.STAND, index);
@@ -551,7 +547,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     private void evaluateGameResults(){
         state = BJGameState.EVALUATION_PHASE;
         for (BJPlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
-            gameEngine.resolvePlayerResult(playerHandUI.getHand(),
+            BlackjackEngine.resolvePlayerResult(playerHandUI.getHand(),
                     gameAreaPanel.getDealerHand().getHand());
         }
         displayResults();
