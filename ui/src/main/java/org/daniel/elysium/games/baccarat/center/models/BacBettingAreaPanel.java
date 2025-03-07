@@ -1,6 +1,6 @@
 package org.daniel.elysium.games.baccarat.center.models;
 
-import org.daniel.elysium.baccarat.constants.HandType;
+import org.daniel.elysium.baccarat.constants.BacHandType;
 import org.daniel.elysium.models.chips.BetBox;
 import org.daniel.elysium.models.chips.Chip;
 
@@ -83,9 +83,9 @@ public class BacBettingAreaPanel extends JPanel implements BetBox.SelectionListe
      *
      * @return The type of hand (PLAYER, BANKER, or TIE) corresponding to the selected bet.
      */
-    public HandType getBoxType() {
+    public BacHandType getBoxType() {
         if (selectedBox != null) {
-            return HandType.valueOf(selectedBox.getLabel().toUpperCase());
+            return BacHandType.valueOf(selectedBox.getLabel().toUpperCase());
         }
         return null; // Return null if no box is selected
     }

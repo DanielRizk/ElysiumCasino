@@ -45,9 +45,6 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     private ChipPanel chipPanel;
     private final UthGameAreaPanel gameAreaPanel;
 
-    // Define the game logic engine
-    private final UthGameEngine gameEngine;
-
     /** The minimum bet allowed in the game. */
     public static final int MIN_BET = 10;
 
@@ -62,7 +59,6 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
      */
     public UltimateController(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.gameEngine = new UthGameEngine();
         this.topPanel = new TopPanel(this, stateManager);
         this.chipPanel = new ChipPanel(this, stateManager);
         this.gameAreaPanel = new UthGameAreaPanel(this, stateManager);
@@ -258,7 +254,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
      */
     private Map<UthActions, Integer> getOptions(){
         Map<UthActions, Integer> actions = new LinkedHashMap<>(); // LinkedHashMap is used to preserve the order
-        for (String option: gameEngine.getPlayerOptions(stage)){
+        for (String option: UthGameEngine.getPlayerOptions(stage)){
             switch (option){
                 case "X4" -> {
                     // Validate if the use has 4x the bet amount and not just the 3x
@@ -484,14 +480,14 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         UthPlayerHand playerHand = gameAreaPanel.getPlayerHand();
         UthHand dealerHand = gameAreaPanel.getDealerHand();
 
-        gameEngine.evaluateHand(gameAreaPanel.getCommunityCards(), playerHand);
-        gameEngine.evaluateHand(gameAreaPanel.getCommunityCards(), dealerHand);
+        UthGameEngine.evaluateHand(gameAreaPanel.getCommunityCards(), playerHand);
+        UthGameEngine.evaluateHand(gameAreaPanel.getCommunityCards(), dealerHand);
 
-        gameEngine.determineGameResults(playerHand, dealerHand);
+        UthGameEngine.determineGameResults(playerHand, dealerHand);
 
-        gameEngine.evaluateTrips(playerHand);
+        UthGameEngine.evaluateTrips(playerHand);
 
-        gameEngine.processResults(playerHand, dealerHand);
+        UthGameEngine.processResults(playerHand, dealerHand);
 
         displayResults();
     }

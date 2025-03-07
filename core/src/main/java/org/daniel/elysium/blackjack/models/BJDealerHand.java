@@ -1,12 +1,12 @@
 package org.daniel.elysium.blackjack.models;
 
-import org.daniel.elysium.blackjack.constants.HandState;
+import org.daniel.elysium.blackjack.constants.BJHandState;
 
 /**
  * Represents the dealer's hand in a game of Blackjack.
  * The dealer follows predefined rules for drawing cards.
  */
-public class DealerHand extends BJHand {
+public class BJDealerHand extends BJHand {
 
     /**
      * Determines if the dealer is allowed to receive another card.
@@ -46,7 +46,7 @@ public class DealerHand extends BJHand {
     public boolean isBlackJack() {
         boolean eval = getHand().size() <= 2 && getHandValue() == 21;
         if (eval) {
-            setState(HandState.BLACKJACK);
+            setState(BJHandState.BLACKJACK);
             return true;
         }
         return false;

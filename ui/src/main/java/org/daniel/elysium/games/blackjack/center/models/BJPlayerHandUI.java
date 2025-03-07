@@ -2,7 +2,7 @@ package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.ResultAsset;
-import org.daniel.elysium.blackjack.models.PlayerHand;
+import org.daniel.elysium.blackjack.models.BJPlayerHand;
 import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.models.chips.Chip;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class BJPlayerHandUI extends JPanel {
     private final BJPlayerCardsPanel playerCards;
     private final BJBetPanel betPanel;
-    private final PlayerHand hand;
+    private final BJPlayerHand hand;
 
     public static final int FIRST_HAND = 0;
 
@@ -42,7 +42,7 @@ public class BJPlayerHandUI extends JPanel {
         add(betPanel);
 
         // Create the logical backend hand
-        hand = new PlayerHand();
+        hand = new BJPlayerHand();
     }
 
     /*========================
@@ -70,9 +70,9 @@ public class BJPlayerHandUI extends JPanel {
     /**
      * Gets the backend implementation of the player's hand.
      *
-     * @return The {@link PlayerHand} instance.
+     * @return The {@link BJPlayerHand} instance.
      */
-    public PlayerHand getHand() {
+    public BJPlayerHand getHand() {
         return hand;
     }
 

@@ -1,16 +1,16 @@
 package org.daniel.elysium.baccarat.models;
 
 import org.daniel.elysium.baccarat.constants.BacHandState;
-import org.daniel.elysium.baccarat.constants.HandType;
+import org.daniel.elysium.baccarat.constants.BacHandType;
 
 /**
  * Represents a bet in a Baccarat game, holding details about the bet amount, the type of hand bet upon,
  * and the outcome state of the bet.
  */
-public class BetHand {
+public class BacBetHand {
 
     private double bet = 0;
-    private HandType handType = HandType.UNDEFINED;
+    private BacHandType handType = BacHandType.UNDEFINED;
     private BacHandState state = BacHandState.UNDEFINED;
 
     /**
@@ -31,17 +31,17 @@ public class BetHand {
 
     /**
      * Retrieves the type of hand on which the bet was placed.
-     * @return The type of hand ({@link HandType}), such as PLAYER, BANKER, or TIE.
+     * @return The type of hand ({@link BacHandType}), such as PLAYER, BANKER, or TIE.
      */
-    public HandType getHandType() {
+    public BacHandType getHandType() {
         return handType;
     }
 
     /**
      * Sets the type of hand on which the bet is placed.
-     * @param handType The hand type ({@link HandType}) to set, indicating on which hand the bet is made.
+     * @param handType The hand type ({@link BacHandType}) to set, indicating on which hand the bet is made.
      */
-    public void setHandType(HandType handType) {
+    public void setHandType(BacHandType handType) {
         this.handType = handType;
     }
 

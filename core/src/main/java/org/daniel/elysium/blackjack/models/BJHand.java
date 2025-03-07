@@ -1,6 +1,6 @@
 package org.daniel.elysium.blackjack.models;
 
-import org.daniel.elysium.blackjack.constants.HandState;
+import org.daniel.elysium.blackjack.constants.BJHandState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public abstract class BJHand {
     protected List<BJCard> hand;
-    private HandState state = HandState.UNDEFINED;
+    private BJHandState state = BJHandState.UNDEFINED;
 
     /**
      * Constructs an empty Blackjack hand.
@@ -33,18 +33,18 @@ public abstract class BJHand {
     /**
      * Gets the current state of the hand.
      *
-     * @return The {@link HandState} of the hand.
+     * @return The {@link BJHandState} of the hand.
      */
-    public HandState getState() {
+    public BJHandState getState() {
         return state;
     }
 
     /**
      * Sets the state of the hand.
      *
-     * @param state The new {@link HandState} to be assigned.
+     * @param state The new {@link BJHandState} to be assigned.
      */
-    public void setState(HandState state) {
+    public void setState(BJHandState state) {
         this.state = state;
     }
 

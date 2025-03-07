@@ -32,7 +32,7 @@ public class UthGameEngine {
      * @param stage the current stage of the game
      * @return a list of available actions as strings
      */
-    public List<String> getPlayerOptions(UthGameStage stage) {
+    public static List<String> getPlayerOptions(UthGameStage stage) {
         List<String> handOptions = new ArrayList<>();
         switch (stage) {
             case START -> {
@@ -61,7 +61,7 @@ public class UthGameEngine {
      * @param communityCards the shared community cards
      * @param hand the player's or dealer's hand to evaluate
      */
-    public void evaluateHand(List<UthCard> communityCards, UthHand hand) {
+    public static void evaluateHand(List<UthCard> communityCards, UthHand hand) {
         if (hand.getState() != UthHandState.FOLD) {
             PokerEvaluatedHandModel model = PokerHandEvaluator.evaluateHand(communityCards, hand);
             hand.setEvaluatedHand(model);
@@ -73,7 +73,7 @@ public class UthGameEngine {
      *
      * @param hand the player's hand containing the Trips bet
      */
-    public void evaluateTrips(UthPlayerHand hand) {
+    public static void evaluateTrips(UthPlayerHand hand) {
         if (hand.getState() != UthHandState.FOLD && hand.getTrips() != 0) {
             switch (hand.getEvaluatedHand().handCombination()) {
                 case TRIPS -> {
@@ -114,7 +114,7 @@ public class UthGameEngine {
      * @param playerHand the player's hand
      * @param dealerHand the dealer's hand
      */
-    public void determineGameResults(UthPlayerHand playerHand, UthHand dealerHand) {
+    public static void determineGameResults(UthPlayerHand playerHand, UthHand dealerHand) {
         if (playerHand.getState() != UthHandState.FOLD) {
             Boolean result = determineWinner(playerHand, dealerHand);
             if (Boolean.TRUE.equals(result)) {
@@ -137,7 +137,7 @@ public class UthGameEngine {
      * @param playerHand the player's hand
      * @param dealerHand the dealer's hand
      */
-    public void processResults(UthPlayerHand playerHand, UthHand dealerHand) {
+    public static void processResults(UthPlayerHand playerHand, UthHand dealerHand) {
         if (playerHand.getState() != UthHandState.FOLD) {
             if (playerHand.getState() == UthHandState.WON) {
                 // Handle Ante bet payout if the dealer qualifies

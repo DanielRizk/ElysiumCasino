@@ -3,7 +3,7 @@ package org.daniel.elysium.blackjack.constants;
 /**
  * Represents the possible outcomes or states of a hand in a card game.
  */
-public enum HandState {
+public enum BJHandState {
 
     /**
      * The hand state is not yet determined.

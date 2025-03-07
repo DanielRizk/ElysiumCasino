@@ -28,6 +28,7 @@ public class CLILauncher {
         DebugPrint.getInstance(DebugLevel.PRINT);
         Scanner scanner = new Scanner(System.in);
 
+        // TODO: create a profile menu
         UserCredentialsHandler userLoginHandler = new UserCredentialsHandler();
         UserProfile profile;
 

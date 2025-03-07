@@ -2,7 +2,7 @@ package org.daniel.elysium.games.baccarat.center;
 
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.ButtonAsset;
-import org.daniel.elysium.baccarat.constants.HandType;
+import org.daniel.elysium.baccarat.constants.BacHandType;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledTextField;
 import org.daniel.elysium.games.baccarat.center.models.BacBettingAreaPanel;
@@ -210,9 +210,9 @@ public class BacGameAreaPanel extends JPanel {
      * Gets the type of the currently selected bet box in the betting area.
      * This method helps in determining the type of bet placed by the player, such as 'Player', 'Banker', or 'Tie'.
      *
-     * @return The {@link HandType} of the selected bet box, indicating the type of bet.
+     * @return The {@link BacHandType} of the selected bet box, indicating the type of bet.
      */
-    public HandType getSelectedBoxType(){
+    public BacHandType getSelectedBoxType(){
         return bettingAreaPanel.getBoxType();
     }
 

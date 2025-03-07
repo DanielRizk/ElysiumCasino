@@ -168,9 +168,10 @@ public class UILauncher {
         stateManager.setProfile(new UserProfile("Test", "Test", 10000));
         stateManager.setAutoStartNewGame(false);
 
-        // TODO: Comment UTH core, Create Settings panel for game mode and speed, Integrate CLI version
+        // TODO: Comment UTH core, Create Settings panel for game mode and speed
         // TODO: update the betLabel with the total chips value after payouts
-        // TODO: BJ left hand got push, i will fix now, validate later photo in phone
+        // TODO: clean assets
+        // TODO: create JUnit Test
         stateManager.registerPanel("Login", new LoginPanel(stateManager));
         stateManager.registerPanel("Register", new RegisterPanel(stateManager));
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));

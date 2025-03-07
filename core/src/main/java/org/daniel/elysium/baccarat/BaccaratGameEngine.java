@@ -2,9 +2,9 @@ package org.daniel.elysium.baccarat;
 
 import org.daniel.elysium.baccarat.constants.BacHandAction;
 import org.daniel.elysium.baccarat.constants.BacHandState;
-import org.daniel.elysium.baccarat.constants.HandType;
+import org.daniel.elysium.baccarat.constants.BacHandType;
 import org.daniel.elysium.baccarat.models.BacHand;
-import org.daniel.elysium.baccarat.models.BetHand;
+import org.daniel.elysium.baccarat.models.BacBetHand;
 
 /**
  * Manages the rules and logic for a Baccarat game, evaluating player and banker hands and determining the outcome of bets.
@@ -18,7 +18,7 @@ public class BaccaratGameEngine {
      * @param banker The current hand of the banker.
      * @param player The current hand of the player.
      */
-    public void evaluatePlayer(BacHand banker, BacHand player){
+    public static void evaluatePlayer(BacHand banker, BacHand player){
         if (banker.getHandValue() != 8 && banker.getHandValue() != 9)
         {
             if (player.getHandValue() <= 5){
@@ -36,7 +36,7 @@ public class BaccaratGameEngine {
      * @param banker The current hand of the banker.
      * @param player The current hand of the player.
      */
-    public void evaluateBanker(BacHand banker, BacHand player){
+    public static void evaluateBanker(BacHand banker, BacHand player){
         if (player.getHand().size() > 2 && player.getHandValue() != 8 && player.getHandValue() != 9)
         {
             if (banker.getHandValue() <= 2){
@@ -69,7 +69,7 @@ public class BaccaratGameEngine {
      * @param banker The banker's hand.
      * @param player The player's hand.
      */
-    public void evaluateHands(BacHand banker, BacHand player){
+    public static void evaluateHands(BacHand banker, BacHand player){
         if (player.getHandValue() > banker.getHandValue()){
             player.setState(BacHandState.WON);
             banker.setState(BacHandState.LOST);
@@ -90,9 +90,9 @@ public class BaccaratGameEngine {
      * @param player The player's hand.
      * @param hand The betting hand which will be adjusted according to the game's outcome.
      */
-    public void calculateResult(BacHand banker, BacHand player, BetHand hand){
+    public static void calculateResult(BacHand banker, BacHand player, BacBetHand hand){
         if (player.getState() == BacHandState.WON){
-            if (hand.getHandType() == HandType.PLAYER){
+            if (hand.getHandType() == BacHandType.PLAYER){
                 hand.setState(BacHandState.WON);
                 hand.setBet(hand.getBet() + (hand.getBet() * hand.getHandType().getValue()));
             } else {
@@ -100,7 +100,7 @@ public class BaccaratGameEngine {
                 hand.setBet(0);
             }
         } else if (banker.getState() == BacHandState.WON) {
-            if (hand.getHandType() == HandType.BANKER){
+            if (hand.getHandType() == BacHandType.BANKER){
                 hand.setState(BacHandState.WON);
                 hand.setBet(hand.getBet() + (hand.getBet() * hand.getHandType().getValue()));
             } else {
@@ -108,7 +108,7 @@ public class BaccaratGameEngine {
                 hand.setBet(0);
             }
         } else {
-            if (hand.getHandType() == HandType.TIE){
+            if (hand.getHandType() == BacHandType.TIE){
                 hand.setState(BacHandState.TIE);
                 hand.setBet(hand.getBet() + (hand.getBet() * hand.getHandType().getValue()));
             } else {

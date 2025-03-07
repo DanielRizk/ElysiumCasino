@@ -2,8 +2,8 @@ package org.daniel.elysium.games.blackjack.center.models;
 
 import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.ResultAsset;
-import org.daniel.elysium.blackjack.constants.HandState;
-import org.daniel.elysium.blackjack.models.DealerHand;
+import org.daniel.elysium.blackjack.constants.BJHandState;
+import org.daniel.elysium.blackjack.models.BJDealerHand;
 import org.daniel.elysium.games.blackjack.models.BJCardUI;
 
 import javax.swing.*;
@@ -12,10 +12,10 @@ import java.awt.*;
 /**
  * Represents the dealer's hand in the Blackjack UI.
  * This class manages both the visual representation of the dealer's cards
- * and the backend logic through {@link DealerHand}.
+ * and the backend logic through {@link BJDealerHand}.
  */
 public class BJDealerHandUI extends JPanel {
-    private final DealerHand hand;
+    private final BJDealerHand hand;
     private Image overlayImage;
 
     /**
@@ -28,15 +28,15 @@ public class BJDealerHandUI extends JPanel {
         setOpaque(false);
 
         // Create the logical backend hand
-        hand = new DealerHand();
+        hand = new BJDealerHand();
     }
 
     /**
      * Retrieves the backend hand implementation of the dealer.
      *
-     * @return The {@link DealerHand} instance managing game logic.
+     * @return The {@link BJDealerHand} instance managing game logic.
      */
-    public DealerHand getHand() {
+    public BJDealerHand getHand() {
         return hand;
     }
 
@@ -79,7 +79,7 @@ public class BJDealerHandUI extends JPanel {
      * Displays the blackjack hand result image.
      */
     public void displayBlackjackResult(){
-        if (hand.getState() == HandState.BLACKJACK){
+        if (hand.getState() == BJHandState.BLACKJACK){
             showOverlay(AssetManager.getScaledImage(ResultAsset.BLACKJACK, new Dimension(500, 200)));
         }
     }

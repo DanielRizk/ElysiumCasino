@@ -3,7 +3,9 @@ package org.daniel.elysium;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.interfaces.MenuOptionCLI;
 import org.daniel.elysium.menus.SecretTopUpCode;
+import org.daniel.elysium.menus.games.BaccaratCLI;
 import org.daniel.elysium.menus.games.BlackjackCLI;
+import org.daniel.elysium.menus.games.UltimateTHCLI;
 
 import java.util.Scanner;
 
@@ -27,10 +29,10 @@ public class MenuFactory {
                 return new BlackjackCLI();
             }
             case 2 -> {
-                return null; // Placeholder for Baccarat CLI
+                return new BaccaratCLI();
             }
             case 3 -> {
-                return null; // Placeholder for Ultimate Texas Hold'em CLI
+                return new UltimateTHCLI();
             }
             case 2684 -> {
                 return new SecretTopUpCode();

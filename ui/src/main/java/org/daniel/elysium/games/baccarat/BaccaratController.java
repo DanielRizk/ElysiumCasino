@@ -6,7 +6,7 @@ import org.daniel.elysium.baccarat.BaccaratGameEngine;
 import org.daniel.elysium.baccarat.constants.BacHandAction;
 import org.daniel.elysium.baccarat.constants.BacHandState;
 import org.daniel.elysium.baccarat.models.BacHand;
-import org.daniel.elysium.baccarat.models.BetHand;
+import org.daniel.elysium.baccarat.models.BacBetHand;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
@@ -40,10 +40,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     private final BacGameAreaPanel gameAreaPanel;
 
     // Define the player's betting hand
-    private BetHand hand;
-
-    // Define the game logic engine
-    private final BaccaratGameEngine gameEngine;
+    private BacBetHand hand;
 
     /** The minimum bet allowed in the game. */
     public static final int MIN_BET = 100;
@@ -59,11 +56,10 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
      */
     public BaccaratController(StateManager stateManager) {
         this.stateManager = stateManager;
-        this.gameEngine = new BaccaratGameEngine();
         this.topPanel = new TopPanel(this, stateManager);
         this.chipPanel = new ChipPanel(this, stateManager);
         this.gameAreaPanel = new BacGameAreaPanel(this, stateManager);
-        this.hand = new BetHand();
+        this.hand = new BacBetHand();
     }
 
     /*======================
@@ -227,11 +223,11 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         BacHand banker = gameAreaPanel.getBankerHand().getHand();
         BacHand player = gameAreaPanel.getPlayerHand().getHand();
 
-        gameEngine.evaluatePlayer(banker, player);
+        BaccaratGameEngine.evaluatePlayer(banker, player);
         executePlayerAction(player);
-        gameEngine.evaluateBanker(banker, player);
+        BaccaratGameEngine.evaluateBanker(banker, player);
         executeBankerAction(banker);
-        gameEngine.evaluateHands(banker ,player);
+        BaccaratGameEngine.evaluateHands(banker ,player);
 
         proceedTopPayouts();
     }
@@ -275,7 +271,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
     private void proceedTopPayouts(){
         state = BaccaratGameState.PAYOUT;
 
-        gameEngine.calculateResult(gameAreaPanel.getBankerHand().getHand(), gameAreaPanel.getPlayerHand().getHand(), hand);
+        BaccaratGameEngine.calculateResult(gameAreaPanel.getBankerHand().getHand(), gameAreaPanel.getPlayerHand().getHand(), hand);
         stateManager.getProfile().increaseBalanceBy(hand.getBet());
 
         // Determine the outcome and update UI accordingly
@@ -342,7 +338,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.clearActions();
         gameAreaPanel.clearChips();
         gameAreaPanel.updateBetLabel(0);
-        hand = new BetHand();
+        hand = new BacBetHand();
         state = BaccaratGameState.BET_PHASE;
         ChipPanelUtil.regenerateChipPanel(this, stateManager);
 

@@ -4,7 +4,7 @@ package org.daniel.elysium.baccarat.constants;
  * Enumerates types of hands in Baccarat, each associated with a specific payout multiplier.
  * This enum is crucial for determining the payout calculations based on the type of bet placed.
  */
-public enum HandType {
+public enum BacHandType {
     /**
      * Represents an undefined hand type, used primarily as a default state.
      */
@@ -32,7 +32,7 @@ public enum HandType {
      * Constructs a HandType with the specified payout multiplier.
      * @param value The payout multiplier for this hand type.
      */
-    HandType(double value) {
+    BacHandType(double value) {
         this.value = value;
     }
 

@@ -1,12 +1,12 @@
 package org.daniel.elysium.blackjack.models;
 
-import org.daniel.elysium.blackjack.constants.HandState;
+import org.daniel.elysium.blackjack.constants.BJHandState;
 
 /**
  * Represents a player's hand in a game of Blackjack.
  * This class handles betting, hand splitting, and Blackjack hand evaluation.
  */
-public class PlayerHand extends BJHand {
+public class BJPlayerHand extends BJHand {
 
     private boolean isHandSplit = false;
     private boolean isSplitAces = false;
@@ -54,7 +54,7 @@ public class PlayerHand extends BJHand {
     public boolean isBlackJack() {
         boolean eval = getHand().size() <= 2 && getHandValue() == 21 && !isHandSplit;
         if (eval) {
-            setState(HandState.BLACKJACK);
+            setState(BJHandState.BLACKJACK);
             return true;
         }
         return false;

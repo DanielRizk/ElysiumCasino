@@ -3,7 +3,7 @@ package org.daniel.elysium.games.blackjack;
 import org.daniel.elysium.StateManager;
 import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.blackjack.BlackjackEngine;
-import org.daniel.elysium.blackjack.constants.HandState;
+import org.daniel.elysium.blackjack.constants.BJHandState;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
@@ -290,7 +290,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
                 playerHandUI.clearInsuranceBet();
                 calculatePlayerOptions(0);
             } else { // If dealer has blackjack, the dealer wins, and the hand is marked as INSURED
-                playerHandUI.getHand().setState(HandState.INSURED);
+                playerHandUI.getHand().setState(BJHandState.INSURED);
                 dealerTurn();
             }
         });
@@ -566,7 +566,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
             playerHandUI.displayHandResult();
         }
 
-        if (gameAreaPanel.getDealerHand().getHand().getState() == HandState.BLACKJACK){
+        if (gameAreaPanel.getDealerHand().getHand().getState() == BJHandState.BLACKJACK){
             gameAreaPanel.getDealerHand().displayBlackjackResult();
         }
         proceedToPayouts();
@@ -584,17 +584,17 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         state = BJGameState.PAYOUT;
         List<BJPlayerHandUI> allHands = gameAreaPanel.getPlayerHands();
         for (BJPlayerHandUI playerHandUI : allHands) {
-            if (playerHandUI.getHand().getState() == HandState.BLACKJACK){
+            if (playerHandUI.getHand().getState() == BJHandState.BLACKJACK){
                 stateManager.getProfile().increaseBalanceBy(playerHandUI.getBet());
                 playerHandUI.payBlackjackWin();
-            } else if (playerHandUI.getHand().getState() == HandState.INSURED){
+            } else if (playerHandUI.getHand().getState() == BJHandState.INSURED){
                 stateManager.getProfile().increaseBalanceBy(playerHandUI.getInsuranceBet());
                 playerHandUI.payInsurance();
                 playerHandUI.clearMainBet();
-            } else if (playerHandUI.getHand().getState() == HandState.WON) {
+            } else if (playerHandUI.getHand().getState() == BJHandState.WON) {
                 stateManager.getProfile().increaseBalanceBy(playerHandUI.getBet());
                 playerHandUI.payWin();
-            } else if (playerHandUI.getHand().getState() == HandState.PUSH) {
+            } else if (playerHandUI.getHand().getState() == BJHandState.PUSH) {
                 stateManager.getProfile().increaseBalanceBy(playerHandUI.getBet());
             } else {
                 playerHandUI.clearChips();
