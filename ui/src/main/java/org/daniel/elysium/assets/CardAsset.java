@@ -49,6 +49,17 @@ public enum CardAsset implements Asset {
     }
 
     /**
+     * Returns the corresponding CardAsset from a given string.
+     *
+     * @param assetName the name of the asset, e.g. "SA"
+     * @return the CardAsset enum value corresponding to assetName.
+     * @throws IllegalArgumentException if assetName is not a valid enum constant.
+     */
+    public static CardAsset fromString(String assetName) {
+        return CardAsset.valueOf(assetName.toUpperCase());
+    }
+
+    /**
      * Returns the filename of the asset in lowercase with a ".png" extension.
      *
      * @return The filename of the asset (e.g., "s10.png", "ha.png").

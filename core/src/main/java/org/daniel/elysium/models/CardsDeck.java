@@ -3,15 +3,7 @@ package org.daniel.elysium.models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Represents a command-line interface (CLI) deck of playing cards.
- * <p>
- * This class extends {@code Deck<Card>} and generates a standard 52-card deck,
- * containing four suits (Spades, Hearts, Diamonds, Clubs) and thirteen ranks (Ace to King).
- * </p>
- */
-public class CLIDeck extends Deck<Card> {
-
+public class CardsDeck extends Deck<Card>{
     /**
      * Generates a standard deck of 52 playing cards.
      *
@@ -31,4 +23,3 @@ public class CLIDeck extends Deck<Card> {
         return cards;
     }
 }
-

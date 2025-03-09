@@ -1,6 +1,7 @@
 package org.daniel.elysium.games.blackjack;
 
 import org.daniel.elysium.StateManager;
+import org.daniel.elysium.assets.Asset;
 import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.blackjack.BlackjackEngine;
 import org.daniel.elysium.blackjack.constants.BJHandState;
@@ -15,9 +16,10 @@ import org.daniel.elysium.games.blackjack.models.BJCardUI;
 import org.daniel.elysium.interfaces.ChipPanelConsumer;
 import org.daniel.elysium.interfaces.GameActions;
 import org.daniel.elysium.interfaces.Mediator;
+import org.daniel.elysium.models.Card;
+import org.daniel.elysium.models.CardsDeck;
 import org.daniel.elysium.models.Shoe;
 import org.daniel.elysium.models.cards.UICard;
-import org.daniel.elysium.models.cards.UIDeck;
 import org.daniel.elysium.models.chips.Chip;
 import org.daniel.elysium.models.panels.ChipPanel;
 import org.daniel.elysium.models.panels.ChipPanelUtil;
@@ -46,8 +48,8 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     public static final int MIN_BET = 10;
 
     // Game cards creation
-    Shoe<UICard> shoe = Shoe.createShoe(4, UIDeck::new);
-    private List<UICard> cards = shoe.cards();
+    Shoe<Card> shoe = Shoe.createShoe(4, CardsDeck::new);
+    private List<Card> cards = shoe.cards();
 
     /**
      * Constructs the BlackjackController and initializes game components.
@@ -656,7 +658,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
 
         // If the shoe has less than 15 cards, start a new shoe
         if (cards.size() < 15){
-            cards = Shoe.createShoe(4, UIDeck::new).cards();
+            cards = Shoe.createShoe(4, CardsDeck::new).cards();
 
             StyledNotificationDialog dialog = new StyledNotificationDialog(
                     stateManager.getFrame(),
@@ -674,7 +676,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
         ChipPanelUtil.removeChipPanel(this, stateManager);
-        cards = Shoe.createShoe(4, UIDeck::new).cards();
+        cards = Shoe.createShoe(4, CardsDeck::new).cards();
     }
 
     /** Protected API for the {@link BlackjackPanel} to restart fresh and updated screen */
@@ -719,8 +721,9 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * @return The top card from the shoe as {@link BJCardUI}.
      */
     private BJCardUI getCardFromShoe() {
-        UICard card = cards.remove(0);
-        return new BJCardUI(card.getRank(), card.getSuit(), card.getAsset());
+        Card card = cards.remove(0);
+        Asset asset = CardAsset.fromString(card.getSuit() + card.getRank());
+        return new BJCardUI(card.getRank(), card.getSuit(), asset);
     }
 
     /**
@@ -732,8 +735,9 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      * @return The top card from the shoe as {@link BJCardUI}.
      */
     private BJCardUI peekCardFromShoe(){
-        UICard card = cards.get(0);
-        return new BJCardUI(card.getRank(), card.getSuit(), card.getAsset());
+        Card card = cards.get(0);
+        Asset asset = CardAsset.fromString(card.getSuit() + card.getRank());
+        return new BJCardUI(card.getRank(), card.getSuit(), asset);
     }
 
     /**

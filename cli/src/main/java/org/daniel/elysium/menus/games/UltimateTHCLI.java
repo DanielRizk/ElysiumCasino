@@ -3,8 +3,8 @@ package org.daniel.elysium.menus.games;
 import org.daniel.elysium.cliUtils.CmdHelper;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.interfaces.MenuOptionCLI;
-import org.daniel.elysium.models.CLIDeck;
 import org.daniel.elysium.models.Card;
+import org.daniel.elysium.models.CardsDeck;
 import org.daniel.elysium.models.Shoe;
 import org.daniel.elysium.ultimateTH.UthGameEngine;
 import org.daniel.elysium.ultimateTH.constants.UthGameStage;
@@ -57,7 +57,7 @@ public class UltimateTHCLI implements MenuOptionCLI {
 
         while (true) {
             UthGameStage stage = UthGameStage.START;
-            Shoe<Card> shoe = Shoe.createShoe(1, CLIDeck::new);
+            Shoe<Card> shoe = Shoe.createShoe(1, CardsDeck::new);
             cards = shoe.cards();
 
             int numberOfHands = getNumberOfHands();

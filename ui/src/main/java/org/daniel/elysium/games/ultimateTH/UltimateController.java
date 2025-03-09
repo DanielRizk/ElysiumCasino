@@ -1,10 +1,12 @@
 package org.daniel.elysium.games.ultimateTH;
 
 import org.daniel.elysium.StateManager;
+import org.daniel.elysium.assets.Asset;
 import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
+import org.daniel.elysium.games.baccarat.models.BacCardUI;
 import org.daniel.elysium.games.ultimateTH.center.UthGameAreaPanel;
 import org.daniel.elysium.games.ultimateTH.constants.UthActions;
 import org.daniel.elysium.games.ultimateTH.constants.UthGameState;
@@ -12,9 +14,10 @@ import org.daniel.elysium.games.ultimateTH.models.UthCardUI;
 import org.daniel.elysium.interfaces.ChipPanelConsumer;
 import org.daniel.elysium.interfaces.GameActions;
 import org.daniel.elysium.interfaces.Mediator;
+import org.daniel.elysium.models.Card;
+import org.daniel.elysium.models.CardsDeck;
 import org.daniel.elysium.models.Shoe;
 import org.daniel.elysium.models.cards.UICard;
-import org.daniel.elysium.models.cards.UIDeck;
 import org.daniel.elysium.models.chips.Chip;
 import org.daniel.elysium.models.panels.ChipPanel;
 import org.daniel.elysium.models.panels.ChipPanelUtil;
@@ -49,8 +52,8 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     public static final int MIN_BET = 10;
 
     // Game cards creation
-    Shoe<UICard> shoe = Shoe.createShoe(1, UIDeck::new);
-    private List<UICard> cards = shoe.cards();
+    Shoe<Card> shoe = Shoe.createShoe(1, CardsDeck::new);
+    private List<Card> cards = shoe.cards();
 
     /**
      * Constructs the UltimateController and initializes game components.
@@ -618,7 +621,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             dialog.setVisible(true);
         }
 
-        cards = Shoe.createShoe(1, UIDeck::new).cards();
+        cards = Shoe.createShoe(1, CardsDeck::new).cards();
     }
 
     /** Protected API for the {@link UltimatePanel} to revert to initial state when exiting */
@@ -630,7 +633,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.clearCards();
         gameAreaPanel.clearAllChips();
         ChipPanelUtil.removeChipPanel(this, stateManager);
-        cards = Shoe.createShoe(1, UIDeck::new).cards();
+        cards = Shoe.createShoe(1, CardsDeck::new).cards();
     }
 
     /** Protected API for the {@link UltimatePanel} to restart fresh and updated screen */
@@ -663,8 +666,9 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
      * @return The top card from the shoe as {@code UthCardUI}.
      */
     private UthCardUI getCardFromShoe() {
-        UICard card = cards.remove(0);
-        return new UthCardUI(card.getRank(), card.getSuit(), card.getAsset());
+        Card card = cards.remove(0);
+        Asset asset = CardAsset.fromString(card.getSuit() + card.getRank());
+        return new UthCardUI(card.getRank(), card.getSuit(), asset);
     }
 
     /**
@@ -678,8 +682,9 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     private List<UthCardUI> getCommunityCardsFromShoe() {
         List<UthCardUI> commCards = new ArrayList<>();
         for (int i = 0; i < 5; i++){
-            UICard card = cards.remove(0);
-            commCards.add(new UthCardUI(card.getRank(), card.getSuit(), card.getAsset()));
+            Card card = cards.remove(0);
+            Asset asset = CardAsset.fromString(card.getSuit() + card.getRank());
+            commCards.add(new UthCardUI(card.getRank(), card.getSuit(), asset));
         }
         return commCards;
     }
