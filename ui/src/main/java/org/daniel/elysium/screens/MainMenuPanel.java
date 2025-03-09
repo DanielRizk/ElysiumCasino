@@ -125,7 +125,7 @@ public class MainMenuPanel extends JPanel {
         // Ultimate Texas Hold'em button action -> start and go to ultimate_th if user has sufficient balance
         ultimateTHButton.addActionListener(e -> {
             if (stateManager.isUserLoggedIn() &&
-                    stateManager.getProfile().getBalance() > UltimateController.MIN_BET) {
+                    stateManager.getProfile().getBalance() > UltimateController.MIN_BET * 5) {
                 stateManager.switchPanel("UltimateTH");
             } else {
                 StyledNotificationDialog dialog = new StyledNotificationDialog(

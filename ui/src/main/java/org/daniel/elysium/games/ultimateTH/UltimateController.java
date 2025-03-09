@@ -458,7 +458,11 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             if (gameAreaPanel.getPlayerHand().getState() != UthHandState.FOLD){
                 evaluateHands();
             } else {
-                reset();
+                if (stateManager.isAutoStartNewGame()){
+                    reset();
+                } else {
+                    gameAreaPanel.showNewGameButton(true);
+                }
             }
 
         });
@@ -610,7 +614,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         ChipPanelUtil.regenerateChipPanel(this, stateManager);
 
         // If player has no enough money, Player then escorted to main menu
-        if (stateManager.getProfile().getBalance() < MIN_BET){
+        if (stateManager.getProfile().getBalance() < MIN_BET * 5){
             stateManager.switchPanel("MainMenu");
 
             StyledNotificationDialog dialog = new StyledNotificationDialog(
