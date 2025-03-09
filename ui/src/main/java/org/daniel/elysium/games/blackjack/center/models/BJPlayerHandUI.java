@@ -283,7 +283,7 @@ public class BJPlayerHandUI extends JPanel {
      *
      * @param bet The updated bet amount.
      */
-    private void updateBetDisplay(int bet) {
+    public void updateBetDisplay(int bet) {
         betPanel.updateBetDisplay(bet);
     }
 }

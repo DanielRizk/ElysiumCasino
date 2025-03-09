@@ -300,6 +300,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         // Trigger visual display of results for both hands
         gameAreaPanel.getPlayerHand().showHandResult();
         gameAreaPanel.getBankerHand().showHandResult();
+        gameAreaPanel.updateBetLabel(hand.getBet());
 
         if (stateManager.isAutoStartNewGame()){
             Timer timer = new Timer(5000, e -> reset());

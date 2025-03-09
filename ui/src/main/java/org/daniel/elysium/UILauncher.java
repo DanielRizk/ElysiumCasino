@@ -114,7 +114,7 @@ public class UILauncher {
         // Creating main Frame
         frame = new JFrame("Elysium Casino");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(1600, 1200));
+        frame.setMinimumSize(new Dimension(1280, 1000));
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
         frame.setResizable(true);
@@ -169,10 +169,8 @@ public class UILauncher {
         stateManager.setAutoStartNewGame(false);
 
         // TODO: Comment UTH core, Create Settings panel for game mode and speed
-        // TODO: update the betLabel with the total chips value after payouts
         // TODO: clean assets
         // TODO: create JUnit Test
-        // TODO: In baccarat make the boxes rounded.
         stateManager.registerPanel("Login", new LoginPanel(stateManager));
         stateManager.registerPanel("Register", new RegisterPanel(stateManager));
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));

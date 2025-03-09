@@ -515,6 +515,11 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.displayBlindMultiplier(playerHand.getEvaluatedHand().handCombination());
         gameAreaPanel.displayAnteState(dealerHand.getEvaluatedHand().handCombination());
 
+        gameAreaPanel.updateAnteDisplay(playerHand.getAnte());
+        gameAreaPanel.updateBlindDisplay(playerHand.getBlind());
+        gameAreaPanel.updateTripsDisplay(playerHand.getTrips());
+        gameAreaPanel.updatePlayDisplay(playerHand.getPlay());
+
         proceedToPayouts();
     }
 

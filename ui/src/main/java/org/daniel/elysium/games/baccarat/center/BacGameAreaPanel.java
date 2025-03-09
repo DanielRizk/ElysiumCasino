@@ -51,6 +51,7 @@ public class BacGameAreaPanel extends JPanel {
         gbc.gridy = 1;
         gbc.weighty = 0.10;
         currentBetLabel = new StyledTextField("Bet: " + 0, new Dimension(200, 50), 15, false);
+        currentBetLabel.setMinimumSize(new Dimension(200, 50));
         add(currentBetLabel, gbc);
 
         // Cards area, player and banker

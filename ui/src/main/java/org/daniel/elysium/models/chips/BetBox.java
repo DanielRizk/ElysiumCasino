@@ -142,7 +142,12 @@ public class BetBox extends JPanel {
      * Doubles the chips in this bet box as part of a win payout.
      */
     public void payWin() {
-        List<Chip> chipList = new ArrayList<>(chips);
+        List<Chip> chipList;
+        if (getLabel().equals("BANKER")){
+            chipList = Chip.getChipCombination((int) (chips.stream().mapToInt(Chip::getValue).sum() * 0.95));
+        } else {
+            chipList = new ArrayList<>(chips);
+        }
         chips.addAll(chipList);
     }
 
@@ -150,7 +155,7 @@ public class BetBox extends JPanel {
      * Calculates and adds the appropriate chips for a tie payout.
      */
     public void payTie() {
-        List<Chip> chipList = Chip.getChipCombination(chips.stream().mapToInt(Chip::getValue).sum() * 9);
+        List<Chip> chipList = Chip.getChipCombination(chips.stream().mapToInt(Chip::getValue).sum() * 8);
         chips.addAll(chipList);
     }
 

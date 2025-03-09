@@ -565,6 +565,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         state = BJGameState.DISPLAY_RESULT;
         for (BJPlayerHandUI playerHandUI : gameAreaPanel.getPlayerHands()){
             playerHandUI.displayHandResult();
+            playerHandUI.updateBetDisplay(playerHandUI.getBet());
         }
 
         if (gameAreaPanel.getDealerHand().getHand().getState() == BJHandState.BLACKJACK){

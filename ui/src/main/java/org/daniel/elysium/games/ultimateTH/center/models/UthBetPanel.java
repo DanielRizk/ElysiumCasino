@@ -92,6 +92,24 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
     }
 
     /**
+     * Updates the displayed bet amount of the Ante bet.
+     *
+     * @param ante the updated the Ante amount to display
+     */
+    public void updateAnteDisplay(int ante){
+        this.ante.updateBetDisplay(ante);
+    }
+
+    /**
+     * Updates the displayed bet amount of the Blind bet.
+     *
+     * @param blind the updated the Blind amount to display
+     */
+    public void updateBlindDisplay(int blind){
+        this.blind.updateBetDisplay(blind);
+    }
+
+    /**
      * Updates the displayed Trips bet amount.
      *
      * @param bet the updated Trips bet amount to display

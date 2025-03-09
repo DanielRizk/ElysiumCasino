@@ -361,6 +361,24 @@ public class UthGameAreaPanel extends JPanel {
     }
 
     /**
+     * Updates the displayed bet amount of the Ante bet.
+     *
+     * @param ante the updated the Ante amount to display
+     */
+    public void updateAnteDisplay(int ante){
+        betPanel.updateBetDisplay(ante);
+    }
+
+    /**
+     * Updates the displayed bet amount of the Blind bet.
+     *
+     * @param blind the updated the Blind amount to display
+     */
+    public void updateBlindDisplay(int blind){
+        betPanel.updateBetDisplay(blind);
+    }
+
+    /**
      * Updates the displayed Trips bet amount.
      *
      * @param bet the updated Trips bet amount to display
