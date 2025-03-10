@@ -6,6 +6,7 @@ import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.LogoAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
 import org.daniel.elysium.elements.fields.StyledTextField;
+import org.daniel.elysium.elements.labels.LogoLabel;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
@@ -54,7 +55,7 @@ public class ProfilePanel extends JPanel implements Resettable {
 
         // Create and add the game logo
         Dimension logoDimension = new Dimension(600, 500);
-        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(LogoAsset.LOGO_SHADE, logoDimension));
+        LogoLabel logoLabel = new LogoLabel(LogoAsset.LOGO_SHADE, logoDimension);
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridy = 0;
         inputPanel.add(logoLabel, gbc);

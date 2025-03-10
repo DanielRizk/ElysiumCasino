@@ -168,8 +168,7 @@ public class UILauncher {
         stateManager.setProfile(new UserProfile("Test", "Test", 10000));
         stateManager.setAutoStartNewGame(false);
 
-        // TODO: Comment UTH core, Create Settings panel for game mode and speed
-        // TODO: clean assets
+        // TODO: Create Settings panel for game mode and speed
         // TODO: create JUnit Test
         stateManager.registerPanel("Login", new LoginPanel(stateManager));
         stateManager.registerPanel("Register", new RegisterPanel(stateManager));

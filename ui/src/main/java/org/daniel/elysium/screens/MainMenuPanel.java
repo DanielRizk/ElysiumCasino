@@ -6,6 +6,7 @@ import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.assets.LogoAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
+import org.daniel.elysium.elements.labels.LogoLabel;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.panels.BackgroundPanel;
 import org.daniel.elysium.games.baccarat.BaccaratController;
@@ -50,7 +51,7 @@ public class MainMenuPanel extends JPanel {
 
         // Create and add the game logo
         Dimension logoDimension = new Dimension(600, 500);
-        JLabel logoLabel = new JLabel(AssetManager.getScaledIcon(LogoAsset.LOGO_SHADE, logoDimension));
+        LogoLabel logoLabel = new LogoLabel(LogoAsset.LOGO_SHADE, logoDimension);
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridy = 0;
         buttonPanel.add(logoLabel, gbc);

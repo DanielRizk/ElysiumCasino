@@ -366,7 +366,7 @@ public class UthGameAreaPanel extends JPanel {
      * @param ante the updated the Ante amount to display
      */
     public void updateAnteDisplay(int ante){
-        betPanel.updateBetDisplay(ante);
+        betPanel.updateAnteDisplay(ante);
     }
 
     /**
@@ -375,7 +375,7 @@ public class UthGameAreaPanel extends JPanel {
      * @param blind the updated the Blind amount to display
      */
     public void updateBlindDisplay(int blind){
-        betPanel.updateBetDisplay(blind);
+        betPanel.updateBlindDisplay(blind);
     }
 
     /**
