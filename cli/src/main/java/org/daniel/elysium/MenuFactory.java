@@ -2,6 +2,7 @@ package org.daniel.elysium;
 
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.interfaces.MenuOptionCLI;
+import org.daniel.elysium.menus.ProfileMenu;
 import org.daniel.elysium.menus.SecretTopUpCode;
 import org.daniel.elysium.menus.games.BaccaratCLI;
 import org.daniel.elysium.menus.games.BlackjackCLI;
@@ -34,6 +35,9 @@ public class MenuFactory {
             case 3 -> {
                 return new UltimateTHCLI();
             }
+            case 4 -> {
+                return new ProfileMenu(scanner);
+            }
             case 2684 -> {
                 return new SecretTopUpCode();
             }
@@ -54,7 +58,7 @@ public class MenuFactory {
      * @return the selected option as an integer
      */
     private int getPlayerOption(Scanner scanner) {
-        DebugPrint.print("Choose game: Blackjack (1), Baccarat (2), Ultimate TH (3), Quit (0): ");
+        DebugPrint.print("Choose game: Blackjack (1), Baccarat (2), Ultimate TH (3), Profile (4), Quit (0): ");
         return scanner.nextInt();
     }
 }

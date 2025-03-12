@@ -458,7 +458,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             if (gameAreaPanel.getPlayerHand().getState() != UthHandState.FOLD){
                 evaluateHands();
             } else {
-                if (stateManager.isAutoStartNewGame()){
+                if (stateManager.isUTHAutoStart()){
                     reset();
                 } else {
                     gameAreaPanel.showNewGameButton(true);
@@ -573,7 +573,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             gameAreaPanel.getBetPanel().clearTripsChips();
         }
 
-        if (stateManager.isAutoStartNewGame()){
+        if (stateManager.isUTHAutoStart()){
             Timer timer = new Timer(5000, e -> reset());
             timer.setRepeats(false);
             timer.start();
@@ -732,33 +732,5 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
      */
     public UthGameAreaPanel getGameAreaPanel() {
         return gameAreaPanel;
-    }
-
-    //TODO: remove before production
-    @SuppressWarnings("Unused")
-    private List<UICard> getCustomDeck(){
-        List<UICard> cards = new ArrayList<>();
-        cards.add(new UthCardUI("K", "H", CardAsset.HK));
-        cards.add(new UthCardUI("3", "H", CardAsset.H3));
-        cards.add(new UthCardUI("4", "D", CardAsset.D4));
-        cards.add(new UthCardUI("J", "S", CardAsset.SJ));
-        cards.add(new UthCardUI("7", "S", CardAsset.S7));
-        cards.add(new UthCardUI("7", "D", CardAsset.D7));
-        cards.add(new UthCardUI("5", "D", CardAsset.D5));
-        cards.add(new UthCardUI("7", "C", CardAsset.C7));
-        cards.add(new UthCardUI("9", "H", CardAsset.H9));
-        cards.add(new UthCardUI("A", "D", CardAsset.CA));
-        cards.add(new UthCardUI("J", "C", CardAsset.HJ));
-        cards.add(new UthCardUI("K", "H", CardAsset.HK));
-        cards.add(new UthCardUI("10", "S", CardAsset.S10));
-        cards.add(new UthCardUI("Q", "H", CardAsset.HQ));
-        cards.add(new UthCardUI("10", "H", CardAsset.H10));
-        cards.add(new UthCardUI("K", "S", CardAsset.SK));
-        cards.add(new UthCardUI("K", "D", CardAsset.DK));
-        cards.add(new UthCardUI("K", "C", CardAsset.CK));
-        cards.add(new UthCardUI("2", "H", CardAsset.H2));
-        cards.add(new UthCardUI("J", "D", CardAsset.DJ));
-        cards.add(new UthCardUI("J", "S", CardAsset.SJ));
-        return cards;
     }
 }

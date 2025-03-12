@@ -26,4 +26,10 @@ public class SecretTopUpCode implements MenuOptionCLI {
         profile.increaseBalanceBy(10000);
         DebugPrint.println("Your new balance is: " + profile.getBalance());
     }
+
+    /** Returns Menu's exit code, default 0 */
+    @Override
+    public int exitCode() {
+        return 0;
+    }
 }

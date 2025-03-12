@@ -34,6 +34,12 @@ public class UltimateTHCLI implements MenuOptionCLI {
     private final Scanner scanner;
     private List<Card> cards;
 
+    /** Returns Menu's exit code, default 0 */
+    @Override
+    public int exitCode() {
+        return 0;
+    }
+
     /**
      * Constructs an instance of the Ultimate Texas Hold'em CLI.
      */

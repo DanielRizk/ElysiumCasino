@@ -607,7 +607,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
 
         updateBalanceDisplay();
 
-        if (stateManager.isAutoStartNewGame()){
+        if (stateManager.isBJAutoStart()){
             Timer timer = new Timer(5000, e -> reset());
             timer.setRepeats(false);
             timer.start();
@@ -789,30 +789,6 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
      */
     public BJGameAreaPanel getGameAreaPanel() {
         return gameAreaPanel;
-    }
-
-    //TODO: remove before production
-    @SuppressWarnings("Unused")
-    private List<UICard> getCustomDeck(){
-        List<UICard> cards = new ArrayList<>();
-        cards.add(new BJCardUI("8", "S", CardAsset.S8));
-        cards.add(new BJCardUI("10", "H", CardAsset.H10));
-        cards.add(new BJCardUI("8", "S", CardAsset.S8));
-        cards.add(new BJCardUI("A", "S", CardAsset.SA));
-        cards.add(new BJCardUI("10", "C", CardAsset.C10));
-        cards.add(new BJCardUI("9", "H", CardAsset.H9));
-
-        cards.add(new BJCardUI("9", "C", CardAsset.C9));
-        cards.add(new BJCardUI("Q", "S", CardAsset.SQ));
-        cards.add(new BJCardUI("K", "S", CardAsset.SK));
-        cards.add(new BJCardUI("8", "S", CardAsset.S8));
-        cards.add(new BJCardUI("K", "S", CardAsset.SK));
-        cards.add(new BJCardUI("A", "S", CardAsset.SA));
-        cards.add(new BJCardUI("K", "S", CardAsset.SK));
-        cards.add(new BJCardUI("K", "S", CardAsset.SK));
-        cards.add(new BJCardUI("K", "S", CardAsset.SK));
-        cards.add(new BJCardUI("K", "S", CardAsset.SK));
-        return cards;
     }
 }
 

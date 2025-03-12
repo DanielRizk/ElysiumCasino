@@ -36,7 +36,8 @@ public class DatabaseConnection {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
-                balance REAL DEFAULT 0.00
+                balance REAL DEFAULT 0.00,
+                gameMode INTEGER DEFAULT 0
             )
         """;
 

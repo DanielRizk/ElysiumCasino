@@ -17,5 +17,8 @@ public interface MenuOptionCLI {
      * @param profile the {@code UserProfile} of the current user
      */
     void start(UserProfile profile);
+
+    /** If necessary return exit code */
+    int exitCode();
 }
 

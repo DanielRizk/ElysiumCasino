@@ -27,16 +27,17 @@ public class UserDAO {
             return null;
         }
 
-        String sql = "INSERT INTO users (username, password, balance) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (username, password, balance, gameMode) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setDouble(3, balance);
+            pstmt.setInt(4, 0);
             pstmt.executeUpdate();
             DebugPrint.println("User added successfully!", true);
-            return new UserProfile(username, password, balance);
+            return new UserProfile(username, password, balance, 0);
         } catch (SQLException e) {
             DebugPrint.println(e, true);
         }
@@ -82,7 +83,12 @@ public class UserDAO {
                 DebugPrint.println("ID: " + rs.getInt("id"), true);
                 DebugPrint.println("Username: " + rs.getString("username"), true);
                 DebugPrint.println("Balance: " + rs.getDouble("balance"), true);
-                return new UserProfile(rs.getString("username"), rs.getString("password"), rs.getDouble("balance"));
+                DebugPrint.println("GameMode: " + rs.getInt("gameMode"), true);
+                return new UserProfile(
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getDouble("balance"),
+                        rs.getInt("gameMode"));
             } else {
                 DebugPrint.println("User not found.", true);
                 return null;
@@ -151,6 +157,27 @@ public class UserDAO {
             pstmt.executeUpdate();
             DebugPrint.println("Balance updated successfully!", true);
             player.setBalance(newBalance);
+        } catch (SQLException e) {
+            DebugPrint.println(e, true);
+        }
+    }
+
+    /**
+     * Updates the game mode for a given user in the database.
+     *
+     * @param player     The UserProfile object representing the user.
+     * @param username   The username of the user.
+     * @param gameMode   The new game mode to set.
+     */
+    public void updateGameMode(UserProfile player, String username, int gameMode) {
+        String sql = "UPDATE users SET gameMode = ? WHERE username = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDouble(1, gameMode);
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            DebugPrint.println("Game mode updated successfully!", true);
         } catch (SQLException e) {
             DebugPrint.println(e, true);
         }

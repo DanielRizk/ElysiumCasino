@@ -305,7 +305,7 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.getBankerHand().showHandResult();
         gameAreaPanel.updateBetLabel(hand.getBet());
 
-        if (stateManager.isAutoStartNewGame()){
+        if (stateManager.isBacAutoStart()){
             Timer timer = new Timer(5000, e -> reset());
             timer.setRepeats(false);
             timer.start();
@@ -456,29 +456,5 @@ public class BaccaratController implements Mediator, ChipPanelConsumer {
      */
     public BacGameAreaPanel getGameAreaPanel() {
         return gameAreaPanel;
-    }
-
-    //TODO: remove before production
-    @SuppressWarnings("Unused")
-    private List<UICard> getCustomDeck(){
-        List<UICard> cards = new ArrayList<>();
-        cards.add(new BacCardUI("10", "S", CardAsset.S10));
-        cards.add(new BacCardUI("7", "S", CardAsset.S7));
-        cards.add(new BacCardUI("7", "H", CardAsset.H7));
-        cards.add(new BacCardUI("Q", "S", CardAsset.SQ));
-        cards.add(new BacCardUI("10", "C", CardAsset.C10));
-        cards.add(new BacCardUI("2", "H", CardAsset.H2));
-
-        cards.add(new BacCardUI("9", "C", CardAsset.C9));
-        cards.add(new BacCardUI("Q", "S", CardAsset.SQ));
-        cards.add(new BacCardUI("K", "S", CardAsset.SK));
-        cards.add(new BacCardUI("8", "S", CardAsset.S8));
-        cards.add(new BacCardUI("K", "S", CardAsset.SK));
-        cards.add(new BacCardUI("A", "S", CardAsset.SA));
-        cards.add(new BacCardUI("K", "S", CardAsset.SK));
-        cards.add(new BacCardUI("K", "S", CardAsset.SK));
-        cards.add(new BacCardUI("K", "S", CardAsset.SK));
-        cards.add(new BacCardUI("K", "S", CardAsset.SK));
-        return cards;
     }
 }

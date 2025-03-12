@@ -41,6 +41,12 @@ public class BaccaratCLI implements MenuOptionCLI {
         this.scanner = new Scanner(System.in);
     }
 
+    /** Returns Menu's exit code, default 0 */
+    @Override
+    public int exitCode() {
+        return 0;
+    }
+
     /**
      * Starts the Baccarat game session.
      *

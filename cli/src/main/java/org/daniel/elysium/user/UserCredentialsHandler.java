@@ -45,7 +45,7 @@ public class UserCredentialsHandler {
                 DebugPrint.println("Invalid Option, Try again!.");
             }
         }
-        return new UserProfile(null, null, 0);
+        return new UserProfile(null, null, 0, 0);
     }
 
     /**
@@ -81,7 +81,7 @@ public class UserCredentialsHandler {
      */
     private UserProfile login(Scanner scanner) {
         UserDAO userDAO = new UserDAO();
-        UserProfile nullPlayer = new UserProfile(null, null, 0);
+        UserProfile nullPlayer = new UserProfile(null, null, 0, 0);
         scanner.nextLine(); // Consume the newline character
 
         DebugPrint.print("Enter your username: ");
@@ -116,7 +116,7 @@ public class UserCredentialsHandler {
     private UserProfile register(Scanner scanner) {
         scanner.nextLine(); // Consume the newline character
         UserDAO userDAO = new UserDAO();
-        UserProfile nullPlayer = new UserProfile(null, null, 0);
+        UserProfile nullPlayer = new UserProfile(null, null, 0, 0);
 
         DebugPrint.print("Enter username: ");
         String name = scanner.nextLine().trim();

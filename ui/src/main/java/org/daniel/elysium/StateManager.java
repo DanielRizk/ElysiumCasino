@@ -18,8 +18,10 @@ public class StateManager {
     /** The container where panels are displayed. */
     private final Container container;
 
-    /** CardLayout container for persistent panels. */
+    /** JPanel container for disposable panels. */
     private final JPanel cardPanel;
+
+    /** CardLayout container for persistent panels. */
     private final CardLayout cardLayout;
 
     /** The current user's profile, or {@code null} if no user is logged in. */
@@ -36,9 +38,6 @@ public class StateManager {
 
     /** The main application frame. */
     private final JFrame frame;
-
-    /** Defines the new game start mode. [Auto, Manual] */
-    private boolean autoStartNewGame = true;
 
     /**
      * Constructs a StateManager with the specified container and frame.
@@ -189,21 +188,76 @@ public class StateManager {
     }
 
     /**
-     * Checks whether the game is set to automatically start a new round after the current game ends.
+     * Checks whether the Blackjack (BJ) auto-start bit is enabled
+     * in the user's gameMode.
      *
-     * @return {@code true} if auto-start is enabled, otherwise {@code false}
+     * @return true if the BJ auto-start bit (0b001) is set, false otherwise
      */
-    public boolean isAutoStartNewGame() {
-        return autoStartNewGame;
+    public boolean isBJAutoStart() {
+        return (profile.getGameMode() & 0b001) == 1;
     }
 
     /**
-     * Sets whether the game should automatically start a new round after the current game ends.
+     * Checks whether the Baccarat (Bac) auto-start bit is enabled
+     * in the user's gameMode.
      *
-     * @param autoStartNewGame {@code true} to enable auto-start, {@code false} to disable it
+     * @return true if the Baccarat auto-start bit (0b010) is set, false otherwise
      */
-    public void setAutoStartNewGame(boolean autoStartNewGame) {
-        this.autoStartNewGame = autoStartNewGame;
+    public boolean isBacAutoStart() {
+        return (profile.getGameMode() & 0b010) == 2;
     }
+
+    /**
+     * Checks whether the Ultimate Texas Hold'em (UTH) auto-start bit
+     * is enabled in the user's gameMode.
+     *
+     * @return true if the UTH auto-start bit (0b100) is set, false otherwise
+     */
+    public boolean isUTHAutoStart() {
+        return (profile.getGameMode() & 0b100) == 4;
+    }
+
+    /**
+     * Enables or disables the Blackjack (BJ) auto-start bit (0b001).
+     *
+     * @param on true to set (enable) the BJ auto-start bit,
+     *           false to clear (disable) it
+     */
+    public void setBJAutoStartMode(boolean on) {
+        if (on) {
+            profile.setGameMode(profile.getGameMode() | 0b001);  // set bit
+        } else {
+            profile.setGameMode(profile.getGameMode() & ~0b001); // clear bit
+        }
+    }
+
+    /**
+     * Enables or disables the Baccarat (Bac) auto-start bit (0b010).
+     *
+     * @param on true to set (enable) the Baccarat auto-start bit,
+     *           false to clear (disable) it
+     */
+    public void setBacAutoStartMode(boolean on) {
+        if (on) {
+            profile.setGameMode(profile.getGameMode() | 0b010);
+        } else {
+            profile.setGameMode(profile.getGameMode() & ~0b010);
+        }
+    }
+
+    /**
+     * Enables or disables the Ultimate Texas Hold'em (UTH) auto-start bit (0b100).
+     *
+     * @param on true to set (enable) the UTH auto-start bit,
+     *           false to clear (disable) it
+     */
+    public void setUTHAutoStartMode(boolean on) {
+        if (on) {
+            profile.setGameMode(profile.getGameMode() | 0b100);
+        } else {
+            profile.setGameMode(profile.getGameMode() & ~0b100);
+        }
+    }
+
 
 }

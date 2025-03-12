@@ -25,6 +25,7 @@ public class MainMenuPanel extends JPanel {
     private final StyledButton baccaratButton;
     private final StyledButton ultimateTHButton;
     private final StyledButton profileButton;
+    private final StyledButton settingsButton;
     private final StyledButton logoutButton;
     private final StateManager stateManager;
 
@@ -76,9 +77,14 @@ public class MainMenuPanel extends JPanel {
         gbc.gridy = 4;
         buttonPanel.add(profileButton, gbc);
 
+        // Create and add settings button
+        settingsButton = new StyledButton("Settings", ButtonAsset.BUTTON_GREY_ROUND);
+        gbc.gridy = 5;
+        buttonPanel.add(settingsButton, gbc);
+
         // Create and add logout button
         logoutButton = new StyledButton("Logout", ButtonAsset.BUTTON_GREY_ROUND);
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         buttonPanel.add(logoutButton, gbc);
 
         // Register button actions
@@ -138,10 +144,17 @@ public class MainMenuPanel extends JPanel {
             }
         });
 
-        // Profile button action -> display "Coming soon" notification
+        // Profile button action -> display profile page
         profileButton.addActionListener(e -> {
             if (stateManager.isUserLoggedIn()) {
                 stateManager.switchPanel("Profile");
+            }
+        });
+
+        // Settings button action -> display settings panel
+        settingsButton.addActionListener(e -> {
+            if (stateManager.isUserLoggedIn()) {
+                stateManager.switchPanel("Settings");
             }
         });
 

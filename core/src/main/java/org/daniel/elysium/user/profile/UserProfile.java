@@ -9,6 +9,7 @@ public class UserProfile {
     private final String name;
     private String pass;
     private double balance;
+    private int gameMode;
     private final UserDAO userDAO;
 
     /**
@@ -17,12 +18,23 @@ public class UserProfile {
      * @param name     The username.
      * @param pass     The password.
      * @param balance  The initial account balance.
+     * @param gameMode The integer defining which mode each game runs with.
      */
-    public UserProfile(String name, String pass, double balance) {
+    public UserProfile(String name, String pass, double balance, int gameMode) {
         this.name = name;
         this.pass = pass;
         this.balance = balance;
+        this.gameMode = gameMode;
         this.userDAO = new UserDAO();
+    }
+
+    /**
+     * Returns the user object.
+     *
+     * @return The username as {@code UserDAO}.
+     */
+    public UserDAO getUser() {
+        return userDAO;
     }
 
     /**
@@ -59,6 +71,25 @@ public class UserProfile {
      */
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    /**
+     * Returns the user's current game mode.
+     *
+     * @return The account game mode.
+     */
+    public int getGameMode() {
+        return gameMode;
+    }
+
+    /**
+     * Sets the user's game mode.
+     *
+     * @param gameMode The new game mode to set.
+     */
+    public void setGameMode(int gameMode) {
+        this.gameMode = gameMode;
+        userDAO.updateGameMode(this, this.name, this.gameMode);
     }
 
     /**

@@ -19,13 +19,14 @@ public class BaccaratGameEngine {
      * @param player The current hand of the player.
      */
     public static void evaluatePlayer(BacHand banker, BacHand player){
-        if (banker.getHandValue() != 8 && banker.getHandValue() != 9)
-        {
+        if (banker.getHandValue() != 8 && banker.getHandValue() != 9) {
             if (player.getHandValue() <= 5){
                 player.setAction(BacHandAction.DRAW);
             } else {
                 player.setAction(BacHandAction.STAND);
             }
+        } else {
+            player.setAction(BacHandAction.STAND);
         }
     }
 
@@ -37,8 +38,7 @@ public class BaccaratGameEngine {
      * @param player The current hand of the player.
      */
     public static void evaluateBanker(BacHand banker, BacHand player){
-        if (player.getHand().size() > 2 && player.getHandValue() != 8 && player.getHandValue() != 9)
-        {
+        if (player.getHand().size() > 2 || !(player.getHandValue() != 8 && player.getHandValue() != 9)) {
             if (banker.getHandValue() <= 2){
                 banker.setAction(BacHandAction.DRAW);
             } else if (banker.getHandValue() == 3
@@ -59,6 +59,8 @@ public class BaccaratGameEngine {
             } else {
                 banker.setAction(BacHandAction.STAND);
             }
+        } else {
+            banker.setAction(BacHandAction.STAND);
         }
     }
 
@@ -109,7 +111,7 @@ public class BaccaratGameEngine {
             }
         } else {
             if (hand.getHandType() == BacHandType.TIE){
-                hand.setState(BacHandState.TIE);
+                hand.setState(BacHandState.WON);
                 hand.setBet(hand.getBet() + (hand.getBet() * hand.getHandType().getValue()));
             } else {
                 hand.setState(BacHandState.LOST);

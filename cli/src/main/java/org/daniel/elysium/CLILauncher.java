@@ -28,7 +28,6 @@ public class CLILauncher {
         DebugPrint.getInstance(DebugLevel.PRINT);
         Scanner scanner = new Scanner(System.in);
 
-        // TODO: create a profile menu
         UserCredentialsHandler userLoginHandler = new UserCredentialsHandler();
         UserProfile profile;
 
@@ -40,6 +39,9 @@ public class CLILauncher {
                     MenuOptionCLI menu = factory.getMenu(scanner);
                     if (menu != null) {
                         menu.start(profile);
+                        if (menu.exitCode() == 1){
+                            break;
+                        }
                     } else {
                         break;
                     }

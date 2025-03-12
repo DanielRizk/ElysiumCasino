@@ -164,16 +164,12 @@ public class UILauncher {
     private static StateManager createStateManager(JPanel mainPanel, JFrame frame) {
         StateManager stateManager = new StateManager(mainPanel, frame);
 
-        //TODO: Test user for testing
-        stateManager.setProfile(new UserProfile("Test", "Test", 10000));
-        stateManager.setAutoStartNewGame(false);
-
-        // TODO: Create Settings panel for game mode and speed
-        // TODO: create JUnit Test
+        // TODO: create JUnit Test for UTH
         stateManager.registerPanel("Login", new LoginPanel(stateManager));
         stateManager.registerPanel("Register", new RegisterPanel(stateManager));
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));
         stateManager.registerPanel("Profile", new ProfilePanel(stateManager));
+        stateManager.registerPanel("Settings", new SettingsPanel(stateManager));
         stateManager.registerPanel("ChangePass", new UpdatePasswordPanel(stateManager));
         stateManager.registerPanel("Blackjack", new BlackjackPanel(stateManager));
         stateManager.registerPanel("Baccarat", new BaccaratPanel(stateManager));
