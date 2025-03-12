@@ -29,6 +29,17 @@ public class UserProfile {
     }
 
     /**
+     * Creates a temp user profile as a placeholder.
+     */
+    public UserProfile() {
+        this.name = "";
+        this.pass = "";
+        this.balance = 0.0;
+        this.gameMode = 0;
+        this.userDAO = new UserDAO();
+    }
+
+    /**
      * Returns the user object.
      *
      * @return The username as {@code UserDAO}.

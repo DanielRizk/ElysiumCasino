@@ -1,3 +1,5 @@
+package org.daniel.elysium;
+
 import org.daniel.elysium.blackjack.BlackjackEngine;
 import org.daniel.elysium.blackjack.constants.BJHandState;
 import org.daniel.elysium.blackjack.models.BJCard;

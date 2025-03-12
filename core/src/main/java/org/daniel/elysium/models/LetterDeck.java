@@ -3,11 +3,22 @@ package org.daniel.elysium.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CardsDeck extends Deck<Card>{
+/**
+ * A {@link Deck} implementation that uses single-letter codes
+ * for suits (S, H, D, C) to represent Spades, Hearts, Diamonds, and Clubs.
+ * <p>
+ * This class creates a standard 52-card deck with ranks
+ * {"A", "2", "3", ..., "10", "J", "Q", "K"}
+ * and suits {"S", "H", "D", "C"}.
+ */
+public class LetterDeck extends Deck<Card> {
+
     /**
-     * Generates a standard deck of 52 playing cards.
+     * Generates a standard deck of 52 playing cards
+     * where suits are denoted by letters (S, H, D, C).
      *
-     * @return a list of {@code Card} objects representing a full deck
+     * @return a list of {@link Card} objects representing
+     *         a full deck of playing cards with letter-based suits
      */
     @Override
     protected List<Card> generateDeck() {
@@ -23,3 +34,4 @@ public class CardsDeck extends Deck<Card>{
         return cards;
     }
 }
+

@@ -1,7 +1,6 @@
 package org.daniel.elysium.screens;
 
 import org.daniel.elysium.StateManager;
-import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.LogoAsset;
 import org.daniel.elysium.elements.buttons.StyledButton;
@@ -61,12 +60,12 @@ public class ProfilePanel extends JPanel implements Resettable {
         inputPanel.add(logoLabel, gbc);
 
         // Create and add Name text field
-        nameLabel = new StyledTextField("Name: " + stateManager.getProfile().getName(), false);
+        nameLabel = new StyledTextField("Name: ", false);
         gbc.gridy = 1;
         inputPanel.add(nameLabel, gbc);
 
         // Create and add Balance text field
-        balanceLabel = new StyledTextField("Balance: " + stateManager.getProfile().getBalance(), false);
+        balanceLabel = new StyledTextField("Balance: ", false);
         gbc.gridy = 2;
         inputPanel.add(balanceLabel, gbc);
 
@@ -105,7 +104,11 @@ public class ProfilePanel extends JPanel implements Resettable {
      */
     private void registerButtonsActions() {
         // change pass button action -> go to change pass panel
-        changePasswordButton.addActionListener(e -> stateManager.switchPanel("ChangePass"));
+        changePasswordButton.addActionListener(e -> {
+                if (stateManager.isUserLoggedIn()){
+                    stateManager.switchPanel("ChangePass");
+                }
+            });
 
         // Add keystroke to top up your balance (Ctrl + Shift + T)
         KeyStroke topUpKey = KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
@@ -113,15 +116,23 @@ public class ProfilePanel extends JPanel implements Resettable {
         getActionMap().put("topUpAction", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                topUpBalance();
+                if (stateManager.isUserLoggedIn()){
+                    topUpBalance();
+                }
             }
         });
 
         // Register button action -> switch to register panel
-        deleteAccountButton.addActionListener(e -> deleteAccount());
+        deleteAccountButton.addActionListener(e -> {
+            if (stateManager.isUserLoggedIn()){
+                deleteAccount();
+            }
+        });
 
         // Back button action -> switch to login panel
-        backButton.addActionListener(e -> stateManager.switchPanel("MainMenu"));
+        backButton.addActionListener(e ->{
+            stateManager.switchPanel("MainMenu");
+        });
     }
 
     /**
@@ -181,7 +192,9 @@ public class ProfilePanel extends JPanel implements Resettable {
 
     @Override
     public void onRestart() {
-        updateNameLabel();
-        updateBalanceLabel();
+        if (stateManager.isUserLoggedIn()){
+            updateNameLabel();
+            updateBalanceLabel();
+        }
     }
 }

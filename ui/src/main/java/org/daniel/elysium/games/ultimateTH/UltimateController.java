@@ -6,7 +6,7 @@ import org.daniel.elysium.assets.CardAsset;
 import org.daniel.elysium.elements.notifications.StyledConfirmDialog;
 import org.daniel.elysium.elements.notifications.StyledNotificationDialog;
 import org.daniel.elysium.elements.notifications.Toast;
-import org.daniel.elysium.games.baccarat.models.BacCardUI;
+import org.daniel.elysium.games.CustomDebugDeck;
 import org.daniel.elysium.games.ultimateTH.center.UthGameAreaPanel;
 import org.daniel.elysium.games.ultimateTH.constants.UthActions;
 import org.daniel.elysium.games.ultimateTH.constants.UthGameState;
@@ -15,9 +15,8 @@ import org.daniel.elysium.interfaces.ChipPanelConsumer;
 import org.daniel.elysium.interfaces.GameActions;
 import org.daniel.elysium.interfaces.Mediator;
 import org.daniel.elysium.models.Card;
-import org.daniel.elysium.models.CardsDeck;
+import org.daniel.elysium.models.LetterDeck;
 import org.daniel.elysium.models.Shoe;
-import org.daniel.elysium.models.cards.UICard;
 import org.daniel.elysium.models.chips.Chip;
 import org.daniel.elysium.models.panels.ChipPanel;
 import org.daniel.elysium.models.panels.ChipPanelUtil;
@@ -52,8 +51,8 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
     public static final int MIN_BET = 10;
 
     // Game cards creation
-    Shoe<Card> shoe = Shoe.createShoe(1, CardsDeck::new);
-    private List<Card> cards = shoe.cards();
+    Shoe<Card> shoe = Shoe.createShoe(1, LetterDeck::new);
+    private List<Card> cards = CustomDebugDeck.getCustomUTHDeck();//shoe.cards();
 
     /**
      * Constructs the UltimateController and initializes game components.
@@ -625,7 +624,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
             dialog.setVisible(true);
         }
 
-        cards = Shoe.createShoe(1, CardsDeck::new).cards();
+        cards = Shoe.createShoe(1, LetterDeck::new).cards();
     }
 
     /** Protected API for the {@link UltimatePanel} to revert to initial state when exiting */
@@ -637,7 +636,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.clearCards();
         gameAreaPanel.clearAllChips();
         ChipPanelUtil.removeChipPanel(this, stateManager);
-        cards = Shoe.createShoe(1, CardsDeck::new).cards();
+        cards = Shoe.createShoe(1, LetterDeck::new).cards();
     }
 
     /** Protected API for the {@link UltimatePanel} to restart fresh and updated screen */

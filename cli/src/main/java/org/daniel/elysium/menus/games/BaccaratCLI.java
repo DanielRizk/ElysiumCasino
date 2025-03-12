@@ -10,8 +10,8 @@ import org.daniel.elysium.cliUtils.CmdHelper;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.interfaces.MenuOptionCLI;
 import org.daniel.elysium.models.Card;
-import org.daniel.elysium.models.CardsDeck;
 import org.daniel.elysium.models.Shoe;
+import org.daniel.elysium.models.SymbolicDeck;
 import org.daniel.elysium.user.profile.UserProfile;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class BaccaratCLI implements MenuOptionCLI {
         this.profile = profile;
         CmdHelper.clearCMD();
 
-        Shoe<Card> shoe = Shoe.createShoe(6, CardsDeck::new);
+        Shoe<Card> shoe = Shoe.createShoe(6, SymbolicDeck::new);
         cards = shoe.cards();
 
         DebugPrint.println("Welcome to Baccarat!");

@@ -1,7 +1,6 @@
 package org.daniel.elysium.screens;
 
 import org.daniel.elysium.StateManager;
-import org.daniel.elysium.assets.AssetManager;
 import org.daniel.elysium.assets.BackgroundAsset;
 import org.daniel.elysium.assets.ButtonAsset;
 import org.daniel.elysium.assets.LogoAsset;
@@ -122,7 +121,11 @@ public class UpdatePasswordPanel extends JPanel implements Resettable {
         });
 
         // Back button action -> switch to login panel
-        backButton.addActionListener(e -> stateManager.switchPanel("Profile"));
+        backButton.addActionListener(e -> {
+            if (stateManager.isUserLoggedIn()){
+                stateManager.switchPanel("Profile");
+            }
+        });
     }
 
     /**

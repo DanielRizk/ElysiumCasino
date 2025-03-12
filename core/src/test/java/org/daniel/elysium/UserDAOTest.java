@@ -1,3 +1,5 @@
+package org.daniel.elysium;
+
 import org.daniel.elysium.user.database.DatabaseConnection;
 import org.daniel.elysium.user.database.UserDAO;
 import org.daniel.elysium.user.profile.UserProfile;

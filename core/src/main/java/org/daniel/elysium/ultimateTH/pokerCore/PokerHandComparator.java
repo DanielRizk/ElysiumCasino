@@ -5,8 +5,6 @@ import org.daniel.elysium.ultimateTH.model.UthHand;
 import org.daniel.elysium.ultimateTH.pokerCore.models.PokerEvaluatedHandModel;
 
 import java.util.*;
-
-import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +41,7 @@ public class PokerHandComparator {
             case TWO_PAIR -> compareTwoPairHands(hand1.cardCombination(), hand2.cardCombination());
             case PAIR -> comparePairHands(hand1.cardCombination(), hand2.cardCombination());
             case HIGH_CARD, TRIPS -> compareKickers(hand1.cardCombination(), hand2.cardCombination());
+            case STRAIGHT, STRAIGHT_FLUSH, ROYAL_FLUSH -> compareStraights(hand1.cardCombination(), hand2.cardCombination());
             default -> compareCardValues(hand1.cardCombination(), hand2.cardCombination());
         };
     }
@@ -97,6 +96,31 @@ public class PokerHandComparator {
             }
         }
         return 0;
+    }
+
+    /**
+     * Compares two hands by evaluating the highest-ranking straight.
+     *
+     * @param hand1 the first hand
+     * @param hand2 the second hand
+     * @return a positive integer if {@code hand1} is stronger,
+     *         a negative integer if {@code hand2} is stronger,
+     *         or 0 if the hands are equal
+     */
+    private static int compareStraights(List<UthCard> hand1, List<UthCard> hand2) {
+        List<Integer> list1 = getStraightValuesDesc(hand1);
+        List<Integer> list2 = getStraightValuesDesc(hand2);
+
+        // Both lists are now 5 elements in descending order.
+        // Compare index by index.
+        for (int i = 0; i < 5; i++) {
+            int comparison = list1.get(i) - list2.get(i);
+            if (comparison != 0) {
+                return comparison;
+                // if > 0 => hand1 is higher, if < 0 => hand2 is higher
+            }
+        }
+        return 0; // perfect tie
     }
 
     /* ======================
@@ -222,5 +246,49 @@ public class PokerHandComparator {
         }
         return kicker;
     }
+
+    /**
+     * Returns a list of card values in descending order,
+     * adjusting Ace=14 to Ace=1 if the hand is A-2-3-4-5.
+     * Assumes the given hand is already recognized as a "straight."
+     */
+    private static List<Integer> getStraightValuesDesc(List<UthCard> hand) {
+        // First, collect all values in ascending order
+        List<Integer> sortedAsc = hand.stream()
+                .map(UthCard::getValue)
+                .sorted() // ascending
+                .collect(Collectors.toList());
+
+        // Check if it's A-2-3-4-5 (which would appear as [2,3,4,5,14] in ascending order)
+        if (isA2345Straight(sortedAsc)) {
+            // Remove the last element (14)...
+            sortedAsc.remove(Integer.valueOf(14));
+            // ...and add '1' for Ace low
+            sortedAsc.add(1);
+            // Now the list is [1,2,3,4,5] in ascending order
+        }
+
+        // Finally, reverse to get descending
+        Collections.reverse(sortedAsc);
+        return sortedAsc;
+    }
+
+    /**
+     * A small helper that checks if the ascending list is exactly A-2-3-4-5
+     * i.e., [2,3,4,5,14].
+     */
+    private static boolean isA2345Straight(List<Integer> sortedAsc) {
+        // Must be exactly 5 cards
+        if (sortedAsc.size() == 5) {
+            // e.g., [2, 3, 4, 5, 14]
+            return sortedAsc.get(0) == 2 &&
+                    sortedAsc.get(1) == 3 &&
+                    sortedAsc.get(2) == 4 &&
+                    sortedAsc.get(3) == 5 &&
+                    sortedAsc.get(4) == 14;
+        }
+        return false;
+    }
+
 }
 

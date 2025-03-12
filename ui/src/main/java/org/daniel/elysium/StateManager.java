@@ -24,8 +24,8 @@ public class StateManager {
     /** CardLayout container for persistent panels. */
     private final CardLayout cardLayout;
 
-    /** The current user's profile, or {@code null} if no user is logged in. */
-    private UserProfile profile = null;
+    /** The current user's profile, or {@code Temp profile} if no user is logged in. */
+    private UserProfile profile = new UserProfile();
 
     /** The currently displayed panel (for the disposable method). */
     private JPanel currentPanel = null;

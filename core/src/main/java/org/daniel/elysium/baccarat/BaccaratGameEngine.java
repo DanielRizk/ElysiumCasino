@@ -3,8 +3,8 @@ package org.daniel.elysium.baccarat;
 import org.daniel.elysium.baccarat.constants.BacHandAction;
 import org.daniel.elysium.baccarat.constants.BacHandState;
 import org.daniel.elysium.baccarat.constants.BacHandType;
-import org.daniel.elysium.baccarat.models.BacHand;
 import org.daniel.elysium.baccarat.models.BacBetHand;
+import org.daniel.elysium.baccarat.models.BacHand;
 
 /**
  * Manages the rules and logic for a Baccarat game, evaluating player and banker hands and determining the outcome of bets.

@@ -14,9 +14,6 @@ import java.util.List;
 
 import static org.daniel.elysium.ultimateTH.pokerCore.PokerHandComparator.determineWinner;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Manages the game logic for Ultimate Texas Hold'em.
  * <p>
@@ -91,6 +88,10 @@ public class UthGameEngine {
                 case FULL_HOUSE -> {
                     hand.setTrips((int) (hand.getTrips() + (hand.getTrips() * UthTripsState.FULL_HOUSE.getValue())));
                     hand.setTripsState(UthTripsState.FULL_HOUSE);
+                }
+                case QUADS -> {
+                    hand.setTrips((int) (hand.getTrips() + (hand.getTrips() * UthTripsState.QUADS.getValue())));
+                    hand.setTripsState(UthTripsState.QUADS);
                 }
                 case STRAIGHT_FLUSH -> {
                     hand.setTrips((int) (hand.getTrips() + (hand.getTrips() * UthTripsState.STRAIGHT_FLUSH.getValue())));

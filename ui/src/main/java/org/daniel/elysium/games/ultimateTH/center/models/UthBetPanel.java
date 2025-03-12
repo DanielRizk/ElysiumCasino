@@ -291,7 +291,6 @@ public class UthBetPanel extends JPanel implements BetCircle.SelectionListener{
      */
     public void payTripsWin(UthPlayerHand hand){
         if (hand.getTripsState().getValue() > 0){
-            // TODO: double check the trips payout, ie should have been 4 chips, got 2, example on phone
             List<Chip> tripsChips = new ArrayList<>(Chip.getChipCombination((hand.getTrips())));
             trips.clearChips();
             for (Chip chip : tripsChips) {

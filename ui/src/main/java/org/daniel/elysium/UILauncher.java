@@ -10,7 +10,6 @@ import org.daniel.elysium.games.blackjack.BlackjackPanel;
 import org.daniel.elysium.games.ultimateTH.UltimatePanel;
 import org.daniel.elysium.screens.*;
 import org.daniel.elysium.user.database.DatabaseConnection;
-import org.daniel.elysium.user.profile.UserProfile;
 
 import javax.swing.*;
 import java.awt.*;
@@ -101,7 +100,7 @@ public class UILauncher {
     private void initializeApplication() {
         // Perform startup tasks
         DatabaseConnection.initializeDatabase();
-        DebugPrint.getInstance(DebugLevel.DEBUG); // Set to Disabled in production
+        DebugPrint.getInstance(DebugLevel.DISABLED); // Set to Disabled in production
 
         // Set the look and feel to match the OS
         try {
@@ -164,7 +163,6 @@ public class UILauncher {
     private static StateManager createStateManager(JPanel mainPanel, JFrame frame) {
         StateManager stateManager = new StateManager(mainPanel, frame);
 
-        // TODO: create JUnit Test for UTH
         stateManager.registerPanel("Login", new LoginPanel(stateManager));
         stateManager.registerPanel("Register", new RegisterPanel(stateManager));
         stateManager.registerPanel("MainMenu", new MainMenuPanel(stateManager));

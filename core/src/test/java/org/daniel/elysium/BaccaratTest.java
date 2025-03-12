@@ -1,3 +1,4 @@
+package org.daniel.elysium;
 
 import org.daniel.elysium.baccarat.BaccaratGameEngine;
 import org.daniel.elysium.baccarat.constants.BacHandAction;

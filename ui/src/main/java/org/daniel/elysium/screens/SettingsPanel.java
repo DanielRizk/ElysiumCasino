@@ -110,38 +110,40 @@ public class SettingsPanel extends JPanel implements Resettable {
      * Registers action listeners for Blackjack toggle, Baccarat toggle, Ultimate_TH toggle and back button.
      */
     private void registerButtonActions() {
-        // bjToggle action -> set the mode for BJ game
-        bjToggle.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                bjToggle.setSelected();
-                stateManager.setBJAutoStartMode(true);
-            } else {
-                bjToggle.setUnselected();
-                stateManager.setBJAutoStartMode(false);
-            }
-        });
+        if (stateManager.isUserLoggedIn()){
+            // bjToggle action -> set the mode for BJ game
+            bjToggle.addItemListener(e -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    bjToggle.setSelected();
+                    stateManager.setBJAutoStartMode(true);
+                } else {
+                    bjToggle.setUnselected();
+                    stateManager.setBJAutoStartMode(false);
+                }
+            });
 
-        // bacToggle action -> set the mode for Bac game
-        bacToggle.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                bacToggle.setSelected();
-                stateManager.setBacAutoStartMode(true);
-            } else {
-                bacToggle.setUnselected();
-                stateManager.setBacAutoStartMode(false);
-            }
-        });
+            // bacToggle action -> set the mode for Bac game
+            bacToggle.addItemListener(e -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    bacToggle.setSelected();
+                    stateManager.setBacAutoStartMode(true);
+                } else {
+                    bacToggle.setUnselected();
+                    stateManager.setBacAutoStartMode(false);
+                }
+            });
 
-        // uthToggle action -> set the mode for UTH game
-        uthToggle.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                uthToggle.setSelected();
-                stateManager.setUTHAutoStartMode(true);
-            } else {
-                uthToggle.setUnselected();
-                stateManager.setUTHAutoStartMode(false);
-            }
-        });
+            // uthToggle action -> set the mode for UTH game
+            uthToggle.addItemListener(e -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    uthToggle.setSelected();
+                    stateManager.setUTHAutoStartMode(true);
+                } else {
+                    uthToggle.setUnselected();
+                    stateManager.setUTHAutoStartMode(false);
+                }
+            });
+        }
 
         // Back button action -> switch to login panel
         backButton.addActionListener(e -> stateManager.switchPanel("MainMenu"));
@@ -154,22 +156,24 @@ public class SettingsPanel extends JPanel implements Resettable {
 
     @Override
     public void onRestart() {
-        if (stateManager.isBJAutoStart()){
-            bjToggle.setSelected();
-        } else {
-            bjToggle.setUnselected();
-        }
+        if (stateManager.isUserLoggedIn()){
+            if (stateManager.isBJAutoStart()){
+                bjToggle.setSelected();
+            } else {
+                bjToggle.setUnselected();
+            }
 
-        if (stateManager.isBacAutoStart()){
-            bacToggle.setSelected();
-        } else {
-            bacToggle.setUnselected();
-        }
+            if (stateManager.isBacAutoStart()){
+                bacToggle.setSelected();
+            } else {
+                bacToggle.setUnselected();
+            }
 
-        if (stateManager.isUTHAutoStart()){
-            uthToggle.setSelected();
-        } else {
-            uthToggle.setUnselected();
+            if (stateManager.isUTHAutoStart()){
+                uthToggle.setSelected();
+            } else {
+                uthToggle.setUnselected();
+            }
         }
     }
 }

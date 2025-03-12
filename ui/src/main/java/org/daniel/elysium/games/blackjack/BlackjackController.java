@@ -17,16 +17,14 @@ import org.daniel.elysium.interfaces.ChipPanelConsumer;
 import org.daniel.elysium.interfaces.GameActions;
 import org.daniel.elysium.interfaces.Mediator;
 import org.daniel.elysium.models.Card;
-import org.daniel.elysium.models.CardsDeck;
+import org.daniel.elysium.models.LetterDeck;
 import org.daniel.elysium.models.Shoe;
-import org.daniel.elysium.models.cards.UICard;
 import org.daniel.elysium.models.chips.Chip;
 import org.daniel.elysium.models.panels.ChipPanel;
 import org.daniel.elysium.models.panels.ChipPanelUtil;
 import org.daniel.elysium.models.panels.TopPanel;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +46,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
     public static final int MIN_BET = 10;
 
     // Game cards creation
-    Shoe<Card> shoe = Shoe.createShoe(4, CardsDeck::new);
+    Shoe<Card> shoe = Shoe.createShoe(4, LetterDeck::new);
     private List<Card> cards = shoe.cards();
 
     /**
@@ -658,7 +656,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
 
         // If the shoe has less than 15 cards, start a new shoe
         if (cards.size() < 15){
-            cards = Shoe.createShoe(4, CardsDeck::new).cards();
+            cards = Shoe.createShoe(4, LetterDeck::new).cards();
 
             StyledNotificationDialog dialog = new StyledNotificationDialog(
                     stateManager.getFrame(),
@@ -676,7 +674,7 @@ public class BlackjackController implements Mediator, ChipPanelConsumer {
         gameAreaPanel.clearActions();
         gameAreaPanel.clearHands();
         ChipPanelUtil.removeChipPanel(this, stateManager);
-        cards = Shoe.createShoe(4, CardsDeck::new).cards();
+        cards = Shoe.createShoe(4, LetterDeck::new).cards();
     }
 
     /** Protected API for the {@link BlackjackPanel} to restart fresh and updated screen */
