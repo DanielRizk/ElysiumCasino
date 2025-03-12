@@ -52,7 +52,7 @@ public class UltimateController implements Mediator, ChipPanelConsumer {
 
     // Game cards creation
     Shoe<Card> shoe = Shoe.createShoe(1, LetterDeck::new);
-    private List<Card> cards = CustomDebugDeck.getCustomUTHDeck();//shoe.cards();
+    private List<Card> cards = shoe.cards();
 
     /**
      * Constructs the UltimateController and initializes game components.
