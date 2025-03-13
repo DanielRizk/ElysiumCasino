@@ -1,6 +1,6 @@
 rootProject.name = 'ElysiumCasino'
 include 'core'
-include 'ui'
+include 'gui'
 include 'utils'
 include 'cli'
 

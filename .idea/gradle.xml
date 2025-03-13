@@ -11,7 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/cli" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/ui" />
+            <option value="$PROJECT_DIR$/gui" />
             <option value="$PROJECT_DIR$/utils" />
           </set>
         </option>
