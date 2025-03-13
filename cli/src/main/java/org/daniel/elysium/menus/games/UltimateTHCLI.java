@@ -4,6 +4,7 @@ import org.daniel.elysium.cliUtils.CmdHelper;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.interfaces.MenuOptionCLI;
 import org.daniel.elysium.models.Card;
+import org.daniel.elysium.models.LetterDeck;
 import org.daniel.elysium.models.Shoe;
 import org.daniel.elysium.models.SymbolicDeck;
 import org.daniel.elysium.ultimateTH.UthGameEngine;
@@ -14,6 +15,7 @@ import org.daniel.elysium.ultimateTH.model.UthHand;
 import org.daniel.elysium.ultimateTH.model.UthPlayerHand;
 import org.daniel.elysium.user.profile.UserProfile;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -33,6 +35,7 @@ public class UltimateTHCLI implements MenuOptionCLI {
     private UserProfile profile = null;
     private final Scanner scanner;
     private List<Card> cards;
+    private final String encoding;
 
     /** Returns Menu's exit code, default 0 */
     @Override
@@ -45,6 +48,7 @@ public class UltimateTHCLI implements MenuOptionCLI {
      */
     public UltimateTHCLI() {
         this.scanner = new Scanner(System.in);
+        this.encoding = Charset.defaultCharset().displayName();
     }
 
     /**
@@ -63,7 +67,13 @@ public class UltimateTHCLI implements MenuOptionCLI {
 
         while (true) {
             UthGameStage stage = UthGameStage.START;
-            Shoe<Card> shoe = Shoe.createShoe(1, SymbolicDeck::new);
+
+            Shoe<Card> shoe;
+            if ("UTF-8".equalsIgnoreCase(encoding)){
+                shoe = Shoe.createShoe(1, SymbolicDeck::new);
+            } else {
+                shoe = Shoe.createShoe(1, LetterDeck::new);
+            }
             cards = shoe.cards();
 
             int numberOfHands = getNumberOfHands();

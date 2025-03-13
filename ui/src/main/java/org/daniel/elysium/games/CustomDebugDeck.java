@@ -44,10 +44,10 @@ public class CustomDebugDeck {
      */
     public static List<Card> getCustomBacDeck() {
         List<Card> cards = new ArrayList<>();
-        cards.add(new Card("9", "S"));
+        cards.add(new Card("6", "S"));
+        cards.add(new Card("8", "H"));
+        cards.add(new Card("3", "S"));
         cards.add(new Card("7", "S"));
-        cards.add(new Card("7", "H"));
-        cards.add(new Card("Q", "S"));
         cards.add(new Card("9", "C"));
         cards.add(new Card("2", "H"));
         return cards;

@@ -10,10 +10,12 @@ import org.daniel.elysium.cliUtils.CmdHelper;
 import org.daniel.elysium.debugUtils.DebugPrint;
 import org.daniel.elysium.interfaces.MenuOptionCLI;
 import org.daniel.elysium.models.Card;
+import org.daniel.elysium.models.LetterDeck;
 import org.daniel.elysium.models.Shoe;
 import org.daniel.elysium.models.SymbolicDeck;
 import org.daniel.elysium.user.profile.UserProfile;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -33,12 +35,14 @@ public class BaccaratCLI implements MenuOptionCLI {
     private UserProfile profile = null;
     private final Scanner scanner;
     private List<Card> cards;
+    private final String encoding;
 
     /**
      * Constructs a BaccaratCLI instance.
      */
     public BaccaratCLI() {
         this.scanner = new Scanner(System.in);
+        this.encoding = Charset.defaultCharset().displayName();
     }
 
     /** Returns Menu's exit code, default 0 */
@@ -57,7 +61,12 @@ public class BaccaratCLI implements MenuOptionCLI {
         this.profile = profile;
         CmdHelper.clearCMD();
 
-        Shoe<Card> shoe = Shoe.createShoe(6, SymbolicDeck::new);
+        Shoe<Card> shoe;
+        if ("UTF-8".equalsIgnoreCase(encoding)){
+            shoe = Shoe.createShoe(6, SymbolicDeck::new);
+        } else {
+            shoe = Shoe.createShoe(6, LetterDeck::new);
+        }
         cards = shoe.cards();
 
         DebugPrint.println("Welcome to Baccarat!");

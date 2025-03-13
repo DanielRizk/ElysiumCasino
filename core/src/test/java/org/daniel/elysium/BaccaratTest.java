@@ -102,7 +102,7 @@ public class BaccaratTest {
 
         // Banker: 3 + 1 = 4
         bankerHand.dealCard(new BacCard("3", "S"));
-        bankerHand.dealCard(new BacCard("1", "S"));
+        bankerHand.dealCard(new BacCard("3", "S"));
 
         // With only 2 player cards, banker does not evaluate draw logic
         BaccaratGameEngine.evaluateBanker(bankerHand, playerHand);
