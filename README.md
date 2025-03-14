@@ -88,11 +88,18 @@ If you **do not** want to build from source or need a quick start:
 ---
 
 ## Screenshots
-You can include screenshots in an `images/` folder (or upload them to an image hosting service). For example:
+Here are some screenshots from the game, enjoy
 
-![GUI Example](images/gui_example.png "Optional caption")
+### GUI
+![Gui](images/gui_mainMenu.png "Main menu")
+![Gui](images/gui_blackjack.png "Blackjack")
+![Gui](images/gui_baccarat.png "Baccarat")
+![Gui](images/gui_uth.png "Ultimate Texas Hold'em")
 
-*(Feel free to add more screenshots showcasing the CLI or different game modes.)*
+### CLI
+![CLI](images/cli_blakjack_utf8.png "Blackjack")
+![CLI](images/cli_uth_utf8.png "Ultimate Texas Hold'em UTF-8 compliant Terminal")
+![CLI](images/cli_uth_ascii.png "Ultimate Texas Hold'em UTF-8 non-compliant Terminal ")
 
 ---
 
