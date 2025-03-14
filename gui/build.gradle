@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.daniel.myCasino'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':utils')
+}
+
+application {
+    mainClass = 'org.daniel.elysium.Main'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.daniel.elysium.Main'
+        )
+    }
+
+    // Include all dependencies in the JAR
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    // Avoid duplicate files in the JAR
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register("Run", JavaExec){
+    group = 'application'
+    mainClass = 'org.daniel.elysium.Main'
+    classpath = sourceSets.main.runtimeClasspath
+    //standardInput = System.in
+}

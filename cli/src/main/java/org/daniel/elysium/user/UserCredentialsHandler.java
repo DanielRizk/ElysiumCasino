@@ -55,7 +55,7 @@ public class UserCredentialsHandler {
         CmdHelper.clearCMD();
         DebugPrint.println("********************************************************");
         DebugPrint.println("********************************************************");
-        DebugPrint.println("                WELCOME TO MY CASINO                    ");
+        DebugPrint.println("              WELCOME TO Elysium Casino                 ");
         DebugPrint.println("********************************************************");
         DebugPrint.println("********************************************************");
         DebugPrint.println();
